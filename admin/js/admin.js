@@ -139,9 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
-            e.preventDefault();
             const targetId = item.dataset.target;
             if(targetId) {
+                e.preventDefault();
                 switchView(targetId);
                 loadAllData();
             }
@@ -308,7 +308,7 @@ window.submitNewProduct = function() {
         price: parseFloat(document.getElementById('prodPrice').value),
         stock: parseInt(document.getElementById('prodStock').value),
         description: document.getElementById('prodDesc').value,
-        image_path: ''
+        image_path: document.getElementById('prodImage') ? document.getElementById('prodImage').value : ''
     };
     
     productsDB.unshift(newProduct);

@@ -22,6 +22,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
     rel="stylesheet">
+    
+  <!-- FONT AWESOME FOR SOCIAL ICONS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- TAILWIND -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -108,7 +111,7 @@
       <nav class="menu left-menu">
 
         <a href="#">Home</a>
-        <a href="#">New Arrivals</a>
+        <a href="catalogue.html">New Arrivals</a>
 
       </nav>
 
@@ -401,12 +404,34 @@ SLIDE 2 (DESKTOP + MOBILE)
     alt="Sanskruti By Bani Desktop Banner"
   >
 
-  <!-- MOBILE IMAGE -->
-  <img 
-    src="assets/slide21-mobile.png"
-    class="mobile-img"
-    alt="Sanskruti By Bani Mobile Banner"
-  >
+  <!-- MOBILE LAYOUT (Premium E-commerce Full Cover) -->
+  <div class="slide2-mobile-layout premium-cover-layout">
+    
+    <!-- FULL COVER IMAGE -->
+    <img 
+      src="assets/slide21-mobile.png"
+      class="premium-cover-img"
+      alt="Sanskruti By Bani Mobile Banner"
+    >
+
+    <!-- DARK GRADIENT OVERLAY FOR TEXT READABILITY -->
+    <div class="premium-gradient-overlay"></div>
+
+    <!-- BOTTOM TEXT OVERLAY (Karagiri / Suvika Style) -->
+    <div class="hero-content premium-bottom-text">
+      <h1 class="hero-title">
+        <span class="line line1" style="font-family:'Noto Serif',serif; font-style:italic; font-size:32px; color:#fff; font-weight:400; text-transform:none; margin-bottom:-5px; text-shadow: 0 4px 15px rgba(0,0,0,0.9);">Timeless Grace Heritage</span>
+        <span class="line line2" style="font-family:'Cinzel',serif; font-size:46px; color:#e7c27a; font-weight:600; margin-top:0; text-shadow: 0 4px 15px rgba(0,0,0,0.9);">PAITHANI</span>
+      </h1>
+      <p class="hero-desc" style="color: #f1f1f1; text-shadow: 0 2px 10px rgba(0,0,0,0.9);">
+        Woven with Tradition,<br>Cherished for Generations...
+      </p>
+      
+      <!-- Premium Button -->
+      <a href="#" class="btn-primary" style="margin-top: 20px; padding: 12px 35px; font-size: 13px; background: #e7c27a; color: #3a1511; border: none; font-weight: 600; letter-spacing: 2px;">Shop Collection</a>
+    </div>
+
+  </div>
 
 </div>
 
@@ -706,7 +731,7 @@ SPECIALITY = PAITHANI
 
     </div>
 
-    <a href="#" class="view-all">
+    <a href="#" class="btn-primary">
       VIEW ALL
     </a>
 
@@ -1110,6 +1135,19 @@ LUXURY FOOTER SECTION
       <a href="#">Bandhani Sarees</a>
       <a href="#">Patola Sarees</a>
       <a href="#">Designer Sarees</a>
+
+    </div>
+
+    <!-- POLICY & INQUIRY -->
+    <div class="footer-col">
+
+      <h3>Policy & Inquiry</h3>
+
+      <a href="#">Return & Exchange Policy</a>
+      <a href="#">Shipping Policy</a>
+      <a href="#">Terms and Conditions</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Wholesale Inquiry</a>
 
     </div>
 

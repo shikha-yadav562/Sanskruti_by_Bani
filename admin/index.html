@@ -83,7 +83,7 @@
                     <span>Products</span>
                 </a>
 
-                <a href="#" data-target="simplecategories" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                <a href="#" data-target="categories" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
                     <i class="ph ph-folders text-xl"></i>
                     <span>Categories</span>
                 </a>
@@ -689,10 +689,12 @@
                     </div>
                 </section>
 
+
+
                 <!-- ==============================
                      MODULE: SIMPLE CATEGORIES
                 ============================== -->
-                <section id="view-simplecategories" class="view-section hidden flex-col gap-6">
+                <section id="view-categories" class="view-section hidden flex-col gap-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Manage Categories</h2>
@@ -960,6 +962,11 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Short Description</label>
                         <textarea id="prodDesc" rows="3" placeholder="Write a short engaging description..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white custom-scrollbar"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product Image URL</label>
+                        <input type="text" id="prodImage" placeholder="e.g. https://example.com/image.jpg" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
                     </div>
                 </form>
             </div>

@@ -18,6 +18,26 @@ ROOT VARIABLES
 }
 
 /* ===================================================
+SHINY TRADITIONAL TEXTURE (GLOBAL)
+=================================================== */
+.bg-traditional-pattern {
+  background-color: #4a0c16;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 0 C60 20, 80 40, 100 50 C80 60, 60 80, 50 100 C40 80, 20 60, 0 50 C20 40, 40 20, 50 0 Z' fill='%23e7c27a' fill-opacity='0.15'/%3E%3Ccircle cx='50' cy='50' r='20' stroke='%23e7c27a' stroke-width='1' fill='none' opacity='0.15'/%3E%3Ccircle cx='50' cy='50' r='10' stroke='%23e7c27a' stroke-width='1' fill='none' opacity='0.15'/%3E%3C/svg%3E");
+  animation: panAndBreathe 20s ease-in-out infinite alternate;
+}
+
+@keyframes panAndBreathe {
+  0% {
+    background-position: 0 0;
+    background-size: 100px 100px;
+  }
+  100% {
+    background-position: 50px 50px;
+    background-size: 120px 120px;
+  }
+}
+
+/* ===================================================
 RESET
 =================================================== */
 
@@ -1122,17 +1142,14 @@ LAYOUT
 /* =========================
 TEXT SIDE
 ========================= */
-/* =========================
-LUXURY TEXT CONTENT
-MODERN + ELEGANT STYLE
-========================= */
+
 
 .hero-content{
 
   position:relative;
   z-index:5;
 
-  padding:50px 0 50px 90px;
+  padding:20px 50px 20px 50px;
 
   max-width:760px;
 
@@ -1155,9 +1172,9 @@ PREMIUM BRAND TAG
   align-items:center;
   gap:12px;
 
-  padding:12px 28px;
+  padding:8px 20px;
 
-  margin-bottom:34px;
+  margin-bottom:24px;
 
   border-radius:60px;
 
@@ -1726,7 +1743,7 @@ IMAGE SIDE
 
   padding-left:0;
 
-  margin-left:-70px;
+  margin-left:-50px;
 }
 .hero-media::after{
   content:"";
@@ -1759,15 +1776,15 @@ IMAGE SIDE
 .glow{
   position:absolute;
 
-  width:600px;
-  height:600px;
+  width:450px;
+  height:450px;
 
   border-radius:50%;
 
   background:
     radial-gradient(circle,
-      rgba(231,194,122,.28) 0%,
-      rgba(196,69,62,.12) 38%,
+      rgba(240, 200, 120, 0.495) 0%,
+      rgba(232, 76, 68, 0.265) 38%,
       transparent 72%
     );
 
@@ -1777,7 +1794,7 @@ IMAGE SIDE
 }
 .hero-img{
   width:100%;
-  max-width:550px;
+  max-width:530px;
   height:auto;
 
   position:relative;
@@ -1824,22 +1841,31 @@ SLIDE 2
 .image-slide{
   position:relative;
   width:100%;
-  height:90vh;
-  overflow:hidden;
-  background:#fff8f4;;
+  height:auto; /* Adjusted to fit image */
+  background:#fff8f4;
 }
 
 /* desktop image */
-.image-slide .desktop-img{
+.image-slide .desktop-img,
+.image-slide img {
   width:100%;
-  height:100%;
-  object-fit:cover;
+  height:100vh;
+  object-fit: cover;
+  object-position: center;
   display:block;
   background:#fff8f4;
 }
 
 /* hide mobile image desktop */
 .image-slide .mobile-img{
+  display:none;
+}
+
+/* =========================
+MOBILE TEXT (SLIDE 2)
+========================= */
+
+.slide2-mobile-layout{
   display:none;
 }
 
@@ -2042,46 +2068,16 @@ TABLET + MOBILE
 
   .image-slide{
     width:100%;
-    height:70svh !important;
-    min-height:70svh !important;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    overflow:hidden;
-
-    background:
-      radial-gradient(circle at top,
-        rgba(231,194,122,.10) 0%,
-        rgba(255,248,244,.96) 35%,
-        #fff 100%);
+    display:flex !important;
+    flex-direction: column !important;
+    align-items: center;
+    justify-content: flex-start;
+    background:#fff8f4; /* Light theme matching slide 1 */
   }
 
   /* luxury glow */
   .image-slide::before{
-    content:"";
-    position:absolute;
-
-    top:-180px;
-    left:50%;
-
-    transform:translateX(-50%);
-
-    width:700px;
-    height:700px;
-
-    border-radius:50%;
-
-    background:
-      radial-gradient(
-        circle,
-        rgba(231,194,122,.12),
-        transparent 68%
-      );
-
-    pointer-events:none;
-    z-index:0;
+    display:none; 
   }
 
   /* hide desktop image */
@@ -2089,21 +2085,46 @@ TABLET + MOBILE
     display:none !important;
   }
 
-  /* show mobile image */
-  .image-slide .mobile-img{
-    display:block !important;
+  /* Premium Mobile Cover Layout */
+  .premium-cover-layout {
+    display: block;
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .premium-cover-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    z-index: 1;
+  }
 
-    width:100%;
-    height:100%;
+  .premium-gradient-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70%;
+    background: linear-gradient(to top, rgba(15, 5, 2, 0.95) 0%, rgba(15, 5, 2, 0.4) 60%, transparent 100%);
+    z-index: 2;
+  }
 
-    max-width:100%;
-    max-height:100%;
-
-    object-fit:cover;
-    object-position:center center;
-
-    position:relative;
-    z-index:2;
+  .premium-bottom-text {
+    position: absolute;
+    bottom: 8%;
+    left: 0;
+    width: 100%;
+    z-index: 5;
+    text-align: center;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }
 
@@ -2540,7 +2561,7 @@ MOBILE
 @media(max-width:768px){
 
   .editorial-showcase{
-    padding:90px 20px;
+    padding:40px 15px;
   }
 
   .luxury-editorial-grid{
@@ -2549,7 +2570,7 @@ MOBILE
   }
 
   .luxury-card{
-    height:380px;
+    height:320px; /* Reduced from 380px to fit image better */
     border-radius:24px;
   }
 
@@ -2565,8 +2586,69 @@ MOBILE
     font-size:13px;
   }
 
-  .editorial-heading h2{
-    font-size:36px;
+  .editorial-heading {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30px;
+  }
+  
+  .editorial-heading h2 {
+    font-size:32px;
+    text-align:center;
+  }
+  
+  .bestseller-title {
+    font-size:32px;
+    text-align:center;
+    width: 100%;
+  }
+  
+  .bestseller-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 25px;
+    width: 100%;
+  }
+  
+  .bestseller-sub {
+    padding-left: 0;
+    text-align: center;
+  }
+  
+  .bestseller-sub::before {
+    display: none;
+  }
+
+  .sweet-memory-section {
+    padding: 30px 15px;
+  }
+
+  .memory-container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .memory-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .bestseller-section {
+    padding: 30px 15px;
+  }
+
+  .view-all {
+    align-self: flex-start;
+    font-size: 10px;
+    margin-top: 10px;
   }
 }
 /* ===================================================
@@ -2967,10 +3049,14 @@ HEADER
   z-index:5;
 
   display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+  text-align: center;
+  gap: 20px;
 
   margin-bottom:42px;
+  width: 100%;
 }
 
 /* SUBTITLE */
@@ -2986,25 +3072,12 @@ HEADER
   letter-spacing:6px;
   text-transform:uppercase;
 
-  padding-left:70px;
-  margin-bottom:18px;
+  margin-bottom:15px;
+  text-align: center;
 }
 
 .bestseller-sub::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:50%;
-
-  width:55px;
-  height:1px;
-
-  background:
-    linear-gradient(
-      to right,
-      transparent,
-      #c4453e
-    );
+  display: none;
 }
 
 /* TITLE */
@@ -3049,21 +3122,7 @@ HEADER
 /* GOLD LINE */
 
 .bestseller-title::after{
-  content:"";
-  position:absolute;
-  left:0;
-  bottom:-18px;
-
-  width:180px;
-  height:2px;
-
-  background:
-    linear-gradient(
-      to right,
-      #c4453e,
-      #e7c27a,
-      transparent
-    );
+  display:none;
 }
 
 /* VIEW ALL */
@@ -3170,7 +3229,8 @@ IMAGE
 
 .saree-image img{
   width:100%;
-  height:200px;
+  aspect-ratio: 1074 / 1600;
+  height: auto;
   object-fit:cover;
 
   transition:
@@ -3502,7 +3562,7 @@ MOBILE
   }
 
   .saree-image img{
-    height:200px;
+    height:auto;
   }
 }
 
@@ -4528,6 +4588,7 @@ TOP SECTION
     1.4fr
     1fr
     1fr
+    1fr
     1.2fr;
 
   gap:70px;
@@ -4622,6 +4683,13 @@ SOCIALS
 COLUMN
 ========================================= */
 
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
 .footer-col h3{
   font-family:'Cinzel', serif;
 
@@ -4657,6 +4725,11 @@ COLUMN
   margin-right:10px;
 
   color:#e7c27a;
+}
+
+.footer-socials i {
+  margin-right: 0 !important;
+  font-size: 18px;
 }
 
 /* =========================================
@@ -4888,18 +4961,6 @@ ANIMATIONS
 /* =========================================
 TABLET
 ========================================= */
-
-@media(max-width:991px){
-
-  .luxury-footer{
-    padding:50px 40px 30px;
-  }
-
-  .footer-top{
-    grid-template-columns:1fr 1fr;
-
-    gap:45px;
-  }
 
   .footer-newsletter{
     flex-direction:column;
@@ -5739,6 +5800,822 @@ font-size:11px;
 
 letter-spacing:3px;
 
+}
+
+}
+
+
+
+
+/* ==========================================
+CATALOGUE PAGE
+========================================== */
+
+.catalogue-container{
+max-width:1400px;
+margin:auto;
+padding:40px 5%;
+}
+
+/* ==========================================
+HERO
+========================================== */
+
+.collection-hero{
+position:relative;
+height:350px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+text-align:center;
+overflow:hidden;
+
+background:
+linear-gradient(
+rgba(90,0,18,.75),
+rgba(90,0,18,.75)
+),
+
+url("assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg");
+
+background-size:cover;
+background-position:center;
+background-attachment:fixed;
+}
+
+.hero-content{
+position:relative;
+z-index:2;
+max-width:950px;
+padding:20px 50px;
+color:#fff;
+}
+
+
+
+.collection-hero h1{
+font-family:'Cinzel',serif;
+font-size:72px;
+line-height:1.1;
+margin-bottom:20px;
+}
+
+.collection-hero p{
+font-size:18px;
+line-height:1.9;
+max-width:700px;
+margin:auto;
+margin-bottom:35px;
+}
+
+.hero-buttons{
+display:flex;
+justify-content:center;
+gap:25px;
+flex-wrap:wrap;
+justify-self: center;
+}
+
+.hero-btn{
+padding:14px 32px;
+border-radius:50px;
+text-decoration:none;
+font-weight:600;
+transition:.3s;
+}
+
+.primary-btn{
+background:#d9b36a;
+color:#5a0012;
+}
+
+.secondary-btn{
+border:1px solid rgba(255,255,255,.5);
+color:#fff;
+}
+
+.secondary-btn:hover{
+background:#fff;
+color:#5a0012;
+}
+
+/* ==========================================
+BREADCRUMB
+========================================== */
+
+.catalogue-breadcrumb{
+padding:20px 5%;
+display:flex;
+gap:10px;
+font-size:14px;
+color:#777;
+}
+
+.catalogue-breadcrumb a{
+color:#5a0012;
+text-decoration:none;
+}
+
+/* ==========================================
+PILLS
+========================================== */
+
+.collection-pills{
+display:flex;
+gap:12px;
+overflow-x:auto;
+padding:25px 5%;
+border-top:1px solid rgba(90,0,18,.08);
+border-bottom:1px solid rgba(90,0,18,.08);
+scrollbar-width:none;
+}
+
+.collection-pills::-webkit-scrollbar{
+display:none;
+}
+
+.collection-pills button{
+padding:12px 24px;
+border:none;
+border-radius:50px;
+background:#f7f2ed;
+cursor:pointer;
+white-space:nowrap;
+color:#5a0012;
+font-weight:500;
+transition:.3s;
+}
+
+.collection-pills button.active,
+.collection-pills button:hover{
+background:#7a0018;
+color:#fff;
+}
+
+/* ==========================================
+TOOLBAR
+========================================== */
+
+.catalogue-toolbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:40px;
+padding-bottom:20px;
+border-bottom:1px solid rgba(0,0,0,.08);
+}
+
+.toolbar-left{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.results-count{
+font-size:14px;
+color:#666;
+}
+
+.sort-dropdown{
+padding:12px 18px;
+border-radius:12px;
+border:1px solid #ddd;
+background:#fff;
+}
+
+/* ==========================================
+MAIN GRID
+========================================== */
+
+.catalogue-layout{
+display:grid;
+grid-template-columns:280px 1fr;
+gap:40px;
+}
+
+.catalogue-products{
+width:100%;
+}
+
+/* ==========================================
+FILTER
+========================================== */
+
+.filter-sidebar{
+background:#fff;
+padding:25px;
+border-radius:24px;
+box-shadow:0 5px 20px rgba(0,0,0,.05);
+position:sticky;
+top:120px;
+height:max-content;
+}
+
+.filter-sidebar h3{
+font-family:'Cinzel';
+color:#5a0012;
+margin-bottom:20px;
+}
+
+.filter-group{
+padding-bottom:15px;
+margin-bottom:15px;
+border-bottom:1px solid #eee;
+}
+
+.filter-title{
+display:flex;
+justify-content:space-between;
+cursor:pointer;
+font-weight:600;
+padding:10px 0;
+}
+
+.filter-content{
+display:flex;
+flex-direction:column;
+gap:10px;
+padding-top:10px;
+}
+
+/* ==========================================
+PRODUCT GRID
+========================================== */
+
+.product-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:28px;
+}
+
+/* ==========================================
+CARD
+========================================== */
+
+.product-card{
+    background:#fff;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 4px 18px rgba(0,0,0,.06);
+    transition:.35s ease;
+}
+
+.product-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 12px 30px rgba(0,0,0,.10);
+}
+.product-image{
+    height:380px;
+    overflow:hidden;
+    position:relative;
+}
+
+
+.product-image img{
+width:100%;
+height:100%;
+object-fit:cover;
+transition:.4s;
+}
+
+.product-card:hover img{
+transform:scale(1.08);
+}
+
+.sale-badge{
+position:absolute;
+top:15px;
+left:15px;
+background:#d9b36a;
+padding:8px 15px;
+border-radius:30px;
+font-size:12px;
+font-weight:600;
+color:#5a0012;
+}
+
+.wishlist-icon{
+position:absolute;
+right:15px;
+top:15px;
+width:42px;
+height:42px;
+border:none;
+border-radius:50%;
+background:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+}
+
+.product-info{
+    padding:14px;
+}
+
+.product-rating{
+font-size:13px;
+color:#d9b36a;
+margin-bottom:12px;
+}
+
+.product-rating span{
+color:#777;
+}
+
+.product-info h3{
+    font-family:'Cinzel',serif;
+    font-size:15px;
+    font-weight: 500;
+    line-height:1.3;
+    margin-bottom:6px;
+}
+
+.sale-price{
+    font-size:20px;
+    color:#7a0018;
+    font-family:'Cinzel',serif;
+}
+
+.product-info p{
+font-size:13px;
+margin-bottom:10px;
+}
+
+
+.price-wrap{
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:18px;
+}
+
+
+
+.old-price{
+text-decoration:line-through;
+font-size:14px;
+color:#999;
+}
+.card-buttons{
+    margin-top:12px;
+}
+
+.buy-btn{
+    width:100%;
+    display:block;
+    text-align:center;
+    padding:12px;
+    border-radius:10px;
+    background:#7a0018;
+    color:#fff;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+}
+
+/* ==========================================
+TABLET
+========================================== */
+
+@media(max-width:1024px){
+
+.catalogue-layout{
+grid-template-columns:1fr;
+}
+
+.filter-sidebar{
+position:relative;
+top:0;
+}
+
+
+.product-grid{
+grid-template-columns:repeat(2,1fr);
+}
+.collection-hero h1{
+font-size:48px;
+}
+
+}
+
+/* ==========================================
+MOBILE
+========================================== */
+
+@media(max-width:768px){
+
+.collection-hero{
+height:420px;
+padding:20px;
+}
+
+.collection-hero h1{
+font-size:34px;
+}
+
+.collection-hero p{
+font-size:14px;
+}
+
+.catalogue-toolbar{
+flex-direction:column;
+align-items:flex-start;
+gap:15px;
+}
+
+.toolbar-right{
+width:100%;
+}
+
+.sort-dropdown{
+width:100%;
+}
+
+.filter-sidebar{
+display:none;
+}
+
+
+.product-grid{
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+}
+}
+
+.product-info{
+padding:18px;
+}
+
+.card-buttons{
+grid-template-columns:1fr;
+}
+
+
+
+/* ==========================================
+SMALL MOBILE
+========================================== */
+
+@media(max-width:480px){
+
+.collection-hero h1{
+font-size:28px;
+}
+
+.product-info h3{
+font-size:18px;
+}
+
+.sale-price{
+font-size:20px;
+}
+
+.product-image{
+aspect-ratio:360px;
+}
+
+}
+
+
+/* ==========================================
+PRODUCT CATEGORY
+========================================== */
+
+.product-category{
+display:inline-block;
+margin-bottom:10px;
+font-size:11px;
+font-weight:600;
+letter-spacing:2px;
+text-transform:uppercase;
+color:#d9b36a;
+}
+
+
+/* ==========================================
+FILTER CHECKBOXES
+========================================== */
+
+.filter-content label{
+display:flex;
+align-items:center;
+gap:10px;
+font-size:14px;
+color:#555;
+cursor:pointer;
+transition:.3s;
+}
+
+.filter-content label:hover{
+color:#7a0018;
+}
+
+.filter-content input{
+accent-color:#7a0018;
+}
+
+
+/* ==========================================
+FILTER TITLE ICON
+========================================== */
+
+.filter-title span{
+font-size:18px;
+color:#7a0018;
+}
+
+
+/* ==========================================
+WISHLIST ICON
+========================================== */
+
+.wishlist-icon{
+transition:.3s;
+}
+
+.wishlist-icon:hover{
+background:#7a0018;
+color:#fff;
+}
+
+.wishlist-icon .material-symbols-outlined{
+font-size:20px;
+}
+
+
+/* ==========================================
+BUTTON HOVER
+========================================== */
+
+.quick-btn{
+transition:.3s;
+}
+
+.quick-btn:hover{
+background:#d9b36a;
+border-color:#d9b36a;
+color:#5a0012;
+}
+
+.buy-btn{
+transition:.3s;
+}
+
+.buy-btn:hover{
+background:#5a0012;
+}
+
+
+/* ==========================================
+FEATURED COLLECTION
+========================================== */
+
+.featured-collection{
+margin:100px 0;
+border-radius:30px;
+overflow:hidden;
+position:relative;
+padding:100px 40px;
+
+background:
+linear-gradient(
+rgba(90,0,18,.82),
+rgba(90,0,18,.82)
+),
+
+url("assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg");
+
+background-size:cover;
+background-position:center;
+
+text-align:center;
+color:#fff;
+}
+
+.featured-content{
+max-width:800px;
+margin:auto;
+}
+
+.featured-content span{
+letter-spacing:4px;
+font-size:12px;
+color:#d9b36a;
+}
+
+.featured-content h2{
+font-family:'Cinzel',serif;
+font-size:52px;
+margin:20px 0;
+}
+
+.featured-content p{
+font-size:16px;
+line-height:1.8;
+margin-bottom:30px;
+}
+
+.featured-content .buy-btn{
+display:inline-block;
+padding:14px 30px;
+}
+
+
+/* ==========================================
+SALE BADGE COLORS
+========================================== */
+
+.sale-badge.bestseller{
+background:#d9b36a;
+}
+
+.sale-badge.new{
+background:#4caf50;
+color:#fff;
+}
+
+.sale-badge.sale{
+background:#e53935;
+color:#fff;
+}
+
+
+/* ==========================================
+PRODUCT IMAGE OVERLAY
+========================================== */
+
+.product-image::after{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(
+to top,
+rgba(0,0,0,.18),
+transparent 50%
+);
+pointer-events:none;
+}
+
+
+/* ==========================================
+SCROLLBAR
+========================================== */
+
+.collection-pills::-webkit-scrollbar{
+height:4px;
+}
+
+.collection-pills::-webkit-scrollbar-thumb{
+background:#d9b36a;
+border-radius:20px;
+}
+
+
+/* ==========================================
+FILTER BUTTON MOBILE
+========================================== */
+
+.filter-toggle{
+display:none;
+}
+
+@media(max-width:768px){
+
+.filter-toggle{
+display:flex;
+align-items:center;
+gap:8px;
+
+position:fixed;
+left:50%;
+bottom:20px;
+
+transform:translateX(-50%);
+
+padding:14px 24px;
+
+background:#7a0018;
+color:#fff;
+
+border:none;
+border-radius:50px;
+
+z-index:999;
+
+box-shadow:
+0 10px 25px rgba(122,0,24,.35);
+}
+
+}
+
+
+/* ==========================================
+MOBILE DRAWER
+========================================== */
+
+.mobile-filter-drawer{
+position:fixed;
+top:0;
+left:-100%;
+
+width:85%;
+max-width:340px;
+
+height:100vh;
+
+background:#fff;
+
+overflow:auto;
+
+z-index:1001;
+
+transition:.4s ease;
+}
+
+.mobile-filter-drawer.active{
+left:0;
+}
+
+.mobile-filter-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:20px;
+
+border-bottom:1px solid #eee;
+}
+
+
+/* ==========================================
+TABLET IMPROVEMENTS
+========================================== */
+
+@media(max-width:1024px){
+
+.featured-content h2{
+font-size:40px;
+}
+
+}
+
+
+/* ==========================================
+MOBILE IMPROVEMENTS
+========================================== */
+
+@media(max-width:768px){
+
+.catalogue-breadcrumb{
+overflow:auto;
+white-space:nowrap;
+font-size:13px;
+}
+
+.collection-pills{
+padding:15px;
+}
+
+.collection-pills button{
+padding:10px 18px;
+font-size:13px;
+}
+
+.featured-collection{
+padding:60px 20px;
+}
+
+.featured-content h2{
+font-size:32px;
+}
+
+.featured-content p{
+font-size:14px;
+}
+
+}
+
+
+/* ==========================================
+SMALL MOBILE
+========================================== */
+
+@media(max-width:480px){
+
+.featured-content h2{
+font-size:26px;
+}
+
+.hero-tag{
+font-size:11px;
+}
+
+.collection-pills button{
+font-size:12px;
+padding:8px 14px;
 }
 
 }

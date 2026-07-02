@@ -408,3 +408,27 @@ autoSlide,
 );
 
 });
+
+
+
+
+const filterBtn =
+document.querySelector(".filter-toggle");
+
+const drawer =
+document.querySelector(".mobile-filter-drawer");
+
+const closeFilter =
+document.querySelector(".close-filter");
+
+filterBtn.addEventListener("click",()=>{
+
+drawer.classList.add("active");
+
+});
+
+closeFilter.addEventListener("click",()=>{
+
+drawer.classList.remove("active");
+
+});
