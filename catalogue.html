@@ -223,10 +223,15 @@
     <div id="filterOverlay" class="fixed inset-0 bg-[#71041a]/40 backdrop-blur-sm z-[998] hidden lg:hidden"></div>
     
     <!-- PRODUCT GRID -->
-    <main class="w-full lg:w-3/4">
+    <main id="mainContent" class="w-full lg:w-3/4 transition-all duration-500 ease-in-out">
       <!-- TOOLBAR -->
       <div class="flex flex-col md:flex-row justify-between items-center mb-8 pb-4 border-b border-[#e7c27a]/50" style="font-family: 'Poppins', sans-serif;">
-          <div class="text-sm text-[#810820] mb-4 md:mb-0">Showing 1-20 of 124 results</div>
+          <div class="flex items-center gap-4 mb-4 md:mb-0">
+              <button id="desktopFilterToggle" class="hidden lg:flex items-center gap-2 text-[11px] font-bold text-[#810820] uppercase tracking-widest hover:bg-[#810820] hover:text-[#fff8f4] transition-colors border border-[#810820] px-4 py-2 bg-[#fff8f4]">
+                  <span class="material-symbols-outlined text-[16px]">tune</span> Filter
+              </button>
+              <div class="text-sm text-[#810820]">Showing 1-20 of 124 results</div>
+          </div>
           <div class="flex items-center space-x-3">
               <label for="sort" class="text-xs font-semibold text-[#71041a] uppercase tracking-widest">Sort By:</label>
               <select id="sort" class="border-b-2 border-[#e7c27a] text-[#4a1c1c] text-sm py-1 pl-2 pr-8 focus:outline-none focus:border-[#810820] bg-transparent cursor-pointer transition">
@@ -240,7 +245,7 @@
 
       <!-- GRID WITH 20 FRAMES -->
       <!-- Added specific styling for ADD TO CART button on each frame -->
-      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8 sm:gap-x-8 sm:gap-y-12">
+      <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8 sm:gap-x-8 sm:gap-y-12 transition-all duration-500">
         
         <!-- Generate 20 frames by repeating a set of 4 cards -->
         <!-- ITEM 1 -->
@@ -776,6 +781,26 @@
 
         closeFilterBtn.addEventListener('click', closeFilter);
         filterOverlay.addEventListener('click', closeFilter);
+      }
+
+      // Desktop Filter Logic
+      const desktopFilterToggle = document.getElementById('desktopFilterToggle');
+      const mainContent = document.getElementById('mainContent');
+      const productGrid = document.getElementById('productGrid');
+
+      if (desktopFilterToggle && filterSidebar && mainContent && productGrid) {
+        desktopFilterToggle.addEventListener('click', () => {
+          // Toggle the sidebar's visibility on desktop
+          filterSidebar.classList.toggle('lg:hidden');
+          
+          // Toggle main content width
+          mainContent.classList.toggle('lg:w-3/4');
+          mainContent.classList.toggle('lg:w-full');
+
+          // Toggle grid columns
+          productGrid.classList.toggle('lg:grid-cols-3');
+          productGrid.classList.toggle('lg:grid-cols-4');
+        });
       }
 
     });
