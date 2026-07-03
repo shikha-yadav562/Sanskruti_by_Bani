@@ -1934,8 +1934,8 @@ TABLET + MOBILE
 @media(max-width:900px){
 
   .hero-slide{
-    min-height:80svh;
-    height:100svh;
+    min-height:100svh;
+    height:auto;
   }
 
   /* MOBILE HERO BACKGROUND */
