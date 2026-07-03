@@ -404,33 +404,36 @@ SLIDE 2 (DESKTOP + MOBILE)
     alt="Sanskruti By Bani Desktop Banner"
   >
 
-  <!-- MOBILE LAYOUT (Premium E-commerce Full Cover) -->
-  <div class="slide2-mobile-layout premium-cover-layout">
-    
-    <!-- FULL COVER IMAGE -->
-    <img 
-      src="assets/slide21-mobile.png"
-      class="premium-cover-img"
-      alt="Sanskruti By Bani Mobile Banner"
-    >
-
-    <!-- DARK GRADIENT OVERLAY FOR TEXT READABILITY -->
-    <div class="premium-gradient-overlay"></div>
-
-    <!-- BOTTOM TEXT OVERLAY (Karagiri / Suvika Style) -->
-    <div class="hero-content premium-bottom-text">
-      <h1 class="hero-title">
-        <span class="line line1" style="font-family:'Noto Serif',serif; font-style:italic; font-size:32px; color:#fff; font-weight:400; text-transform:none; margin-bottom:-5px; text-shadow: 0 4px 15px rgba(0,0,0,0.9);">Timeless Grace Heritage</span>
-        <span class="line line2" style="font-family:'Cinzel',serif; font-size:46px; color:#e7c27a; font-weight:600; margin-top:0; text-shadow: 0 4px 15px rgba(0,0,0,0.9);">PAITHANI</span>
-      </h1>
-      <p class="hero-desc" style="color: #f1f1f1; text-shadow: 0 2px 10px rgba(0,0,0,0.9);">
-        Woven with Tradition,<br>Cherished for Generations...
-      </p>
+  <!-- MOBILE LAYOUT (Matching Slide 1 Structure) -->
+  <div class="slide2-mobile-layout" style="height: 100vh;">
+    <div style="width: 100%; height: 100%; display: flex; flex-direction: column; padding-top: 50px;">
       
-      <!-- Premium Button -->
-      <a href="#" class="btn-primary" style="margin-top: 20px; padding: 12px 35px; font-size: 13px; background: #e7c27a; color: #3a1511; border: none; font-weight: 600; letter-spacing: 2px;">Shop Collection</a>
-    </div>
+      <!-- TEXT CONTENT (Top) -->
+      <div class="hero-content" style="flex-shrink: 0; text-align: center; padding-bottom: 20px;">
+        <h1 class="hero-title" style="margin-top: 0;">
+          <span class="line line1" style="font-family:'Noto Serif',serif; font-style:italic; font-size:28px; color:#71041a; font-weight:400; text-transform:none; margin-bottom:-5px;">Timeless Grace Heritage</span>
+          <span class="line line2" style="font-family:'Cinzel',serif; font-size:42px; color:#810820; font-weight:600; margin-top:0;">PAITHANI</span>
+        </h1>
+        <p class="hero-desc" style="color: #4a1c1c; margin-bottom: 20px;">
+          Woven with Tradition,<br>Cherished for Generations...
+        </p>
+        
+        <div class="hero-buttons" style="justify-content:center;">
+          <a href="#" class="btn-primary" style="padding: 12px 35px; font-size: 13px; font-weight: 600; letter-spacing: 2px;">Shop Collection</a>
+        </div>
+      </div>
 
+      <!-- BOTTOM IMAGE (Covers remaining height) -->
+      <div class="hero-media" style="flex-grow: 1; display: flex; justify-content: center; align-items: flex-end; overflow: hidden;">
+        <img 
+          src="assets/slide21-mobile.png"
+          class="mobile-hero-img"
+          style="width: 100%; max-width: 350px; max-height: 100%; object-fit: cover; object-position: center top; display: block !important; border-radius: 20px 20px 0 0;"
+          alt="Sanskruti By Bani Mobile Banner"
+        >
+      </div>
+
+    </div>
   </div>
 
 </div>
@@ -731,7 +734,7 @@ SPECIALITY = PAITHANI
 
     </div>
 
-    <a href="#" class="btn-primary">
+    <a href="#" class="inline-flex items-center justify-center px-8 py-2.5 bg-transparent border-2 border-[#71041a] text-[#71041a] text-[11px] font-bold tracking-[3px] uppercase hover:bg-[#71041a] hover:text-[#fff8f4] transition-all duration-300 w-full md:w-auto mt-2 md:mt-0">
       VIEW ALL
     </a>
 
