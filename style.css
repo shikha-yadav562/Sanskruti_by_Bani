@@ -2087,7 +2087,8 @@ TABLET + MOBILE
 
   /* Premium Mobile Cover Layout */
   .premium-cover-layout {
-    display: block;
+    display: flex !important;
+    flex-direction: column;
     width: 100%;
     height: 100vh;
     position: relative;
