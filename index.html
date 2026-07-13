@@ -404,21 +404,22 @@ SLIDE 2 (DESKTOP + MOBILE)
     alt="Sanskruti By Bani Desktop Banner"
   >
 
-  <!-- MOBILE LAYOUT (Image + Text) -->
-  <div class="slide2-mobile-layout premium-cover-layout" style="position: absolute; inset: 0; width: 100%; height: 100% !important; background: #503820; z-index: 2;">
+  <!-- MOBILE LAYOUT (Karagiri Style Full-Bleed Overlay) -->
+  <div class="slide2-mobile-layout premium-cover-layout" style="position: absolute; inset: 0; width: 100%; height: 100% !important; z-index: 2;">
     
-    <!-- IMAGE (Fills top remaining space) -->
-    <div style="flex-grow: 1; position: relative; width: 100%;">
-      <img 
-        src="assets/slide21-mobile-new.jpg"
-        class="premium-cover-img"
-        style="object-position: center bottom;"
-        alt="Sanskruti By Bani Mobile Banner"
-      >
-    </div>
+    <!-- FULL-SCREEN IMAGE -->
+    <img 
+      src="assets/slide21-mobile-new.jpg"
+      class="premium-cover-img"
+      style="object-position: center bottom; width: 100%; height: 100%; object-fit: cover;"
+      alt="Sanskruti By Bani Mobile Banner"
+    >
 
-    <!-- TEXT CONTENT (Bottom) -->
-    <div class="hero-content" style="flex-shrink: 0; padding: 30px 20px 60px; background: linear-gradient(to top, #503820 75%, rgba(80,56,32,0)); margin-top: -30px; position: relative; z-index: 10;">
+    <!-- GRADIENT OVERLAY (Bottom to Top) for text readability without blocking the image -->
+    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(20,10,0,0.9) 0%, rgba(20,10,0,0.5) 30%, transparent 60%); z-index: 5; pointer-events: none;"></div>
+
+    <!-- FLOATING TEXT AT BOTTOM -->
+    <div class="hero-content" style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 40px 20px 60px; z-index: 10; text-align: center; display: flex; flex-direction: column; justify-content: flex-end;">
       <p class="hero-tag" style="color: #e7c27a; letter-spacing: 4px; text-transform: uppercase;">
         Sanskruti By Bani
       </p>
@@ -433,8 +434,8 @@ SLIDE 2 (DESKTOP + MOBILE)
       <p class="hero-desc" style="color: #e0d0c8; font-size: 13px; margin-bottom: 25px;">
         Embrace the luxury of handcrafted artistry
       </p>
-      <div class="hero-buttons">
-        <a href="catalogue.html" class="inline-flex items-center justify-center px-8 py-3 bg-transparent border border-[#e7c27a] text-[#e7c27a] text-[11px] font-bold tracking-[3px] uppercase hover:bg-[#e7c27a] hover:text-[#2a0b06] transition-all duration-300">
+      <div class="hero-buttons" style="justify-content: center;">
+        <a href="catalogue.html" class="inline-flex items-center justify-center px-8 py-3 bg-[#e7c27a] text-[#111] text-[11px] font-bold tracking-[3px] uppercase hover:bg-transparent hover:border-[#e7c27a] hover:text-[#e7c27a] border border-transparent transition-all duration-300 shadow-[0_4px_15px_rgba(231,194,122,0.4)]">
           Explore Now
         </a>
       </div>
