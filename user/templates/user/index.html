@@ -110,7 +110,7 @@
       <nav class="menu left-menu">
 
         <a href="#">Home</a>
-        <a href="{% url 'catalogue' %}">New Arrivals</a>
+        <a href="{% url 'user:catalogue' %}">New Arrivals</a>
 
       </nav>
 
@@ -902,7 +902,7 @@ SPECIALITY = PAITHANI
 
     <!-- VIEW ALL BUTTON (BOTTOM RIGHT) -->
     <div class="flex justify-end mt-10 w-full relative z-10 pr-2 lg:pr-0">
-      <a href="{% url 'catalogue' %}"
+      <a href="{% url 'user:catalogue' %}"
         class="inline-flex items-center justify-center px-8 py-2.5 bg-transparent border-2 border-[#71041a] text-[#71041a] text-[11px] font-bold tracking-[3px] uppercase hover:bg-[#71041a] hover:text-[#fff8f4] transition-all duration-300 w-full sm:w-auto">
         VIEW ALL <span class="material-symbols-outlined text-[14px] ml-2">arrow_forward</span>
       </a>

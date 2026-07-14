@@ -46,7 +46,7 @@
 
       <!-- LEFT MENU -->
       <nav class="menu left-menu">
-        <a href="{% url 'index' %}">Home</a>
+        <a href="{% url 'user:index' %}">Home</a>
         <a href="#">New Arrivals</a>
       </nav>
 
@@ -121,7 +121,7 @@
       <span class="material-symbols-outlined">arrow_back</span>
     </button>
     <div class="mobile-links">
-      <a href="{% url 'index' %}">Home</a>
+      <a href="{% url 'user:index' %}">Home</a>
       <div class="mobile-dropdown">
         <div class="mobile-dropdown-head" id="mobileCollectionBtn">
           Collections
@@ -1026,20 +1026,20 @@
       <!-- QUICK LINKS -->
       <div class="footer-col">
         <h3>Quick Links</h3>
-        <a href="{% url 'index' %}">Home</a>
-        <a href="{% url 'catalogue' %}">New Arrivals</a>
-        <a href="{% url 'catalogue' %}">Collections</a>
-        <a href="{% url 'catalogue' %}">Best Sellers</a>
+        <a href="{% url 'user:index' %}">Home</a>
+        <a href="{% url 'user:catalogue' %}">New Arrivals</a>
+        <a href="{% url 'user:catalogue' %}">Collections</a>
+        <a href="{% url 'user:catalogue' %}">Best Sellers</a>
       </div>
       <!-- COLLECTIONS -->
       <div class="footer-col">
         <h3>Collections</h3>
-        <a href="{% url 'catalogue' %}">Paithani Sarees</a>
-        <a href="{% url 'catalogue' %}">Banarasi Sarees</a>
-        <a href="{% url 'catalogue' %}">Kanjivaram Sarees</a>
-        <a href="{% url 'catalogue' %}">Bandhani Sarees</a>
-        <a href="{% url 'catalogue' %}">Patola Sarees</a>
-        <a href="{% url 'catalogue' %}">Designer Sarees</a>
+        <a href="{% url 'user:catalogue' %}">Paithani Sarees</a>
+        <a href="{% url 'user:catalogue' %}">Banarasi Sarees</a>
+        <a href="{% url 'user:catalogue' %}">Kanjivaram Sarees</a>
+        <a href="{% url 'user:catalogue' %}">Bandhani Sarees</a>
+        <a href="{% url 'user:catalogue' %}">Patola Sarees</a>
+        <a href="{% url 'user:catalogue' %}">Designer Sarees</a>
       </div>
 
       <!-- POLICY & INQUIRY -->

@@ -56,8 +56,8 @@
 
       <!-- LEFT MENU -->
       <nav class="menu left-menu">
-        <a href="{% url 'index' %}">Home</a>
-        <a href="{% url 'catalogue' %}">New Arrivals</a>
+        <a href="{% url 'user:index' %}">Home</a>
+        <a href="{% url 'user:catalogue' %}">New Arrivals</a>
       </nav>
 
       <section class="reveal-section">
@@ -136,7 +136,7 @@
     </button>
     <!-- LINKS -->
     <div class="mobile-links">
-      <a href="{% url 'index' %}">Home</a>
+      <a href="{% url 'user:index' %}">Home</a>
       <!-- MOBILE COLLECTION -->
       <div class="mobile-dropdown">
         <div class="mobile-dropdown-head" id="mobileCollectionBtn">
@@ -164,8 +164,8 @@
     <!-- BREADCRUMB -->
     <div class="mb-6 text-xs text-[#810820] opacity-80 uppercase tracking-widest"
       style="font-family: 'Inter', sans-serif;">
-      <a href="{% url 'index' %}" class="hover:text-[#71041a] hover:opacity-100 transition">Home</a> /
-      <a href="{% url 'catalogue' %}" class="hover:text-[#71041a] hover:opacity-100 transition">Catalogue</a> /
+      <a href="{% url 'user:index' %}" class="hover:text-[#71041a] hover:opacity-100 transition">Home</a> /
+      <a href="{% url 'user:catalogue' %}" class="hover:text-[#71041a] hover:opacity-100 transition">Catalogue</a> /
       <span class="text-[#71041a] font-semibold opacity-100">Anuradha Paithani Saree</span>
     </div>
 
@@ -519,8 +519,8 @@ LUXURY FOOTER SECTION
       <!-- QUICK LINKS -->
       <div class="footer-col">
         <h3>Quick Links</h3>
-        <a href="{% url 'index' %}">Home</a>
-        <a href="{% url 'catalogue' %}">New Arrivals</a>
+        <a href="{% url 'user:index' %}">Home</a>
+        <a href="{% url 'user:catalogue' %}">New Arrivals</a>
         <a href="#">Collections</a>
         <a href="#">Best Sellers</a>
       </div>
