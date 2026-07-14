@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanskruti by Bani - Management Dashboard</title>
+    {% load static %}
+
+    <!-- Tailwind CSS (CDN for simple setup) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Phosphor Icons (Huge, Premium Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'adm_user/css/admin.css' %}">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            maroon: '#71041a',
+                            maroonLight: '#9b0b28',
+                            maroonDark: '#4a0210',
+                            gold: '#e7c27a',
+                            ivory: '#fff8f4',
+                        },
+                        dark: {
+                            bg: '#0f172a',
+                            panel: '#1e293b',
+                            border: '#334155'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Cinzel', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body
+    class="bg-slate-50 text-slate-800 dark:bg-dark-bg dark:text-slate-200 antialiased font-sans transition-colors duration-200">
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar"
+            class="w-64 bg-white dark:bg-dark-panel border-r border-slate-200 dark:border-dark-border flex flex-col transition-transform duration-300 z-40 fixed inset-y-0 left-0 -translate-x-full md:relative md:translate-x-0">
+
+            <!-- Logo Area -->
+            <div class="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-dark-border">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-8 h-8 rounded bg-brand-maroon flex items-center justify-center text-brand-gold font-serif font-bold text-xl">
+                        S</div>
+                    <span class="font-semibold text-lg tracking-wide hidden sm:block">Admin Panel</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar">
+
+                <div class="px-3 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Overview</div>
+
+                <a href="#" data-target="dashboard"
+                    class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-brand-maroon bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-squares-four text-xl"></i>
+                    <span>Dashboard Home</span>
+                </a>
+
+                <div class="px-3 mt-6 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">E-Commerce
+                </div>
+
+                <a href="#" data-target="orders"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-shopping-bag text-xl"></i>
+                    <span>Orders <span
+                            class="ml-auto bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs">12</span></span>
+                </a>
+
+                <a href="#" data-target="products"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-t-shirt text-xl"></i>
+                    <span>Products</span>
+                </a>
+
+                <a href="#" data-target="categories"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-folders text-xl"></i>
+                    <span>Categories</span>
+                </a>
+
+                <a href="#" data-target="filters"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-funnel text-xl"></i>
+                    <span>Add Filters</span>
+                </a>
+
+                <a href="#" data-target="customers"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-users text-xl"></i>
+                    <span>Customers</span>
+                </a>
+
+                <a href="#" data-target="offers"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-tag text-xl"></i>
+                    <span>Offers & Discounts</span>
+                </a>
+
+                <div class="px-3 mt-6 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Content &
+                    Website</div>
+
+                <a href="#" data-target="website"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-browser text-xl"></i>
+                    <span>Website Builder</span>
+                </a>
+
+                <a href="#" data-target="imagemanager"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-image text-xl"></i>
+                    <span>Image Manager</span>
+                </a>
+
+                <a href="#" data-target="blog"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-article text-xl"></i>
+                    <span>Blog Manager</span>
+                </a>
+
+                <div class="px-3 mt-6 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">System</div>
+
+                <a href="#" data-target="analytics"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-chart-line-up text-xl"></i>
+                    <span>Analytics</span>
+                </a>
+
+                <a href="#" data-target="hosting"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-hard-drives text-xl"></i>
+                    <span>Hosting Panel</span>
+                </a>
+
+                <a href="#" data-target="settings"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
+                    <i class="ph ph-gear text-xl"></i>
+                    <span>Settings</span>
+                </a>
+
+            </nav>
+
+            <!-- Bottom Profile -->
+            <div class="p-4 border-t border-slate-100 dark:border-dark-border">
+                <div class="flex items-center gap-3">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=71041a&color=e7c27a"
+                        class="w-10 h-10 rounded-full" alt="Admin">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Store Owner</p>
+                        <p class="text-xs text-slate-500">View Live Website</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Sidebar Overlay -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 hidden"></div>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+
+            <!-- TOP HEADER -->
+            <header
+                class="h-16 bg-white/80 dark:bg-dark-panel/80 backdrop-blur-md border-b border-slate-200 dark:border-dark-border flex items-center justify-between px-8 z-10 sticky top-0">
+
+                <div class="flex items-center gap-4">
+                    <button id="mobile-menu-btn" class="md:hidden text-slate-500 hover:text-brand-maroon">
+                        <i class="ph ph-list text-2xl"></i>
+                    </button>
+                    <h2 class="text-xl font-semibold text-slate-800 dark:text-slate-100" id="page-title">Dashboard Home
+                    </h2>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- Search -->
+                    <div class="hidden md:flex relative group">
+                        <i
+                            class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-maroon"></i>
+                        <input type="text" placeholder="Search orders, products..."
+                            class="pl-10 pr-4 py-2 w-64 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon transition-all">
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
+                            <kbd
+                                class="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-500 font-mono">Ctrl</kbd>
+                            <kbd
+                                class="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-500 font-mono">K</kbd>
+                        </div>
+                    </div>
+
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle"
+                        class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-maroon transition-colors"
+                        title="Toggle Dark Mode">
+                        <i class="ph ph-moon text-xl dark:hidden"></i>
+                        <i class="ph ph-sun text-xl hidden dark:block"></i>
+                    </button>
+
+                    <!-- Notifications -->
+                    <button
+                        class="relative w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-maroon transition-colors">
+                        <i class="ph ph-bell text-xl"></i>
+                        <span
+                            class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- SCROLLABLE PAGE CONTENT -->
+            <div id="app-content" class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+
+                <!-- ==============================
+                     DASHBOARD HOME VIEW
+                ============================== -->
+                <div id="view-dashboard" class="view-section">
+                    <!-- Welcome Section -->
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-1">Welcome back, Owner! 👋
+                            </h1>
+                            <p class="text-slate-500 dark:text-slate-400">Here's what's happening with your store today.
+                            </p>
+                        </div>
+                        <button
+                            class="flex items-center gap-2 bg-brand-maroon hover:bg-brand-maroonLight text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-brand-maroon/30"
+                            onclick="switchView('products')">
+                            <i class="ph ph-plus-circle text-xl"></i>
+                            Add New Product
+                        </button>
+                    </div>
+
+                    <!-- KPI CARDS -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <!-- Card 1 -->
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                                    <i class="ph ph-currency-inr text-2xl"></i>
+                                </div>
+                                <span
+                                    class="flex items-center gap-1 text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-lg">
+                                    <i class="ph ph-trend-up"></i> +12.5%
+                                </span>
+                            </div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Today's Sales</p>
+                            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">₹45,230</h3>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <i class="ph ph-users text-2xl"></i>
+                                </div>
+                                <span
+                                    class="flex items-center gap-1 text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-lg">
+                                    <i class="ph ph-trend-up"></i> +5.2%
+                                </span>
+                            </div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Today's Visitors</p>
+                            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">1,204</h3>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                                    <i class="ph ph-package text-2xl"></i>
+                                </div>
+                                <span
+                                    class="flex items-center gap-1 text-sm font-medium text-slate-500 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-lg">
+                                    Needs Action
+                                </span>
+                            </div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Pending Orders</p>
+                            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">12</h3>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-brand-maroon/10 flex items-center justify-center text-brand-maroon dark:text-brand-gold">
+                                    <i class="ph ph-shopping-bag-open text-2xl"></i>
+                                </div>
+                                <span
+                                    class="flex items-center gap-1 text-sm font-medium text-red-600 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded-lg">
+                                    <i class="ph ph-trend-down"></i> -2.1%
+                                </span>
+                            </div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Monthly Revenue</p>
+                            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">₹8,45,000</h3>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+
+                        <!-- CHARTS AREA -->
+                        <div
+                            class="lg:col-span-2 bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold text-slate-800 dark:text-white">Revenue Overview</h3>
+                                <select
+                                    class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon block p-2">
+                                    <option>Last 7 Days</option>
+                                    <option>This Month</option>
+                                    <option>This Year</option>
+                                </select>
+                            </div>
+                            <div class="h-[300px] w-full relative">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- QUICK ACTIONS -->
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm">
+                            <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-6">Quick Actions</h3>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <button onclick="switchView('products')"
+                                    class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 hover:bg-brand-maroon/5 hover:border-brand-maroon/30 transition-all group">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-white dark:bg-dark-panel shadow-sm flex items-center justify-center text-brand-maroon group-hover:scale-110 transition-transform">
+                                        <i class="ph ph-t-shirt text-xl"></i>
+                                    </div>
+                                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Add
+                                        Product</span>
+                                </button>
+
+                                <button onclick="switchView('imagemanager')"
+                                    class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 hover:bg-brand-maroon/5 hover:border-brand-maroon/30 transition-all group">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-white dark:bg-dark-panel shadow-sm flex items-center justify-center text-brand-maroon group-hover:scale-110 transition-transform">
+                                        <i class="ph ph-image text-xl"></i>
+                                    </div>
+                                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Upload
+                                        Banner</span>
+                                </button>
+
+                                <button
+                                    class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 hover:bg-brand-maroon/5 hover:border-brand-maroon/30 transition-all group">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-white dark:bg-dark-panel shadow-sm flex items-center justify-center text-brand-maroon group-hover:scale-110 transition-transform">
+                                        <i class="ph ph-tag text-xl"></i>
+                                    </div>
+                                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Create
+                                        Offer</span>
+                                </button>
+
+                                <button
+                                    class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 hover:bg-brand-maroon/5 hover:border-brand-maroon/30 transition-all group">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-white dark:bg-dark-panel shadow-sm flex items-center justify-center text-brand-maroon group-hover:scale-110 transition-transform">
+                                        <i class="ph ph-article text-xl"></i>
+                                    </div>
+                                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Add Blog</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HEALTH PANELS -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Website Health -->
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border-4 border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                                <i class="ph ph-check-circle text-2xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Website Health</p>
+                                <h4 class="text-lg font-bold text-slate-800 dark:text-white">Excellent</h4>
+                                <p class="text-xs text-emerald-600 mt-1">100% Uptime</p>
+                            </div>
+                        </div>
+
+                        <!-- Storage Used -->
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-500/10 border-4 border-blue-100 dark:border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                <i class="ph ph-hard-drive text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Storage Used</p>
+                                <div class="flex justify-between items-end mb-1">
+                                    <h4 class="text-lg font-bold text-slate-800 dark:text-white">2.4 GB</h4>
+                                    <span class="text-xs text-slate-500">of 10 GB</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5">
+                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: 24%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Domain & SSL -->
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm flex flex-col justify-center">
+                            <div class="flex items-center justify-between mb-3">
+                                <div
+                                    class="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                    <i class="ph ph-globe text-brand-maroon"></i> Domain Expiry
+                                </div>
+                                <span
+                                    class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded font-medium">Active</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Renews in 245 Days</p>
+
+                            <div class="flex items-center justify-between">
+                                <div
+                                    class="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                    <i class="ph ph-lock-key text-brand-maroon"></i> SSL Security
+                                </div>
+                                <span
+                                    class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded font-medium">Secure</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- End View Dashboard -->
+
+                <!-- ==============================
+                     PRODUCTS VIEW (PHASE 2)
+                ============================== -->
+                <div id="view-products" class="view-section hidden">
+
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Products</h2>
+                            <p class="text-slate-500 dark:text-slate-400">Manage your inventory, prices, and catalog.
+                            </p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button
+                                class="flex items-center gap-2 bg-white dark:bg-dark-panel border border-slate-200 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl font-medium transition-all">
+                                <i class="ph ph-export"></i> Export
+                            </button>
+                            <button onclick="openAddProductModal()"
+                                class="flex items-center gap-2 bg-brand-maroon hover:bg-brand-maroonLight text-white px-5 py-2 rounded-xl font-medium transition-all shadow-lg shadow-brand-maroon/20">
+                                <i class="ph ph-plus"></i> Add Product
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div
+                        class="bg-white dark:bg-dark-panel rounded-t-2xl p-4 border-x border-t border-slate-100 dark:border-dark-border flex flex-wrap gap-4 items-center justify-between">
+                        <div class="flex gap-2">
+                            <select
+                                class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-3 py-2">
+                                <option>All Categories</option>
+                                <option>Paithani</option>
+                                <option>Banarasi</option>
+                            </select>
+                            <select
+                                class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-3 py-2">
+                                <option>Stock Status</option>
+                                <option>In Stock</option>
+                                <option>Low Stock</option>
+                                <option>Out of Stock</option>
+                            </select>
+                        </div>
+                        <div class="relative">
+                            <i
+                                class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" placeholder="Search by name or code..."
+                                class="pl-9 pr-4 py-2 w-64 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon">
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div
+                        class="bg-white dark:bg-dark-panel rounded-b-2xl border border-slate-100 dark:border-dark-border overflow-hidden overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr
+                                    class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 dark:border-dark-border">
+                                    <th class="p-4 font-semibold w-10">
+                                        <input type="checkbox"
+                                            class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon">
+                                    </th>
+                                    <th class="p-4 font-semibold">Product</th>
+                                    <th class="p-4 font-semibold">Product Code</th>
+                                    <th class="p-4 font-semibold">Category</th>
+                                    <th class="p-4 font-semibold">Price</th>
+                                    <th class="p-4 font-semibold">Stock</th>
+                                    <th class="p-4 font-semibold text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-dark-border">
+                                <!-- Row 1 -->
+                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
+                                    <td class="p-4">
+                                        <input type="checkbox"
+                                            class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon">
+                                    </td>
+                                    <td class="p-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-12 h-16 rounded bg-slate-100 overflow-hidden">
+                                                <img src="../assets/slide11.png" class="w-full h-full object-cover"
+                                                    alt="Saree">
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-brand-maroon transition-colors cursor-pointer">
+                                                    Royal Maroon Paithani</p>
+                                                <p class="text-xs text-slate-500">Pure Silk</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300">SBB-PT-001</td>
+                                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300"><span
+                                            class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">Paithani</span>
+                                    </td>
+                                    <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">₹24,500</td>
+                                    <td class="p-4">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 14 in stock
+                                        </span>
+                                    </td>
+                                    <td class="p-4 text-right">
+                                        <button class="text-slate-400 hover:text-brand-maroon p-1"><i
+                                                class="ph ph-pencil-simple text-lg"></i></button>
+                                        <button class="text-slate-400 hover:text-red-500 p-1"><i
+                                                class="ph ph-trash text-lg"></i></button>
+                                    </td>
+                                </tr>
+                                <!-- Row 2 -->
+                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
+                                    <td class="p-4">
+                                        <input type="checkbox"
+                                            class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon">
+                                    </td>
+                                    <td class="p-4">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-12 h-16 rounded bg-slate-100 overflow-hidden flex items-center justify-center text-slate-300">
+                                                <i class="ph ph-image text-2xl"></i>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-brand-maroon transition-colors cursor-pointer">
+                                                    Emerald Banarasi</p>
+                                                <p class="text-xs text-slate-500">Zari Work</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300">SBB-BN-042</td>
+                                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300"><span
+                                            class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">Banarasi</span>
+                                    </td>
+                                    <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">₹18,900</td>
+                                    <td class="p-4">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> 2 in stock
+                                        </span>
+                                    </td>
+                                    <td class="p-4 text-right">
+                                        <button class="text-slate-400 hover:text-brand-maroon p-1"><i
+                                                class="ph ph-pencil-simple text-lg"></i></button>
+                                        <button class="text-slate-400 hover:text-red-500 p-1"><i
+                                                class="ph ph-trash text-lg"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Pagination -->
+                        <div
+                            class="px-4 py-3 border-t border-slate-100 dark:border-dark-border flex items-center justify-between bg-slate-50 dark:bg-slate-800/30">
+                            <p class="text-xs text-slate-500">Showing 1 to 2 of 45 products</p>
+                            <div class="flex gap-1">
+                                <button
+                                    class="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-dark-panel text-slate-400 cursor-not-allowed">Prev</button>
+                                <button
+                                    class="px-3 py-1 rounded border border-brand-maroon bg-brand-maroon text-white">1</button>
+                                <button
+                                    class="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-dark-panel text-slate-600 hover:bg-slate-50">2</button>
+                                <button
+                                    class="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-dark-panel text-slate-600 hover:bg-slate-50">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==============================
+                     IMAGE MANAGER VIEW (PHASE 2)
+                ============================== -->
+                <div id="view-imagemanager" class="view-section hidden">
+
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Image Manager</h2>
+                            <p class="text-slate-500 dark:text-slate-400">Upload perfectly sized images for every
+                                section of your website.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                        <!-- Main Banners -->
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+                            <h3
+                                class="text-lg font-semibold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+                                <i class="ph ph-monitor text-brand-maroon"></i> Desktop Homepage Banner
+                            </h3>
+                            <p class="text-sm text-slate-500 mb-6">This is the large image shown at the very top of your
+                                website on computers.</p>
+
+                            <div
+                                class="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50 flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group relative overflow-hidden">
+
+                                <!-- Visual Aspect Ratio Frame -->
+                                <div
+                                    class="w-full max-w-[280px] aspect-[2.26/1] border-2 border-brand-maroon/30 rounded flex items-center justify-center mb-4 group-hover:scale-105 transition-transform bg-white dark:bg-dark-panel shadow-sm">
+                                    <i class="ph ph-image text-4xl text-slate-300"></i>
+                                </div>
+
+                                <p class="text-brand-maroon dark:text-brand-gold font-medium mb-1">Click to Upload or
+                                    Drag and Drop</p>
+
+                                <div class="flex flex-wrap justify-center gap-2 mt-4">
+                                    <span
+                                        class="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded font-medium flex items-center gap-1">
+                                        <i class="ph ph-aspect-ratio"></i> Recommended Size: 1920 × 850 px
+                                    </span>
+                                    <span
+                                        class="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded font-medium flex items-center gap-1">
+                                        <i class="ph ph-frame-corners"></i> Landscape Frame (2.26:1)
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Banners -->
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+                            <h3
+                                class="text-lg font-semibold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+                                <i class="ph ph-device-mobile text-brand-maroon"></i> Mobile Homepage Banner
+                            </h3>
+                            <p class="text-sm text-slate-500 mb-6">This is the tall image shown at the very top of your
+                                website on phones.</p>
+
+                            <div
+                                class="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50 flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group relative overflow-hidden">
+
+                                <!-- Visual Aspect Ratio Frame -->
+                                <div
+                                    class="w-full max-w-[120px] aspect-[4/5] border-2 border-brand-maroon/30 rounded flex items-center justify-center mb-4 group-hover:scale-105 transition-transform bg-white dark:bg-dark-panel shadow-sm">
+                                    <i class="ph ph-image text-4xl text-slate-300"></i>
+                                </div>
+
+                                <p class="text-brand-maroon dark:text-brand-gold font-medium mb-1">Click to Upload or
+                                    Drag and Drop</p>
+
+                                <div class="flex flex-wrap justify-center gap-2 mt-4">
+                                    <span
+                                        class="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded font-medium flex items-center gap-1">
+                                        <i class="ph ph-aspect-ratio"></i> Recommended Size: 1080 × 1350 px
+                                    </span>
+                                    <span
+                                        class="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded font-medium flex items-center gap-1">
+                                        <i class="ph ph-frame-corners"></i> Portrait Frame (4:5)
+                                    </span>
+                                </div>
+
+                                <!-- Example of Live Validation -->
+                                <div
+                                    class="absolute bottom-4 right-4 bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 rounded-lg p-2 flex items-start gap-2 shadow-lg hidden">
+                                    <i class="ph-fill ph-check-circle text-emerald-500 text-lg mt-0.5"></i>
+                                    <div class="text-left">
+                                        <p class="text-xs font-bold text-slate-800 dark:text-white">Perfect Size!</p>
+                                        <p class="text-[10px] text-slate-500">1080x1350 • 240kb</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ==============================
+                     MODULE: ORDERS (MOCKUP)
+                ============================== -->
+                <section id="view-orders" class="view-section hidden flex-col gap-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Orders Management</h2>
+                            <p class="text-slate-500 dark:text-slate-400 mt-1">View and process customer orders</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button
+                                class="flex items-center gap-2 bg-white dark:bg-dark-panel border border-slate-200 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl font-medium transition-all">
+                                <i class="ph ph-export"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Orders Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div
+                            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Orders</p>
+                                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-2">1,245</h3>
+                                </div>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-brand-maroon/10 flex items-center justify-center text-brand-maroon">
+                                    <i class="ph ph-shopping-bag text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Pending Processing
+                                    </p>
+                                    <h3 class="text-2xl font-bold text-amber-500 mt-2">18</h3>
+                                </div>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
+                                    <i class="ph ph-clock-countdown text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Table -->
+                    <div
+                        class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden flex-1 flex flex-col min-h-[400px]">
+                        <div
+                            class="p-5 border-b border-slate-100 dark:border-dark-border flex flex-col md:flex-row gap-4 justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
+                            <div class="relative w-full md:w-96">
+                                <i
+                                    class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" placeholder="Search by order ID, customer name..."
+                                    class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon transition-all text-slate-800 dark:text-white">
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse min-w-[800px]">
+                                <thead>
+                                    <tr
+                                        class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
+                                        <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                            Order ID</th>
+                                        <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                            Date</th>
+                                        <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                            Customer</th>
+                                        <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                            Total</th>
+                                        <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                            Status</th>
+                                        <th
+                                            class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">
+                                            Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        class="border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                                        <td class="p-4 font-mono text-sm font-medium text-brand-maroon">#ORD-0092</td>
+                                        <td class="p-4 text-sm text-slate-600 dark:text-slate-300">Today, 10:42 AM</td>
+                                        <td class="p-4">
+                                            <p class="text-sm font-medium text-slate-800 dark:text-white">Priya Sharma
+                                            </p>
+                                            <p class="text-xs text-slate-500">Mumbai, Maharashtra</p>
+                                        </td>
+                                        <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">₹24,500.00
+                                        </td>
+                                        <td class="p-4">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Processing
+                                            </span>
+                                        </td>
+                                        <td class="p-4 text-right">
+                                            <button
+                                                class="text-brand-maroon hover:text-brand-maroonLight font-medium text-sm">View
+                                                Details</button>
+                                        </td>
+                                    </tr>
+                                    <tr
+                                        class="border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                                        <td
+                                            class="p-4 font-mono text-sm font-medium text-slate-600 dark:text-slate-400">
+                                            #ORD-0091</td>
+                                        <td class="p-4 text-sm text-slate-600 dark:text-slate-300">Yesterday, 04:15 PM
+                                        </td>
+                                        <td class="p-4">
+                                            <p class="text-sm font-medium text-slate-800 dark:text-white">Ananya Gupta
+                                            </p>
+                                            <p class="text-xs text-slate-500">Delhi</p>
+                                        </td>
+                                        <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">₹18,900.00
+                                        </td>
+                                        <td class="p-4">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Shipped
+                                            </span>
+                                        </td>
+                                        <td class="p-4 text-right">
+                                            <button
+                                                class="text-brand-maroon hover:text-brand-maroonLight font-medium text-sm">View
+                                                Details</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+
+                <!-- ==============================
+                     MODULE: SIMPLE CATEGORIES
+                ============================== -->
+                <section id="view-categories" class="view-section hidden flex-col gap-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Manage Categories</h2>
+                            <p class="text-slate-500 dark:text-slate-400 mt-1">Add and modify product categories</p>
+                        </div>
+                    </div>
+
+                    <!-- Add Category Form -->
+                    <div
+                        class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
+                            id="scFormTitle">Create New Category</h3>
+                        <form id="simpleCategoryForm" onsubmit="handleSCSubmit(event)"
+                            class="flex flex-col md:flex-row items-end gap-4">
+                            <div class="flex-1 w-full">
+                                <label
+                                    class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Category
+                                    Name <span class="text-red-500">*</span></label>
+                                <input type="text" id="scName" placeholder="e.g. Banarasi Silk, Georgette" required
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                            </div>
+                            <input type="hidden" id="scEditIndex" value="-1">
+                            <div class="flex gap-2 w-full md:w-auto">
+                                <button type="button" id="scCancelBtn" onclick="resetSCForm()"
+                                    class="hidden px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors w-full md:w-auto">Cancel</button>
+                                <button type="submit" id="scSubmitBtn"
+                                    class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-md w-full md:w-auto flex items-center justify-center gap-2">
+                                    <i class="ph ph-plus"></i> Add Category
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Categories Table -->
+                    <div
+                        class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
+                        <div class="p-5 border-b border-slate-100 dark:border-dark-border">
+                            <h3 class="text-lg font-bold text-slate-800 dark:text-white">Existing Categories</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse min-w-[500px]">
+                                <thead>
+                                    <tr
+                                        class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
+                                        <th
+                                            class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">
+                                            Sr. No.</th>
+                                        <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                            Category Name</th>
+                                        <th
+                                            class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center w-48">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scTableBody">
+                                    <!-- Rendered by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==============================
+                     MODULE: ADD FILTERS
+                ============================== -->
+                <section id="view-filters" class="view-section hidden flex-col gap-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Add Filters</h2>
+                            <p class="text-slate-500 dark:text-slate-400 mt-1">Manage global product filters like
+                                Colors, Fabrics, and Prints</p>
+                        </div>
+                    </div>
+
+                    <!-- 1. COLORS -->
+                    <div class="space-y-4">
+                        <div
+                            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
+                                id="colorFormTitle">Add New Color</h3>
+                            <form id="colorForm" onsubmit="handleColorSubmit(event)"
+                                class="flex flex-col md:flex-row items-end gap-4">
+                                <div class="flex-1 w-full">
+                                    <label
+                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Color
+                                        Name <span class="text-red-500">*</span></label>
+                                    <input type="text" id="colorName" placeholder="e.g. Royal Blue, Ivory" required
+                                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                                </div>
+                                <div class="w-full md:w-auto">
+                                    <label
+                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Pick
+                                        Color</label>
+                                    <div
+                                        class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 h-[42px]">
+                                        <div id="colorPreview"
+                                            class="w-6 h-6 rounded-full border border-slate-200 shadow-sm"
+                                            style="background-color: #c0392b;"></div>
+                                        <input type="color" id="colorPicker" value="#c0392b"
+                                            oninput="updateColorPreview()"
+                                            class="w-6 h-6 cursor-pointer border-0 bg-transparent p-0">
+                                    </div>
+                                </div>
+                                <input type="hidden" id="colorEditIndex" value="-1">
+                                <div class="flex gap-2 w-full md:w-auto">
+                                    <button type="button" id="colorCancelBtn" onclick="resetColorForm()"
+                                        class="hidden px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors w-full md:w-auto">Cancel</button>
+                                    <button type="submit" id="colorSubmitBtn"
+                                        class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-md w-full md:w-auto flex items-center justify-center gap-2">
+                                        <i class="ph ph-plus"></i> Add Color
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
+                            <div class="p-5 border-b border-slate-100 dark:border-dark-border">
+                                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Existing Colors</h3>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse min-w-[500px]">
+                                    <thead>
+                                        <tr
+                                            class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
+                                            <th
+                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">
+                                                Sr. No.</th>
+                                            <th
+                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-24">
+                                                Color</th>
+                                            <th
+                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                                Color Name</th>
+                                            <th
+                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center w-48">
+                                                Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="colorTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. FABRICS -->
+                    <div class="space-y-4">
+                        <div
+                            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
+                                id="fabricFormTitle">Add New Fabric</h3>
+                            <form id="fabricForm" onsubmit="handleFabricSubmit(event)"
+                                class="flex flex-col md:flex-row items-end gap-4">
+                                <div class="flex-1 w-full">
+                                    <label
+                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fabric
+                                        Name <span class="text-red-500">*</span></label>
+                                    <input type="text" id="fabricName" placeholder="e.g. Pure Silk, Chiffon, Cotton"
+                                        required
+                                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                                </div>
+                                <input type="hidden" id="fabricEditIndex" value="-1">
+                                <div class="flex gap-2 w-full md:w-auto">
+                                    <button type="button" id="fabricCancelBtn" onclick="resetFabricForm()"
+                                        class="hidden px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors w-full md:w-auto">Cancel</button>
+                                    <button type="submit" id="fabricSubmitBtn"
+                                        class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-md w-full md:w-auto flex items-center justify-center gap-2">
+                                        <i class="ph ph-plus"></i> Add Fabric
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
+                            <div class="p-5 border-b border-slate-100 dark:border-dark-border">
+                                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Existing Fabrics</h3>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse min-w-[500px]">
+                                    <thead>
+                                        <tr
+                                            class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
+                                            <th
+                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">
+                                                Sr. No.</th>
+                                            <th
+                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                                Fabric Name</th>
+                                            <th
+                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center w-48">
+                                                Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fabricTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. PRINTS -->
+                    <div class="space-y-4">
+                        <div
+                            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
+                                id="printFormTitle">Add New Print</h3>
+                            <form id="printForm" onsubmit="handlePrintSubmit(event)"
+                                class="flex flex-col md:flex-row items-end gap-4">
+                                <div class="flex-1 w-full">
+                                    <label
+                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Print
+                                        Name <span class="text-red-500">*</span></label>
+                                    <input type="text" id="printName" placeholder="e.g. Floral, Paisley, Geometric"
+                                        required
+                                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                                </div>
+                                <input type="hidden" id="printEditIndex" value="-1">
+                                <div class="flex gap-2 w-full md:w-auto">
+                                    <button type="button" id="printCancelBtn" onclick="resetPrintForm()"
+                                        class="hidden px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors w-full md:w-auto">Cancel</button>
+                                    <button type="submit" id="printSubmitBtn"
+                                        class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-md w-full md:w-auto flex items-center justify-center gap-2">
+                                        <i class="ph ph-plus"></i> Add Print
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div
+                            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
+                            <div class="p-5 border-b border-slate-100 dark:border-dark-border">
+                                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Existing Prints</h3>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse min-w-[500px]">
+                                    <thead>
+                                        <tr
+                                            class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
+                                            <th
+                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">
+                                                Sr. No.</th>
+                                            <th
+                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                                Print Name</th>
+                                            <th
+                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center w-48">
+                                                Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="printTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==============================
+                     MODULE: CUSTOMERS (MOCKUP)
+                ============================== -->
+                <section id="view-customers" class="view-section hidden flex-col gap-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Customers</h2>
+                            <p class="text-slate-500 dark:text-slate-400 mt-1">Manage your customer relationships</p>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden flex-1 flex flex-col min-h-[400px]">
+                        <div class="p-16 text-center">
+                            <div
+                                class="w-20 h-20 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-brand-maroon mx-auto mb-4">
+                                <i class="ph ph-users-three text-3xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Customer Database</h3>
+                            <p class="text-slate-500 max-w-md mx-auto">Your customers will appear here automatically
+                                when they place an order or create an account.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==============================
+                     COMING SOON PLACEHOLDER
+                ============================== -->
+                <div id="view-coming-soon"
+                    class="view-section hidden flex-col items-center justify-center h-full py-20 text-center">
+                    <div
+                        class="w-24 h-24 bg-brand-maroon/10 text-brand-maroon dark:text-brand-gold rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="ph ph-wrench text-5xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Module Under Construction</h2>
+                    <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto">This section is part of a future
+                        phase and is currently being built.</p>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ==============================
+         ADD PRODUCT MODAL
+    ============================== -->
+    <div id="addProductModal"
+        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div
+            class="bg-white dark:bg-dark-panel w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+
+            <div
+                class="p-6 border-b border-slate-100 dark:border-dark-border flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i class="ph ph-t-shirt text-brand-maroon"></i> Add New Product
+                </h3>
+                <button onclick="closeAddProductModal()"
+                    class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 transition-colors">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
+                <form id="addProductForm" class="space-y-5">
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product Name
+                            *</label>
+                        <input type="text" id="prodName" required placeholder="e.g. Royal Maroon Paithani"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product
+                                Code *</label>
+                            <input type="text" id="prodCode" required placeholder="e.g. SBB-001"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Category
+                                *</label>
+                            <select id="prodCategory" required
+                                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                                <option value="" disabled selected>Select Category</option>
+                                <option value="Paithani">Paithani</option>
+                                <option value="Banarasi">Banarasi</option>
+                                <option value="Kanjivaram">Kanjivaram</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Price (₹)
+                                *</label>
+                            <input type="number" id="prodPrice" required min="0" placeholder="0.00"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Stock
+                                Quantity *</label>
+                            <input type="number" id="prodStock" required min="0" placeholder="0"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Short
+                            Description</label>
+                        <textarea id="prodDesc" rows="3" placeholder="Write a short engaging description..."
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white custom-scrollbar"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product Image
+                            URL</label>
+                        <input type="text" id="prodImage" placeholder="e.g. https://example.com/image.jpg"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                    </div>
+                </form>
+            </div>
+
+            <div
+                class="p-6 border-t border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 flex justify-end gap-3">
+                <button type="button" onclick="closeAddProductModal()"
+                    class="px-5 py-2.5 rounded-xl font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Cancel</button>
+                <button type="button" onclick="submitNewProduct()"
+                    class="px-5 py-2.5 rounded-xl font-medium bg-brand-maroon hover:bg-brand-maroonLight text-white shadow-lg shadow-brand-maroon/30 transition-all flex items-center gap-2">
+                    <i class="ph ph-check-circle"></i> Save Product
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Add Category Modal Removed -->
+
+    <!-- ==============================
+         ADD OFFER MODAL
+    ============================== -->
+    <div id="addOfferModal"
+        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-dark-panel w-full max-w-md rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            <div
+                class="p-6 border-b border-slate-100 dark:border-dark-border flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i class="ph ph-ticket text-brand-maroon"></i> Create Discount Code
+                </h3>
+                <button onclick="closeAddOfferModal()"
+                    class="text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="addOfferForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Promo Code
+                            *</label>
+                        <input type="text" id="offerCode" required placeholder="e.g. SUMMER50"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Discount
+                            Description *</label>
+                        <input type="text" id="offerDesc" required placeholder="e.g. 50% Off Select Sarees"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Expiry Date
+                            *</label>
+                        <input type="date" id="offerExpiry" required
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                    </div>
+                </form>
+            </div>
+            <div
+                class="p-6 border-t border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 flex justify-end gap-3">
+                <button type="button" onclick="closeAddOfferModal()"
+                    class="px-5 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium transition-colors">Cancel</button>
+                <button type="button" onclick="submitNewOffer()"
+                    class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-lg">Create
+                    Offer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================
+         ADD BLOG POST MODAL
+    ============================== -->
+    <div id="addBlogModal"
+        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div
+            class="bg-white dark:bg-dark-panel w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div
+                class="p-6 border-b border-slate-100 dark:border-dark-border flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i class="ph ph-article text-brand-maroon"></i> Write New Post
+                </h3>
+                <button onclick="closeAddBlogModal()"
+                    class="text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <form id="addBlogForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Post Title
+                            *</label>
+                        <input type="text" id="blogTitle" required
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Content
+                            *</label>
+                        <textarea id="blogContent" required rows="8"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div
+                class="p-6 border-t border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 flex justify-end gap-3">
+                <button type="button" onclick="closeAddBlogModal()"
+                    class="px-5 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium transition-colors">Cancel</button>
+                <button type="button" onclick="submitNewBlog()"
+                    class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-lg">Publish
+                    Post</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'adm_user/js/admin.js' %}"></script>
+</body>
+
+</html>

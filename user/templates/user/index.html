@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- =====================================
+  META
+  ===================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Sanskruti by Bani</title>
+  {% load static %}
+  <!-- =====================================
+  GOOGLE FONTS
+  ===================================== -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap"
+    rel="stylesheet">
+
+  <!-- MATERIAL ICONS -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet">
+
+  <!-- FONT AWESOME FOR SOCIAL ICONS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- TAILWIND -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- MAIN CSS -->
+  <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+
+</head>
+
+<body>
+
+  <!-- =====================================
+  SPLASH SCREEN
+  ===================================== -->
+
+  <div id="splash">
+
+    <div class="cinema-light"></div>
+    <div class="star-dust"></div>
+
+    <div class="logo-aura"></div>
+    <div class="dark-edge"></div>
+
+    <div class="splash-inner">
+
+      <img src="{% static 'user/assets/logo.png' %}" class="splash-logo" alt="Sanskruti Logo">
+
+      <h1 class="movie-title">
+        <span>S</span>
+        <span>A</span>
+        <span>N</span>
+        <span>S</span>
+        <span>K</span>
+        <span>R</span>
+        <span>U</span>
+        <span>T</span>
+        <span>I</span>
+      </h1>
+
+      <div class="movie-sub">by Bani</div>
+
+      <div class="movie-line"></div>
+
+      <div class="movie-tagline">
+        A REFLECTION OF BEAUTY THROUGH CULTURE
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =====================================
+  TOP OFFER BAR
+  ===================================== -->
+
+  <div class="top-bar">
+
+    <button class="tb-btn prev">‹</button>
+
+    <div class="tb-window">
+      <div class="tb-item active">Free Discount</div>
+      <div class="tb-item">COD across India</div>
+      <div class="tb-item">Easy Return & Exchange*</div>
+    </div>
+
+    <button class="tb-btn next">›</button>
+
+  </div>
+
+  <!-- =====================================
+  NAVBAR
+  ===================================== -->
+
+  <header id="navbar">
+
+    <div class="nav-wrap">
+
+      <!-- MOBILE TOGGLE -->
+      <button class="mobile-toggle" id="mobileToggle">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+
+      <!-- LEFT MENU -->
+      <nav class="menu left-menu">
+
+        <a href="#">Home</a>
+        <a href="{% url 'catalogue' %}">New Arrivals</a>
+
+      </nav>
+
+      <section class="reveal-section">
+
+        <div class="luxury-logo">
+
+          <!-- SANSKRUTI -->
+          <div class="logo-main">
+
+            <span>S</span>
+            <span>A</span>
+            <span>N</span>
+            <span>S</span>
+            <span>K</span>
+            <span>R</span>
+            <span>U</span>
+            <span>T</span>
+            <span>I</span>
+
+          </div>
+
+          <!-- LINE -->
+          <div class="logo-divider"></div>
+
+          <!-- BY BANI -->
+          <div class="logo-sub">
+
+            <span>B</span>
+            <span>Y</span>
+
+            <span class="space"></span>
+
+            <span>B</span>
+            <span>A</span>
+            <span>N</span>
+            <span>I</span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- RIGHT MENU -->
+      <nav class="menu right-menu">
+
+        <!-- COLLECTION -->
+        <div class="dropdown">
+
+          <a href="#" class="mega-link">
+            Collections
+
+            <span class="material-symbols-outlined arrow">
+              expand_more
+            </span>
+          </a>
+
+          <!-- MEGA MENU -->
+          <div class="mega-menu">
+
+            <div class="mega-col">
+              <h4>Banarasi</h4>
+              <a href="#">Katan Silk</a>
+              <a href="#">Organza</a>
+              <a href="#">Tissue</a>
+            </div>
+
+            <div class="mega-col">
+              <h4>Paithani</h4>
+              <a href="#">Traditional</a>
+              <a href="#">Lotus</a>
+            </div>
+
+            <div class="mega-col">
+              <h4>Patola</h4>
+              <a href="#">Rajkot</a>
+              <a href="#">Double Ikat</a>
+            </div>
+
+            <div class="mega-col">
+              <h4>Bandhani</h4>
+              <a href="#">Leheriya</a>
+              <a href="#">Gharchola</a>
+            </div>
+
+            <div class="mega-col">
+              <h4>Kanjivaram</h4>
+              <a href="#">Temple Border</a>
+              <a href="#">Soft Silk</a>
+            </div>
+
+          </div>
+
+        </div>
+
+        <a href="#">Bestsellers</a>
+
+        <!-- SEARCH -->
+        <div class="search-box">
+
+          <input type="text" placeholder="Search..." class="search-input">
+
+        </div>
+
+        <!-- ICONS -->
+        <button class="icon-btn">
+          <span class="material-symbols-outlined">favorite</span>
+        </button>
+
+        <button class="icon-btn">
+          <span class="material-symbols-outlined">shopping_bag</span>
+        </button>
+
+      </nav>
+
+      <!-- SPACER -->
+      <div class="nav-spacer"></div>
+
+    </div>
+
+  </header>
+
+  <!-- =====================================
+  MOBILE DRAWER
+  ===================================== -->
+
+  <div class="mobile-drawer" id="mobileDrawer">
+
+    <!-- CLOSE -->
+    <button class="close-menu" id="closeMenu">
+
+      <span class="material-symbols-outlined">
+        arrow_back
+      </span>
+
+    </button>
+
+    <!-- LINKS -->
+    <div class="mobile-links">
+
+      <a href="#">Home</a>
+
+      <!-- MOBILE COLLECTION -->
+      <div class="mobile-dropdown">
+
+        <div class="mobile-dropdown-head" id="mobileCollectionBtn">
+
+          Collections
+
+          <span class="material-symbols-outlined">
+            expand_more
+          </span>
+
+        </div>
+
+        <div class="mobile-dropdown-body">
+
+          <h5>Banarasi</h5>
+          <a href="#">Katan Silk</a>
+          <a href="#">Organza</a>
+
+          <h5>Paithani</h5>
+          <a href="#">Traditional</a>
+          <a href="#">Lotus</a>
+
+          <h5>Patola</h5>
+          <a href="#">Rajkot</a>
+          <a href="#">Double Ikat</a>
+
+          <h5>Bandhani</h5>
+          <a href="#">Leheriya</a>
+          <a href="#">Gharchola</a>
+
+          <h5>Kanjivaram</h5>
+          <a href="#">Temple Border</a>
+          <a href="#">Soft Silk</a>
+
+        </div>
+
+      </div>
+
+      <a href="#">New Arrivals</a>
+      <a href="#">Bestsellers</a>
+
+    </div>
+
+  </div>
+  <!-- ================================
+HERO SLIDER (LUXURY EDITION)
+================================ -->
+
+  <section class="hero-slider" id="heroSlider">
+
+    <div class="hero-track" id="heroTrack">
+
+      <!-- =========================
+    SLIDE 1 (CALLIGRAPHY HERO)
+    ========================= -->
+      <div class="hero-slide hero-slide-1">
+
+        <div class="hero-inner">
+
+          <!-- TEXT CONTENT -->
+          <div class="hero-content">
+
+            <p class="hero-tag">
+              Sanskruti By Bani
+            </p>
+
+            <h1 class="hero-title">
+
+              <span class="line line1">
+                A Legacy of Cherished Memories…
+              </span>
+
+              <span class="line line2">
+                The Warmth of Traditions…
+              </span>
+
+              <span class="line line3">
+                And Every Bond Beautifully Woven With Emotions.
+              </span>
+
+            </h1>
+
+            <p class="hero-desc">
+
+              Preserving the timeless elegance of Indian heritage, every saree reflects
+              love, grace, celebration and the soulful essence of our culture.
+              <br><br>
+
+              <strong>Sanskruti By Bani</strong> — where every color tells a story,
+              and every drape becomes a treasured memory.
+
+            </p>
+
+            <div class="hero-buttons">
+
+              <a href="#" class="btn-primary">
+                Explore Collection
+              </a>
+
+              <a href="#" class="btn-outline">
+                Shop Now
+              </a>
+
+            </div>
+
+          </div>
+
+          <!-- IMAGE -->
+          <div class="hero-media">
+
+            <div class="glow"></div>
+
+            <!-- DESKTOP IMAGE -->
+            <img src="{% static 'user/assets/slide1.png' %}" class="hero-img desktop-hero-img" alt="Founder Image">
+
+            <!-- MOBILE IMAGE -->
+            <img src="{% static 'user/assets/344941.png' %}" class="hero-img mobile-hero-img"
+              alt="Sanskruti By Bani Family">
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- =========================
+SLIDE 2 (DESKTOP + MOBILE)
+========================= -->
+
+      <div class="hero-slide image-slide">
+
+        <!-- DESKTOP IMAGE -->
+        <img src="{% static 'user/assets/slide21.png' %}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner">
+
+        <!-- MOBILE LAYOUT (Full Image Only) -->
+        <div class="slide2-mobile-layout premium-cover-layout"
+          style="position: absolute; inset: 0; width: 100%; height: 100% !important;">
+          <img src="{% static 'user/assets/slide21-mobile.png' %}" class="premium-cover-img"
+            alt="Sanskruti By Bani Mobile Banner">
+        </div>
+
+      </div>
+
+      <!-- =========================
+    SLIDE 3 (OFFER)
+    ========================= -->
+      <div class="hero-slide hero-offer">
+
+        <div class="offer-box">
+
+          <p>Limited Time Offer</p>
+
+          <h2>Flat 25% OFF</h2>
+
+          <span>On Festive Saree Collection</span>
+
+          <br><br>
+
+          <a href="#" class="btn-primary">Grab Offer</a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- DOTS -->
+    <div class="hero-dots">
+      <button class="active"></button>
+      <button></button>
+      <button></button>
+    </div>
+
+  </section>
+  <!-- =====================================
+LUXURY EDITORIAL COLLECTIONS
+===================================== -->
+
+  <section class="editorial-showcase">
+
+    <!-- HEADING -->
+    <div class="editorial-heading">
+      <p>Curated Heritage</p>
+      <h2>Luxury Saree Collections</h2>
+    </div>
+
+    <!-- GRID -->
+    <div class="luxury-editorial-grid">
+
+      <!-- FEATURED : PAITHANI -->
+      <a href="#" class="luxury-card featured-card">
+
+        <img
+          src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}"
+          alt="Paithani">
+
+        <div class="luxury-overlay"></div>
+
+        <div class="luxury-content">
+
+          <span class="luxury-tag">
+            Our Signature Collection
+          </span>
+
+          <h3>Paithani</h3>
+
+          <p>
+            Timeless Maharashtrian elegance woven with rich heritage and handcrafted artistry.
+          </p>
+
+          <div class="luxury-link">
+            Explore Collection
+            <span>↗</span>
+          </div>
+
+        </div>
+
+      </a>
+
+      <!-- KANJIVARAM -->
+      <a href="#" class="luxury-card">
+
+        <img
+          src="{% static 'user/assets/PAITHANI SAREE PHOTO/PAITHANI SAREE PHOTO/PURE SOFT KANCHIVRAM  PETHANI SILK 21.jpeg' %}"
+          alt="Kanjivaram">
+
+        <div class="luxury-overlay"></div>
+
+        <div class="luxury-content">
+
+          <span class="luxury-tag">
+            Temple Silk
+          </span>
+
+          <h3>Kanjivaram</h3>
+
+          <p>
+            Regal South Indian silk sarees with luxurious zari craftsmanship.
+          </p>
+
+          <div class="luxury-link">
+            Discover
+            <span>↗</span>
+          </div>
+
+        </div>
+
+      </a>
+
+      <!-- BANARASI -->
+      <a href="#" class="luxury-card">
+
+        <img src="{% static 'user/assets/Banarasi Sami Katan silk/Banarasi Sami Katan silk 10.jpeg' %}" alt="Banarasi">
+
+        <div class="luxury-overlay"></div>
+
+        <div class="luxury-content">
+
+          <span class="luxury-tag">
+            Ethereal
+          </span>
+
+          <h3>Banarasi</h3>
+
+          <p>
+
+            Banarasi Sami Katan silk All over beautiful light golden zari minakari buti & Designer minakari Pallu and
+            Border weaving
+
+          </p>
+
+          <div class="luxury-link">
+            Price-₹2995/-
+            <span>↗</span>
+          </div>
+
+        </div>
+
+      </a>
+
+      <!-- BANDHANI PATOLA -->
+      <a href="#" class="luxury-card">
+
+        <img src="{% static 'user/assets/bandhani patola/PATOLA 1.jpeg' %}" alt="Bandhani Patola">
+
+        <div class="luxury-overlay"></div>
+
+        <div class="luxury-content">
+
+          <span class="luxury-tag">
+            Premium Craft
+          </span>
+
+          <h3>Silk Patola Saree</h3>
+
+          <p>
+            Soft silk-blend saree with a graceful sheen and elegant rich-tone body.
+            Features a vibrant Patola-inspired pallu with intricate motifs and zari woven traditional borders.
+          </p>
+
+          <div class="luxury-link">
+            Price-₹2695/-
+            <span>↗</span>
+          </div>
+
+        </div>
+
+      </a>
+
+      <!-- DESIGNER -->
+      <a href="#" class="luxury-card">
+
+        <img src="img/designer.jpg" alt="Designer Saree">
+
+        <div class="luxury-overlay"></div>
+
+        <div class="luxury-content">
+
+          <span class="luxury-tag">
+            Modern Luxury
+          </span>
+
+          <h3>Designer Sarees</h3>
+
+          <p>
+            Contemporary statement sarees crafted for weddings and grand occasions.
+          </p>
+
+          <div class="luxury-link">
+            Discover
+            <span>↗</span>
+          </div>
+
+        </div>
+
+      </a>
+
+    </div>
+
+  </section>
+  <section class="sweet-memory-section">
+
+    <div class="memory-container">
+
+      <!-- LEFT -->
+
+      <div class="memory-image">
+
+        <div class="slider-window">
+
+          <div class="slider-track">
+
+            <img src="{% static 'user/assets/SPECIAL MEMORIES/CARE FOR HER DAUGHTER.JPG' %}">
+
+            <img src="{% static 'user/assets/SPECIAL MEMORIES/HEART TOUCHING FEELING WITH WEDDING SAREE.JPG' %}">
+
+            <img src="{% static 'user/assets/SPECIAL MEMORIES/WEDDING MOMENTS WITH YELLOW PAITHANI.JPG' %}">
+
+            <img src="{% static 'user/assets/SPECIAL MEMORIES/MOTHER UNBITABLE LOVE TO HER DAUGHTER.JPG' %}">
+
+            <img src="{% static 'user/assets/SPECIAL MEMORIES/FOREVER SPECIAL WITH SPECIAL 9 YARD SAREE.JPG' %}">
+
+            <img src="{% static 'user/assets/SPECIAL MEMORIES/HAPPY CUSTOMER.JPG' %}">
+
+            <img src="{% static 'user/assets/SPECIAL MEMORIES/HAPPY CUSTOMER WITH DESIGNER SAREE.JPG' %}">
+
+            <img src="{% static 'user/assets/SPECIAL MEMORIES/SILK PAITHANI FOR SONS WEDDING.jpeg' %}">
+
+            <img src="{% static 'user/assets/SPECIAL MEMORIES/SPECIAL MEMORIES WITH BUAUTIFUL SAREE.JPG' %}">
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- RIGHT -->
+
+      <div class="memory-content">
+
+        <span class="memory-label">
+
+          SWEET MEMORIES
+
+        </span>
+
+        <h2>
+
+          Woven Into<br>
+          Your <strong>Beautiful</strong> Moments
+
+        </h2>
+
+        <div class="gold-line"></div>
+
+        <p>
+
+          Some moments stay forever.
+
+          A wedding morning.
+          A family celebration.
+          A tradition passed through generations.
+
+          Our Paithani sarees become part of
+          those unforgettable memories.
+
+          At <strong>Sanskruti By Bani</strong>,
+          every weave carries heritage,
+          every drape carries emotion,
+          and every celebration shines
+          a little more beautifully.
+
+          Because special moments deserve
+          something timeless.
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+  <!-- =========================================
+BESTSELLER SECTION
+SPECIALITY = PAITHANI
+========================================= -->
+
+  <section class="bestseller-section">
+
+    <div class="bestseller-top">
+
+      <div>
+
+        <p class="bestseller-sub">
+          Our Signature Collection
+        </p>
+
+        <h2 class="bestseller-title">
+          BEST SELLING PAITHANI
+        </h2>
+
+      </div>
+
+    </div>
+
+    <div class="bestseller-grid">
+
+      <!-- CARD 1 -->
+      <div class="saree-card">
+
+        <div class="saree-image">
+          <img
+            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/PICHWAI NATURE SAREE/PICHWAI NATURE INSPIRED SAREE 10.jpeg' %}"
+            alt="">
+          <span class="saree-badge">Best Seller</span>
+        </div>
+
+        <div class="saree-info">
+
+          <div class="saree-category">
+            Pure Silk Paithani
+          </div>
+
+          <h3 class="saree-name">
+            Royal Peacock Paithani
+          </h3>
+
+          <div class="saree-stars">
+            ★★★★★
+          </div>
+
+          <div class="saree-bottom">
+
+            <div class="saree-price">
+              ₹18,500
+            </div>
+
+            <a href="#" class="saree-link">
+              <i class="fa-brands fa-whatsapp"></i>
+              BUY NOW
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- CARD 2 -->
+      <div class="saree-card">
+
+        <div class="saree-image">
+          <img src="{% static 'user/assets/p2.jpg' %}" alt="">
+        </div>
+
+        <div class="saree-info">
+
+          <div class="saree-category">
+            Traditional Paithani
+          </div>
+
+          <h3 class="saree-name">
+            Lotus Border Paithani
+          </h3>
+
+          <div class="saree-stars">
+            ★★★★★
+          </div>
+
+          <div class="saree-bottom">
+
+            <div class="saree-price">
+              ₹21,000
+            </div>
+
+            <a href="#" class="saree-link">
+              <i class="fa-brands fa-whatsapp"></i>
+              BUY NOW
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="saree-card">
+
+        <div class="saree-image">
+          <img src="{% static 'user/assets/p3.jpg' %}" alt="">
+          <span class="saree-badge">New</span>
+        </div>
+
+        <div class="saree-info">
+
+          <div class="saree-category">
+            Bridal Paithani
+          </div>
+
+          <h3 class="saree-name">
+            Bridal Gold Zari Paithani
+          </h3>
+
+          <div class="saree-stars">
+            ★★★★★
+          </div>
+
+          <div class="saree-bottom">
+
+            <div class="saree-price">
+              ₹34,000
+            </div>
+
+            <a href="#" class="saree-link">
+              <i class="fa-brands fa-whatsapp"></i>
+              BUY NOW
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- CARD 4 -->
+      <div class="saree-card">
+
+        <div class="saree-image">
+          <img src="{% static 'user/assets/p4.jpg' %}" alt="">
+        </div>
+
+        <div class="saree-info">
+
+          <div class="saree-category">
+            Handwoven Paithani
+          </div>
+
+          <h3 class="saree-name">
+            Mor Pallu Heritage Paithani
+          </h3>
+
+          <div class="saree-stars">
+            ★★★★★
+          </div>
+
+          <div class="saree-bottom">
+
+            <div class="saree-price">
+              ₹26,500
+            </div>
+
+            <a href="#" class="saree-link">
+              <i class="fa-brands fa-whatsapp"></i>
+              BUY NOW
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- CARD 5 -->
+      <div class="saree-card">
+
+        <div class="saree-image">
+          <img src="{% static 'user/assets/p5.jpg' %}" alt="">
+          <span class="saree-badge">Exclusive</span>
+        </div>
+
+        <div class="saree-info">
+
+          <div class="saree-category">
+            Premium Paithani
+          </div>
+
+          <h3 class="saree-name">
+            Maharani Paithani Silk
+          </h3>
+
+          <div class="saree-stars">
+            ★★★★★
+          </div>
+
+          <div class="saree-bottom">
+
+            <div class="saree-price">
+              ₹39,500
+            </div>
+
+            <a href="#" class="saree-link">
+              <i class="fa-brands fa-whatsapp"></i>
+              BUY NOW
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- VIEW ALL BUTTON (BOTTOM RIGHT) -->
+    <div class="flex justify-end mt-10 w-full relative z-10 pr-2 lg:pr-0">
+      <a href="{% url 'catalogue' %}"
+        class="inline-flex items-center justify-center px-8 py-2.5 bg-transparent border-2 border-[#71041a] text-[#71041a] text-[11px] font-bold tracking-[3px] uppercase hover:bg-[#71041a] hover:text-[#fff8f4] transition-all duration-300 w-full sm:w-auto">
+        VIEW ALL <span class="material-symbols-outlined text-[14px] ml-2">arrow_forward</span>
+      </a>
+    </div>
+
+  </section>
+  <!--Counter Stripe section-->
+  <section class="royal-counter-strip">
+
+    <div class="royal-counter-grid">
+
+      <div class="royal-counter-card">
+        <div class="royal-counter-number">
+          <span class="count" data-count="25">0</span>
+          <small>K+</small>
+        </div>
+        <p>Happy Customers</p>
+      </div>
+
+      <div class="royal-counter-card">
+        <div class="royal-counter-number">
+          <span class="count" data-count="18">0</span>
+          <small>+</small>
+        </div>
+        <p>Years Heritage</p>
+      </div>
+
+      <div class="royal-counter-card">
+        <div class="royal-counter-number">
+          <span class="count" data-count="320">0</span>
+          <small>+</small>
+        </div>
+        <p>Exclusive Sarees</p>
+      </div>
+
+      <div class="royal-counter-card">
+        <div class="royal-counter-number">
+          <span class="count" data-count="12">0</span>
+        </div>
+        <p>States Crafted</p>
+      </div>
+
+      <div class="royal-counter-card">
+        <div class="royal-counter-number">
+          <span class="count" data-count="4.9">0</span>
+          <small>★</small>
+        </div>
+        <p>Luxury Experience</p>
+      </div>
+
+    </div>
+
+  </section>
+  <!-- =========================================
+LUXURY ABOUT US SECTION
+WITH IMAGE + ANIMATION
+========================================= -->
+
+  <section class="about-bani-wrap">
+
+    <div class="about-bani-box">
+
+      <!-- LEFT IMAGE SIDE -->
+      <div class="about-image-side">
+
+        <!-- MAIN IMAGE -->
+        <div class="about-image-wrap">
+
+          <img src="{% static 'user/assets/about-1.jpeg' %}" alt="Sanskruti By Bani" class="about-main-img">
+
+          <!-- FLOAT CARD -->
+          <div class="about-floating-card">
+
+            <span>Legacy of</span>
+            <h4>Paithani</h4>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- RIGHT CONTENT -->
+      <div class="about-content-side">
+
+        <p class="about-mini">
+          About Us
+        </p>
+
+        <h2 class="about-title">
+          Sanskruti By – Bani
+        </h2>
+
+        <div class="about-divider"></div>
+
+        <p class="about-highlight">
+          “Paithani म्हणजे फक्त साडी नाही...
+          ती प्रत्येक स्त्रीची जपलेली आठवण आहे.”
+        </p>
+
+        <div class="about-text">
+
+          <p>
+            <span>संस्कृती...</span>
+            म्हणजे फक्त परंपरा नाही,
+            तर पिढ्यानपिढ्या चालत आलेला
+            भावनांचा आणि आठवणींचा वारसा आहे...
+          </p>
+
+          <p>
+            Sanskruti By - Bani ही त्या संस्कृतीची सुरुवात आहे…
+            प्रत्येक साडी ही एक भावना,
+            एक आठवण आणि एक ओळख आहे.
+          </p>
+
+          <p>
+            आमच्या brand ची खरी ओळख असेल —
+            <strong>Paithani.</strong>
+            कारण प्रत्येक Paithani मागे
+            एक खास कथा दडलली आहे.
+          </p>
+
+        </div>
+
+        <div class="about-ending">
+          – संस्कृतीतून उमटलेलं सौंदर्य
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================================
+LUXURY FOOTER SECTION
+========================================= -->
+
+  <footer class="luxury-footer">
+
+    <!-- TOP FOOTER -->
+    <div class="footer-top">
+
+      <!-- BRAND -->
+      <div class="footer-col footer-brand">
+
+        <h2>Sanskruti By Bani</h2>
+
+        <p>
+          Celebrating timeless Indian heritage through handcrafted Paithani,
+          Banarasi, Kanjivaram and luxury saree collections woven with elegance,
+          culture and emotion.
+        </p>
+
+        <!-- SOCIAL -->
+        <div class="footer-socials">
+
+          <a href="#">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+
+          <a href="#">
+            <i class="fa-brands fa-facebook-f"></i>
+          </a>
+
+          <a href="#">
+            <i class="fa-brands fa-youtube"></i>
+          </a>
+
+          <a href="#">
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+
+        </div>
+
+      </div>
+
+      <!-- QUICK LINKS -->
+      <div class="footer-col">
+
+        <h3>Quick Links</h3>
+
+        <a href="#">Home</a>
+        <a href="#">New Arrivals</a>
+        <a href="#">Collections</a>
+        <a href="#">Best Sellers</a>
+
+      </div>
+
+      <!-- COLLECTIONS -->
+      <div class="footer-col">
+
+        <h3>Collections</h3>
+
+        <a href="#">Paithani Sarees</a>
+        <a href="#">Banarasi Sarees</a>
+        <a href="#">Kanjivaram Sarees</a>
+        <a href="#">Bandhani Sarees</a>
+        <a href="#">Patola Sarees</a>
+        <a href="#">Designer Sarees</a>
+
+      </div>
+
+      <!-- POLICY & INQUIRY -->
+      <div class="footer-col">
+
+        <h3>Policy & Inquiry</h3>
+
+        <a href="#">Return & Exchange Policy</a>
+        <a href="#">Shipping Policy</a>
+        <a href="#">Terms and Conditions</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Wholesale Inquiry</a>
+
+      </div>
+
+      <!-- CONTACT -->
+      <div class="footer-col">
+
+        <h3>Contact</h3>
+
+        <p>
+          <i class="fa-solid fa-location-dot"></i>
+          Pune, Maharashtra, India
+        </p>
+
+        <p>
+          <i class="fa-solid fa-phone"></i>
+          +91 98765 43210
+        </p>
+
+        <p>
+          <i class="fa-solid fa-envelope"></i>
+          info@sanskrutibybani.com
+        </p>
+
+        <p>
+          <i class="fa-solid fa-clock"></i>
+          Mon - Sat : 10 AM - 8 PM
+        </p>
+
+      </div>
+
+    </div>
+
+    <!-- NEWSLETTER -->
+    <div class="footer-newsletter">
+
+      <div>
+        <h3>Join Our Heritage Circle</h3>
+        <p>
+          Get updates on new arrivals, festive collections & exclusive offers.
+        </p>
+      </div>
+
+      <form class="newsletter-form">
+
+        <input type="email" placeholder="Enter your email">
+
+        <button type="submit">
+          Subscribe
+        </button>
+
+      </form>
+
+    </div>
+
+    <!-- BOTTOM -->
+    <div class="footer-bottom">
+
+      <p>
+        © 2025 Sanskruti By Bani. All Rights Reserved.
+      </p>
+
+      <div class="footer-bottom-links">
+
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms & Conditions</a>
+        <a href="#">Shipping Policy</a>
+
+      </div>
+
+    </div>
+
+  </footer>
+  <!-- =====================================
+  SCRIPT
+  ===================================== -->
+
+  <script src="{% static 'user/js/script.js' %}"></script>
+
+</body>
+
+</html>
