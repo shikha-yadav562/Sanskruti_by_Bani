@@ -1,0 +1,218 @@
+{% extends "adm_user/base_admin.html" %}
+{% load static %}
+
+{% block content %}
+<div id="view-dashboard" class="view-section">
+    <!-- Welcome Section -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-1">Welcome back, Owner! 👋
+            </h1>
+            <p class="text-slate-500 dark:text-slate-400">Here's what's happening with your store today.
+            </p>
+        </div>
+        {% url 'adm_user:products' as products_url %}
+        <button
+            class="flex items-center gap-2 bg-brand-maroon hover:bg-brand-maroonLight text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-brand-maroon/30"
+            onclick="window.location.href='{{ products_url }}'">
+            <i class="ph ph-plus-circle text-xl"></i>
+            Add New Product
+        </button>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Card 1 -->
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div
+                    class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                    <i class="ph ph-currency-inr text-2xl"></i>
+                </div>
+                <span
+                    class="flex items-center gap-1 text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-lg">
+                    <i class="ph ph-trend-up"></i> +12.5%
+                </span>
+            </div>
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Today's Sales</p>
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">₹45,230</h3>
+        </div>
+
+        <!-- Card 2 -->
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div
+                    class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                    <i class="ph ph-users text-2xl"></i>
+                </div>
+                <span
+                    class="flex items-center gap-1 text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-lg">
+                    <i class="ph ph-trend-up"></i> +5.2%
+                </span>
+            </div>
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Today's Visitors</p>
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">1,204</h3>
+        </div>
+
+        <!-- Card 3 -->
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div
+                    class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                    <i class="ph ph-package text-2xl"></i>
+                </div>
+                <span
+                    class="flex items-center gap-1 text-sm font-medium text-slate-500 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-lg">
+                    Needs Action
+                </span>
+            </div>
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Pending Orders</p>
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">12</h3>
+        </div>
+
+        <!-- Card 4 -->
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div
+                    class="w-12 h-12 rounded-xl bg-brand-maroon/10 flex items-center justify-center text-brand-maroon dark:text-brand-gold">
+                    <i class="ph ph-shopping-bag-open text-2xl"></i>
+                </div>
+                <span
+                    class="flex items-center gap-1 text-sm font-medium text-red-600 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded-lg">
+                    <i class="ph ph-trend-down"></i> -2.1%
+                </span>
+            </div>
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Monthly Revenue</p>
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">₹8,45,000</h3>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+
+        <!-- CHARTS AREA -->
+        <div
+            class="lg:col-span-2 bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-slate-800 dark:text-white">Revenue Overview</h3>
+                <select
+                    class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon block p-2">
+                    <option>Last 7 Days</option>
+                    <option>This Month</option>
+                    <option>This Year</option>
+                </select>
+            </div>
+            <div class="h-[300px] w-full relative">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-6">Quick Actions</h3>
+
+            <div class="grid grid-cols-2 gap-4">
+                {% url 'adm_user:products' as products_url %}
+                <button onclick="window.location.href='{{ products_url }}'"
+                    class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 hover:bg-brand-maroon/5 hover:border-brand-maroon/30 transition-all group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-white dark:bg-dark-panel shadow-sm flex items-center justify-center text-brand-maroon group-hover:scale-110 transition-transform">
+                        <i class="ph ph-t-shirt text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Add
+                        Product</span>
+                </button>
+
+                {% url 'adm_user:img_manager' as img_manager_url %}
+                <button onclick="window.location.href='{{img_manager_url}}'"
+                    class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 hover:bg-brand-maroon/5 hover:border-brand-maroon/30 transition-all group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-white dark:bg-dark-panel shadow-sm flex items-center justify-center text-brand-maroon group-hover:scale-110 transition-transform">
+                        <i class="ph ph-image text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Upload
+                        Banner</span>
+                </button>
+
+                <button
+                    class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 hover:bg-brand-maroon/5 hover:border-brand-maroon/30 transition-all group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-white dark:bg-dark-panel shadow-sm flex items-center justify-center text-brand-maroon group-hover:scale-110 transition-transform">
+                        <i class="ph ph-tag text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Create
+                        Offer</span>
+                </button>
+
+                <button
+                    class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 hover:bg-brand-maroon/5 hover:border-brand-maroon/30 transition-all group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-white dark:bg-dark-panel shadow-sm flex items-center justify-center text-brand-maroon group-hover:scale-110 transition-transform">
+                        <i class="ph ph-article text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Add Blog</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEALTH PANELS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Website Health -->
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm flex items-center gap-4">
+            <div
+                class="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border-4 border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <i class="ph ph-check-circle text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Website Health</p>
+                <h4 class="text-lg font-bold text-slate-800 dark:text-white">Excellent</h4>
+                <p class="text-xs text-emerald-600 mt-1">100% Uptime</p>
+            </div>
+        </div>
+
+        <!-- Storage Used -->
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm flex items-center gap-4">
+            <div
+                class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-500/10 border-4 border-blue-100 dark:border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                <i class="ph ph-hard-drive text-2xl"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Storage Used</p>
+                <div class="flex justify-between items-end mb-1">
+                    <h4 class="text-lg font-bold text-slate-800 dark:text-white">2.4 GB</h4>
+                    <span class="text-xs text-slate-500">of 10 GB</span>
+                </div>
+                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5">
+                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: 24%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Domain & SSL -->
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm flex flex-col justify-center">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <i class="ph ph-globe text-brand-maroon"></i> Domain Expiry
+                </div>
+                <span class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded font-medium">Active</span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Renews in 245 Days</p>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <i class="ph ph-lock-key text-brand-maroon"></i> SSL Security
+                </div>
+                <span class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded font-medium">Secure</span>
+            </div>
+        </div>
+    </div>
+</div> <!-- End View Dashboard -->
+{% endblock %}

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sanskruti by Bani - Management Dashboard{% endblock %}</title>
+    {% load static %}
+
+    <!-- Tailwind CSS (CDN for simple setup) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Phosphor Icons (Huge, Premium Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'adm_user/css/admin.css' %}">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            maroon: '#71041a',
+                            maroonLight: '#9b0b28',
+                            maroonDark: '#4a0210',
+                            gold: '#e7c27a',
+                            ivory: '#fff8f4',
+                        },
+                        dark: {
+                            bg: '#0f172a',
+                            panel: '#1e293b',
+                            border: '#334155'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Cinzel', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body
+    class="bg-slate-50 text-slate-800 dark:bg-dark-bg dark:text-slate-200 antialiased font-sans transition-colors duration-200">
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar"
+            class="w-64 bg-white dark:bg-dark-panel border-r border-slate-200 dark:border-dark-border flex flex-col transition-transform duration-300 z-40 fixed inset-y-0 left-0 -translate-x-full md:relative md:translate-x-0">
+
+            <!-- Logo Area -->
+            <div class="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-dark-border">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-8 h-8 rounded bg-brand-maroon flex items-center justify-center text-brand-gold font-serif font-bold text-xl">
+                        S</div>
+                    <span class="font-semibold text-lg tracking-wide hidden sm:block">Admin Panel</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar">
+
+                <div class="px-3 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Overview</div>
+
+                <a href="{% url 'adm_user:dashboard' %}" data-module="dashboard"
+                    class="{% block nav_class_dashboard %}nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-brand-maroon bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-squares-four text-xl"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <div class="px-3 mt-6 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">E-Commerce
+                </div>
+
+                <!-- <a href="orders.html"
+                    class="{% block nav_class_orders %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-shopping-bag text-xl"></i>
+                    <span>Orders <span
+                            class="ml-auto bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs">12</span></span>
+                </a> -->
+
+                <a href="{% url 'adm_user:products' %}"
+                    class="{% block nav_class_products %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-t-shirt text-xl"></i>
+                    <span>Products</span>
+                </a>
+
+                <a href="{% url 'adm_user:categories' %}"
+                    class="{% block nav_class_categories %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-folders text-xl"></i>
+                    <span>Categories</span>
+                </a>
+
+                <a href="{% url 'adm_user:filters' %}"
+                    class="{% block nav_class_filters %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-funnel text-xl"></i>
+                    <span>Add Filters</span>
+                </a>
+
+                <!-- <a href="customers.html"
+                    class="{% block nav_class_customers %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-users text-xl"></i>
+                    <span>Customers</span>
+                </a> -->
+
+                <a href="{% url 'adm_user:coming_soon' %}?module=offers" data-module="offers"
+                    class="{% block nav_class_offers %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-tag text-xl"></i>
+                    <span>Offers & Discounts</span>
+                </a>
+
+                <div class="px-3 mt-6 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Content &
+                    Website</div>
+
+                <!-- <a href="coming-soon.html"
+                    class="{% block nav_class_website %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-browser text-xl"></i>
+                    <span>Website Builder</span>
+                </a> -->
+
+                <a href="{% url 'adm_user:img_manager' %}"
+                    class="{% block nav_class_imagemanager %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-image text-xl"></i>
+                    <span>Image Manager</span>
+                </a>
+
+                <!-- <a href="coming-soon.html"
+                    class="{% block nav_class_blog %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-article text-xl"></i>
+                    <span>Blog Manager</span>
+                </a> -->
+
+                <div class="px-3 mt-6 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">System</div>
+
+                <!-- <a href="coming-soon.html"
+                    class="{% block nav_class_analytics %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-chart-line-up text-xl"></i>
+                    <span>Analytics</span>
+                </a> -->
+
+                <a href="{% url 'adm_user:coming_soon' %}?module=offers" data-module="hosting"
+                    class="{% block nav_class_hosting %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-hard-drives text-xl"></i>
+                    <span>Hosting Panel</span>
+                </a>
+
+                <a href="{% url 'adm_user:coming_soon' %}?module=offers" data-module="setting"
+                    class="{% block nav_class_settings %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
+                    <i class="ph ph-gear text-xl"></i>
+                    <span>Settings</span>
+                </a>
+
+            </nav>
+
+            <!-- Bottom Profile -->
+            <div class="p-4 border-t border-slate-100 dark:border-dark-border">
+                <div class="flex items-center gap-3">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=71041a&color=e7c27a"
+                        class="w-10 h-10 rounded-full" alt="Admin">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Store Owner</p>
+                        <p class="text-xs text-slate-500">View Live Website</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Sidebar Overlay -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 hidden"></div>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+
+            <!-- TOP HEADER -->
+            <header
+                class="h-16 bg-white/80 dark:bg-dark-panel/80 backdrop-blur-md border-b border-slate-200 dark:border-dark-border flex items-center justify-between px-8 z-10 sticky top-0">
+
+                <div class="flex items-center gap-4">
+                    <button id="mobile-menu-btn" class="md:hidden text-slate-500 hover:text-brand-maroon">
+                        <i class="ph ph-list text-2xl"></i>
+                    </button>
+                    <h2 class="text-xl font-semibold text-slate-800 dark:text-slate-100" id="page-title">
+                        {% block page_title %}Dashboard Home{% endblock %}
+                    </h2>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- Search -->
+                    <div class="hidden md:flex relative group">
+                        <i
+                            class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-maroon"></i>
+                        <input type="text" placeholder="Search orders, products..."
+                            class="pl-10 pr-4 py-2 w-64 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon transition-all">
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
+                            <kbd
+                                class="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-500 font-mono">Ctrl</kbd>
+                            <kbd
+                                class="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-500 font-mono">K</kbd>
+                        </div>
+                    </div>
+
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle"
+                        class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-maroon transition-colors"
+                        title="Toggle Dark Mode">
+                        <i class="ph ph-moon text-xl dark:hidden"></i>
+                        <i class="ph ph-sun text-xl hidden dark:block"></i>
+                    </button>
+
+                    <!-- Notifications -->
+                    <button
+                        class="relative w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-maroon transition-colors">
+                        <i class="ph ph-bell text-xl"></i>
+                        <span
+                            class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- SCROLLABLE PAGE CONTENT -->
+            <div id="app-content" class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+
+                {% block content %}{% endblock %}
+
+            </div>
+        </main>
+    </div>
+
+
+    {% block modals %}{% endblock %}
+
+    <script src="{% static 'adm_user/js/admin.js' %}"></script>
+</body>
+
+</html>

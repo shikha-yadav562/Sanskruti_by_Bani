@@ -1,0 +1,47 @@
+{% extends "adm_user/base_admin.html" %}
+{% load static %}
+{% block title %}Module Under Construction - Sanskruti by Bani{% endblock %}
+{% block page_title %}Coming Soon{% endblock %}
+{% block nav_class_dashboard %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600
+dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold
+font-medium transition-colors{% endblock %}
+
+{% block content %}
+<div id="view-coming-soon" class="view-section flex flex-col items-center justify-center h-full py-20 text-center">
+    <div
+        class="w-24 h-24 bg-brand-maroon/10 text-brand-maroon dark:text-brand-gold rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="ph ph-wrench text-5xl"></i>
+    </div>
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Module Under Construction</h2>
+    <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto">This section is part of a future
+        phase and is currently being built.</p>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // This page is shared by several not-yet-built modules, so the sidebar's
+    // "active" nav item is set at runtime from the ?module= query param
+    // instead of being hardcoded per page like the other views.
+    (function () {
+        var ACTIVE = 'nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-brand-maroon bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium transition-colors';
+        var INACTIVE = 'nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors';
+        var LABELS = {
+            offers: 'Offers & Discounts',
+            website: 'Website Builder',
+            blog: 'Blog Manager',
+            analytics: 'Analytics',
+            hosting: 'Hosting Panel',
+            settings: 'Settings'
+        };
+        var mod = new URLSearchParams(window.location.search).get('module');
+        document.querySelectorAll('[data-module]').forEach(function (link) {
+            link.className = (link.dataset.module === mod) ? ACTIVE : INACTIVE;
+        });
+        if (mod && LABELS[mod]) {
+            var titleEl = document.getElementById('page-title');
+            if (titleEl) titleEl.textContent = LABELS[mod];
+        }
+    })();
+</script>
+{% endblock %}

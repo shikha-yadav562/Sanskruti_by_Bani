@@ -54,7 +54,7 @@ function saveDatabase() {
 
 document.addEventListener('DOMContentLoaded', () => {
     initDatabase();
-    
+
     // --- THEME TOGGLE (Light/Dark Mode) ---
     const themeToggleBtn = document.getElementById('theme-toggle');
     const html = document.documentElement;
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             localStorage.theme = 'light';
         }
-        if(window.revenueChartInstance) {
+        if (window.revenueChartInstance) {
             updateChartTheme();
         }
     });
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     mobileMenuBtn.addEventListener('click', toggleSidebar);
-    
+
     if (sidebarOverlay) {
         sidebarOverlay.addEventListener('click', toggleSidebar);
     }
@@ -98,12 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewSections = document.querySelectorAll('.view-section');
     const pageTitle = document.getElementById('page-title');
 
-    window.switchView = function(targetId) {
+    window.switchView = function (targetId) {
         const targetNav = Array.from(navItems).find(nav => nav.dataset.target === targetId);
-        
+
         viewSections.forEach(section => {
             section.classList.add('hidden');
-            section.classList.remove('flex'); 
+            section.classList.remove('flex');
         });
 
         navItems.forEach(nav => {
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             const targetId = item.dataset.target;
-            if(targetId) {
+            if (targetId) {
                 e.preventDefault();
                 switchView(targetId);
                 loadAllData();
@@ -158,7 +158,7 @@ function loadAllData() {
     renderProductsTable(productsDB);
     renderOffers(offersDB);
     renderBlog(blogDB);
-    
+
     // New collections
     renderSC();
     renderColors();
@@ -170,15 +170,15 @@ function renderProductsTable(products) {
     const tableBody = document.querySelector('#view-products tbody');
     if (!tableBody) return;
     tableBody.innerHTML = '';
-    
+
     if (products.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-500">No products found. Click "Add Product" to create one.</td></tr>';
         return;
     }
-    
+
     products.forEach(product => {
         const price = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(product.price);
-        
+
         let stockBadge = '';
         if (product.stock > 10) {
             stockBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ${product.stock} in stock</span>`;
@@ -187,11 +187,11 @@ function renderProductsTable(products) {
         } else {
             stockBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border border-red-200 dark:border-red-800"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Out of stock</span>`;
         }
-        
-        const imgHtml = product.image_path 
+
+        const imgHtml = product.image_path
             ? `<img src="${product.image_path}" class="w-full h-full object-cover" alt="${product.name}" onerror="this.src='https://placehold.co/100x150?text=No+Image'">`
             : `<i class="ph ph-image text-2xl text-slate-400"></i>`;
-            
+
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group';
         tr.innerHTML = `
@@ -222,7 +222,7 @@ function renderOffers(offers) {
     const container = document.getElementById('offers-container');
     if (!container) return;
     container.innerHTML = '';
-    
+
     offers.forEach(offer => {
         const div = document.createElement('div');
         div.className = 'bg-gradient-to-br from-brand-maroon to-brand-maroonLight p-6 rounded-2xl text-white shadow-lg relative overflow-hidden group';
@@ -248,7 +248,7 @@ function renderBlog(posts) {
     const container = document.getElementById('blog-container');
     if (!container) return;
     container.innerHTML = '';
-    
+
     if (posts.length === 0) {
         container.parentElement.innerHTML += `
             <div id="empty-blog" class="bg-white dark:bg-dark-panel p-16 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm text-center">
@@ -262,7 +262,7 @@ function renderBlog(posts) {
         `;
         return;
     }
-    
+
     const emptyState = document.getElementById('empty-blog');
     if (emptyState) emptyState.remove();
 
@@ -287,19 +287,19 @@ function renderBlog(posts) {
 // --- MODAL & FORM HANDLING ---
 
 // Product
-window.openAddProductModal = function() {
+window.openAddProductModal = function () {
     document.getElementById('addProductModal').classList.remove('hidden');
     document.getElementById('addProductModal').classList.add('flex');
 };
-window.closeAddProductModal = function() {
+window.closeAddProductModal = function () {
     document.getElementById('addProductModal').classList.add('hidden');
     document.getElementById('addProductModal').classList.remove('flex');
     document.getElementById('addProductForm').reset();
 };
-window.submitNewProduct = function() {
+window.submitNewProduct = function () {
     const form = document.getElementById('addProductForm');
     if (!form.checkValidity()) { form.reportValidity(); return; }
-    
+
     const newProduct = {
         id: Date.now(),
         name: document.getElementById('prodName').value,
@@ -310,15 +310,15 @@ window.submitNewProduct = function() {
         description: document.getElementById('prodDesc').value,
         image_path: document.getElementById('prodImage') ? document.getElementById('prodImage').value : ''
     };
-    
+
     productsDB.unshift(newProduct);
     saveDatabase();
     closeAddProductModal();
     loadAllData();
     alert("Product saved successfully!");
 };
-window.deleteProduct = function(id) {
-    if(confirm("Delete this product?")) {
+window.deleteProduct = function (id) {
+    if (confirm("Delete this product?")) {
         productsDB = productsDB.filter(p => p.id !== id);
         saveDatabase();
         loadAllData();
@@ -327,33 +327,33 @@ window.deleteProduct = function(id) {
 
 
 // Offer
-window.openAddOfferModal = function() {
+window.openAddOfferModal = function () {
     document.getElementById('addOfferModal').classList.remove('hidden');
     document.getElementById('addOfferModal').classList.add('flex');
 };
-window.closeAddOfferModal = function() {
+window.closeAddOfferModal = function () {
     document.getElementById('addOfferModal').classList.add('hidden');
     document.getElementById('addOfferModal').classList.remove('flex');
     document.getElementById('addOfferForm').reset();
 };
-window.submitNewOffer = function() {
+window.submitNewOffer = function () {
     const form = document.getElementById('addOfferForm');
     if (!form.checkValidity()) { form.reportValidity(); return; }
-    
+
     const newOffer = {
         id: Date.now(),
         code: document.getElementById('offerCode').value.toUpperCase(),
         desc: document.getElementById('offerDesc').value,
         expiry: document.getElementById('offerExpiry').value
     };
-    
+
     offersDB.push(newOffer);
     saveDatabase();
     closeAddOfferModal();
     loadAllData();
 };
-window.deleteOffer = function(id) {
-    if(confirm("Delete this offer?")) {
+window.deleteOffer = function (id) {
+    if (confirm("Delete this offer?")) {
         offersDB = offersDB.filter(o => o.id !== id);
         saveDatabase();
         loadAllData();
@@ -361,35 +361,35 @@ window.deleteOffer = function(id) {
 };
 
 // Blog
-window.openAddBlogModal = function() {
+window.openAddBlogModal = function () {
     document.getElementById('addBlogModal').classList.remove('hidden');
     document.getElementById('addBlogModal').classList.add('flex');
 };
-window.closeAddBlogModal = function() {
+window.closeAddBlogModal = function () {
     document.getElementById('addBlogModal').classList.add('hidden');
     document.getElementById('addBlogModal').classList.remove('flex');
     document.getElementById('addBlogForm').reset();
 };
-window.submitNewBlog = function() {
+window.submitNewBlog = function () {
     const form = document.getElementById('addBlogForm');
     if (!form.checkValidity()) { form.reportValidity(); return; }
-    
+
     const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    
+
     const newBlog = {
         id: Date.now(),
         title: document.getElementById('blogTitle').value,
         content: document.getElementById('blogContent').value,
         date: date
     };
-    
+
     blogDB.unshift(newBlog);
     saveDatabase();
     closeAddBlogModal();
     loadAllData();
 };
-window.deleteBlog = function(id) {
-    if(confirm("Delete this post?")) {
+window.deleteBlog = function (id) {
+    if (confirm("Delete this post?")) {
         blogDB = blogDB.filter(b => b.id !== id);
         saveDatabase();
         loadAllData();
@@ -443,7 +443,7 @@ function initChart() {
                     padding: 10,
                     displayColors: false,
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             let label = context.dataset.label || '';
                             if (label) { label += ': '; }
                             if (context.parsed.y !== null) { label += '₹' + context.parsed.y.toLocaleString(); }
@@ -458,7 +458,7 @@ function initChart() {
                     grid: { color: gridColor, drawBorder: false },
                     ticks: {
                         color: textColor,
-                        callback: function(value) { return '₹' + (value / 1000) + 'k'; }
+                        callback: function (value) { return '₹' + (value / 1000) + 'k'; }
                     }
                 },
                 x: {
@@ -472,23 +472,23 @@ function initChart() {
 
 function updateChartTheme() {
     if (!window.revenueChartInstance) return;
-    
+
     const isDark = document.documentElement.classList.contains('dark');
     const gridColor = isDark ? '#334155' : '#f1f5f9';
     const textColor = isDark ? '#94a3b8' : '#64748b';
     const brandColor = isDark ? '#e7c27a' : '#71041a';
 
     const chart = window.revenueChartInstance;
-    
+
     chart.data.datasets[0].borderColor = brandColor;
     chart.data.datasets[0].backgroundColor = isDark ? 'rgba(231, 194, 122, 0.1)' : 'rgba(113, 4, 26, 0.1)';
     chart.data.datasets[0].pointBackgroundColor = brandColor;
     chart.data.datasets[0].pointBorderColor = isDark ? '#1e293b' : '#fff';
-    
+
     chart.options.scales.x.ticks.color = textColor;
     chart.options.scales.y.ticks.color = textColor;
     chart.options.scales.y.grid.color = gridColor;
-    
+
     chart.options.plugins.tooltip.backgroundColor = isDark ? '#0f172a' : '#fff';
     chart.options.plugins.tooltip.titleColor = isDark ? '#fff' : '#0f172a';
     chart.options.plugins.tooltip.bodyColor = isDark ? '#cbd5e1' : '#475569';
@@ -527,7 +527,7 @@ function renderSC() {
     });
 }
 
-window.handleSCSubmit = function(e) {
+window.handleSCSubmit = function (e) {
     e.preventDefault();
     const inputField = document.getElementById("scName");
     const editIdx = parseInt(document.getElementById("scEditIndex").value);
@@ -554,7 +554,7 @@ window.handleSCSubmit = function(e) {
     renderSC();
 };
 
-window.editSC = function(index) {
+window.editSC = function (index) {
     document.getElementById("scName").value = simpleCategoriesDB[index];
     document.getElementById("scEditIndex").value = index;
     document.getElementById("scFormTitle").textContent = "Modify Category Entry";
@@ -563,7 +563,7 @@ window.editSC = function(index) {
     document.getElementById("scName").focus();
 };
 
-window.deleteSC = function(index) {
+window.deleteSC = function (index) {
     if (confirm(`Are you sure you want to delete "${simpleCategoriesDB[index]}"?`)) {
         simpleCategoriesDB.splice(index, 1);
         saveDatabase();
@@ -572,7 +572,7 @@ window.deleteSC = function(index) {
     }
 };
 
-window.resetSCForm = function() {
+window.resetSCForm = function () {
     document.getElementById("scName").value = "";
     document.getElementById("scEditIndex").value = "-1";
     document.getElementById("scFormTitle").textContent = "Create New Category";
@@ -584,7 +584,7 @@ window.resetSCForm = function() {
 // ==========================================
 // FILTERS: COLORS LOGIC
 // ==========================================
-window.updateColorPreview = function() {
+window.updateColorPreview = function () {
     const hex = document.getElementById("colorPicker").value;
     document.getElementById("colorPreview").style.backgroundColor = hex;
 };
@@ -614,12 +614,12 @@ function renderColors() {
     });
 }
 
-window.handleColorSubmit = function(e) {
+window.handleColorSubmit = function (e) {
     e.preventDefault();
     const name = document.getElementById("colorName").value.trim();
     const hex = document.getElementById("colorPicker").value;
     const idx = parseInt(document.getElementById("colorEditIndex").value);
-    
+
     if (!name) return;
 
     if (idx === -1) {
@@ -638,7 +638,7 @@ window.handleColorSubmit = function(e) {
     renderColors();
 };
 
-window.editColor = function(i) {
+window.editColor = function (i) {
     document.getElementById("colorName").value = colorsDB[i].name;
     document.getElementById("colorPicker").value = colorsDB[i].hex;
     updateColorPreview();
@@ -649,7 +649,7 @@ window.editColor = function(i) {
     document.getElementById("colorName").focus();
 };
 
-window.deleteColor = function(i) {
+window.deleteColor = function (i) {
     if (confirm(`Delete "${colorsDB[i].name}"?`)) {
         colorsDB.splice(i, 1);
         saveDatabase();
@@ -658,7 +658,7 @@ window.deleteColor = function(i) {
     }
 };
 
-window.resetColorForm = function() {
+window.resetColorForm = function () {
     document.getElementById("colorName").value = "";
     document.getElementById("colorPicker").value = "#c0392b";
     updateColorPreview();
@@ -696,11 +696,11 @@ function renderFabrics() {
     });
 }
 
-window.handleFabricSubmit = function(e) {
+window.handleFabricSubmit = function (e) {
     e.preventDefault();
     const name = document.getElementById("fabricName").value.trim();
     const idx = parseInt(document.getElementById("fabricEditIndex").value);
-    
+
     if (!name) return;
 
     if (idx === -1) {
@@ -719,7 +719,7 @@ window.handleFabricSubmit = function(e) {
     renderFabrics();
 };
 
-window.editFabric = function(i) {
+window.editFabric = function (i) {
     document.getElementById("fabricName").value = fabricsDB[i];
     document.getElementById("fabricEditIndex").value = i;
     document.getElementById("fabricFormTitle").textContent = "Modify Fabric Entry";
@@ -728,7 +728,7 @@ window.editFabric = function(i) {
     document.getElementById("fabricName").focus();
 };
 
-window.deleteFabric = function(i) {
+window.deleteFabric = function (i) {
     if (confirm(`Delete "${fabricsDB[i]}"?`)) {
         fabricsDB.splice(i, 1);
         saveDatabase();
@@ -737,7 +737,7 @@ window.deleteFabric = function(i) {
     }
 };
 
-window.resetFabricForm = function() {
+window.resetFabricForm = function () {
     document.getElementById("fabricName").value = "";
     document.getElementById("fabricEditIndex").value = "-1";
     document.getElementById("fabricFormTitle").textContent = "Add New Fabric";
@@ -773,11 +773,11 @@ function renderPrints() {
     });
 }
 
-window.handlePrintSubmit = function(e) {
+window.handlePrintSubmit = function (e) {
     e.preventDefault();
     const name = document.getElementById("printName").value.trim();
     const idx = parseInt(document.getElementById("printEditIndex").value);
-    
+
     if (!name) return;
 
     if (idx === -1) {
@@ -796,7 +796,7 @@ window.handlePrintSubmit = function(e) {
     renderPrints();
 };
 
-window.editPrint = function(i) {
+window.editPrint = function (i) {
     document.getElementById("printName").value = printsDB[i];
     document.getElementById("printEditIndex").value = i;
     document.getElementById("printFormTitle").textContent = "Modify Print Entry";
@@ -805,7 +805,7 @@ window.editPrint = function(i) {
     document.getElementById("printName").focus();
 };
 
-window.deletePrint = function(i) {
+window.deletePrint = function (i) {
     if (confirm(`Delete "${printsDB[i]}"?`)) {
         printsDB.splice(i, 1);
         saveDatabase();
@@ -814,7 +814,7 @@ window.deletePrint = function(i) {
     }
 };
 
-window.resetPrintForm = function() {
+window.resetPrintForm = function () {
     document.getElementById("printName").value = "";
     document.getElementById("printEditIndex").value = "-1";
     document.getElementById("printFormTitle").textContent = "Add New Print";

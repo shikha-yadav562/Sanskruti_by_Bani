@@ -1,0 +1,104 @@
+{% extends "adm_user/base_admin.html" %}
+{% load static %}
+{% block title %}Image Manager - Sanskruti by Bani{% endblock %}
+{% block page_title %}Image Manager{% endblock %}
+{% block nav_class_dashboard %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600
+dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold
+font-medium transition-colors{% endblock %}
+{% block nav_class_imagemanager %}nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-brand-maroon
+bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium transition-colors{% endblock %}
+
+{% block content %}
+<div id="view-imagemanager" class="view-section">
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Image Manager</h2>
+            <p class="text-slate-500 dark:text-slate-400">Upload perfectly sized images for every
+                section of your website.</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <!-- Main Banners -->
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+                <i class="ph ph-monitor text-brand-maroon"></i> Desktop Homepage Banner
+            </h3>
+            <p class="text-sm text-slate-500 mb-6">This is the large image shown at the very top of your
+                website on computers.</p>
+
+            <div
+                class="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50 flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group relative overflow-hidden">
+
+                <!-- Visual Aspect Ratio Frame -->
+                <div
+                    class="w-full max-w-[280px] aspect-[2.26/1] border-2 border-brand-maroon/30 rounded flex items-center justify-center mb-4 group-hover:scale-105 transition-transform bg-white dark:bg-dark-panel shadow-sm">
+                    <i class="ph ph-image text-4xl text-slate-300"></i>
+                </div>
+
+                <p class="text-brand-maroon dark:text-brand-gold font-medium mb-1">Click to Upload or
+                    Drag and Drop</p>
+
+                <div class="flex flex-wrap justify-center gap-2 mt-4">
+                    <span
+                        class="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded font-medium flex items-center gap-1">
+                        <i class="ph ph-aspect-ratio"></i> Recommended Size: 1920 × 850 px
+                    </span>
+                    <span
+                        class="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded font-medium flex items-center gap-1">
+                        <i class="ph ph-frame-corners"></i> Landscape Frame (2.26:1)
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Banners -->
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+                <i class="ph ph-device-mobile text-brand-maroon"></i> Mobile Homepage Banner
+            </h3>
+            <p class="text-sm text-slate-500 mb-6">This is the tall image shown at the very top of your
+                website on phones.</p>
+
+            <div
+                class="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50 flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group relative overflow-hidden">
+
+                <!-- Visual Aspect Ratio Frame -->
+                <div
+                    class="w-full max-w-[120px] aspect-[4/5] border-2 border-brand-maroon/30 rounded flex items-center justify-center mb-4 group-hover:scale-105 transition-transform bg-white dark:bg-dark-panel shadow-sm">
+                    <i class="ph ph-image text-4xl text-slate-300"></i>
+                </div>
+
+                <p class="text-brand-maroon dark:text-brand-gold font-medium mb-1">Click to Upload or
+                    Drag and Drop</p>
+
+                <div class="flex flex-wrap justify-center gap-2 mt-4">
+                    <span
+                        class="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded font-medium flex items-center gap-1">
+                        <i class="ph ph-aspect-ratio"></i> Recommended Size: 1080 × 1350 px
+                    </span>
+                    <span
+                        class="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded font-medium flex items-center gap-1">
+                        <i class="ph ph-frame-corners"></i> Portrait Frame (4:5)
+                    </span>
+                </div>
+
+                <!-- Example of Live Validation -->
+                <div
+                    class="absolute bottom-4 right-4 bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 rounded-lg p-2 flex items-start gap-2 shadow-lg hidden">
+                    <i class="ph-fill ph-check-circle text-emerald-500 text-lg mt-0.5"></i>
+                    <div class="text-left">
+                        <p class="text-xs font-bold text-slate-800 dark:text-white">Perfect Size!</p>
+                        <p class="text-[10px] text-slate-500">1080x1350 • 240kb</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

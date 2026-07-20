@@ -1,0 +1,261 @@
+{% extends "adm_user/base_admin.html" %}
+{% load static %}
+{% block title %}Products - Sanskruti by Bani{% endblock %}
+{% block page_title %}Products{% endblock %}
+{% block nav_class_dashboard %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600
+dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold
+font-medium transition-colors{% endblock %}
+{% block nav_class_products %}nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-brand-maroon
+bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium transition-colors{% endblock %}
+
+{% block content %}
+<div id="view-products" class="view-section">
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Products</h2>
+            <p class="text-slate-500 dark:text-slate-400">Manage your inventory, prices, and catalog.
+            </p>
+        </div>
+        <div class="flex gap-3">
+            <button
+                class="flex items-center gap-2 bg-white dark:bg-dark-panel border border-slate-200 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl font-medium transition-all">
+                <i class="ph ph-export"></i> Export
+            </button>
+            <button onclick="openAddProductModal()"
+                class="flex items-center gap-2 bg-brand-maroon hover:bg-brand-maroonLight text-white px-5 py-2 rounded-xl font-medium transition-all shadow-lg shadow-brand-maroon/20">
+                <i class="ph ph-plus"></i> Add Product
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div
+        class="bg-white dark:bg-dark-panel rounded-t-2xl p-4 border-x border-t border-slate-100 dark:border-dark-border flex flex-wrap gap-4 items-center justify-between">
+        <div class="flex gap-2">
+            <select
+                class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-3 py-2">
+                <option>All Categories</option>
+                <option>Paithani</option>
+                <option>Banarasi</option>
+            </select>
+            <select
+                class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-3 py-2">
+                <option>Stock Status</option>
+                <option>In Stock</option>
+                <option>Low Stock</option>
+                <option>Out of Stock</option>
+            </select>
+        </div>
+        <div class="relative">
+            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" placeholder="Search by name or code..."
+                class="pl-9 pr-4 py-2 w-64 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon">
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div
+        class="bg-white dark:bg-dark-panel rounded-b-2xl border border-slate-100 dark:border-dark-border overflow-hidden overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr
+                    class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 dark:border-dark-border">
+                    <th class="p-4 font-semibold w-10">
+                        <input type="checkbox"
+                            class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon">
+                    </th>
+                    <th class="p-4 font-semibold">Product</th>
+                    <th class="p-4 font-semibold">Product Code</th>
+                    <th class="p-4 font-semibold">Category</th>
+                    <th class="p-4 font-semibold">Price</th>
+                    <th class="p-4 font-semibold">Stock</th>
+                    <th class="p-4 font-semibold text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-dark-border">
+                <!-- Row 1 -->
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
+                    <td class="p-4">
+                        <input type="checkbox"
+                            class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon">
+                    </td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-16 rounded bg-slate-100 overflow-hidden">
+                                <img src="../assets/slide11.png" class="w-full h-full object-cover" alt="Saree">
+                            </div>
+                            <div>
+                                <p
+                                    class="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-brand-maroon transition-colors cursor-pointer">
+                                    Royal Maroon Paithani</p>
+                                <p class="text-xs text-slate-500">Pure Silk</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300">SBB-PT-001</td>
+                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300"><span
+                            class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">Paithani</span>
+                    </td>
+                    <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">₹24,500</td>
+                    <td class="p-4">
+                        <span
+                            class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 14 in stock
+                        </span>
+                    </td>
+                    <td class="p-4 text-right">
+                        <button class="text-slate-400 hover:text-brand-maroon p-1"><i
+                                class="ph ph-pencil-simple text-lg"></i></button>
+                        <button class="text-slate-400 hover:text-red-500 p-1"><i
+                                class="ph ph-trash text-lg"></i></button>
+                    </td>
+                </tr>
+                <!-- Row 2 -->
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
+                    <td class="p-4">
+                        <input type="checkbox"
+                            class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon">
+                    </td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-12 h-16 rounded bg-slate-100 overflow-hidden flex items-center justify-center text-slate-300">
+                                <i class="ph ph-image text-2xl"></i>
+                            </div>
+                            <div>
+                                <p
+                                    class="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-brand-maroon transition-colors cursor-pointer">
+                                    Emerald Banarasi</p>
+                                <p class="text-xs text-slate-500">Zari Work</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300">SBB-BN-042</td>
+                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300"><span
+                            class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">Banarasi</span>
+                    </td>
+                    <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">₹18,900</td>
+                    <td class="p-4">
+                        <span
+                            class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> 2 in stock
+                        </span>
+                    </td>
+                    <td class="p-4 text-right">
+                        <button class="text-slate-400 hover:text-brand-maroon p-1"><i
+                                class="ph ph-pencil-simple text-lg"></i></button>
+                        <button class="text-slate-400 hover:text-red-500 p-1"><i
+                                class="ph ph-trash text-lg"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div
+            class="px-4 py-3 border-t border-slate-100 dark:border-dark-border flex items-center justify-between bg-slate-50 dark:bg-slate-800/30">
+            <p class="text-xs text-slate-500">Showing 1 to 2 of 45 products</p>
+            <div class="flex gap-1">
+                <button
+                    class="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-dark-panel text-slate-400 cursor-not-allowed">Prev</button>
+                <button class="px-3 py-1 rounded border border-brand-maroon bg-brand-maroon text-white">1</button>
+                <button
+                    class="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-dark-panel text-slate-600 hover:bg-slate-50">2</button>
+                <button
+                    class="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-dark-panel text-slate-600 hover:bg-slate-50">Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="addProductModal"
+    class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div
+        class="bg-white dark:bg-dark-panel w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+
+        <div
+            class="p-6 border-b border-slate-100 dark:border-dark-border flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <i class="ph ph-t-shirt text-brand-maroon"></i> Add New Product
+            </h3>
+            <button onclick="closeAddProductModal()"
+                class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 transition-colors">
+                <i class="ph ph-x text-lg"></i>
+            </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
+            <form id="addProductForm" class="space-y-5">
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product Name
+                        *</label>
+                    <input type="text" id="prodName" required placeholder="e.g. Royal Maroon Paithani"
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                </div>
+
+                <div class="grid grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product
+                            Code *</label>
+                        <input type="text" id="prodCode" required placeholder="e.g. SBB-001"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Category
+                            *</label>
+                        <select id="prodCategory" required
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="Paithani">Paithani</option>
+                            <option value="Banarasi">Banarasi</option>
+                            <option value="Kanjivaram">Kanjivaram</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Price (₹)
+                            *</label>
+                        <input type="number" id="prodPrice" required min="0" placeholder="0.00"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Stock
+                            Quantity *</label>
+                        <input type="number" id="prodStock" required min="0" placeholder="0"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Short
+                        Description</label>
+                    <textarea id="prodDesc" rows="3" placeholder="Write a short engaging description..."
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white custom-scrollbar"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product Image
+                        URL</label>
+                    <input type="text" id="prodImage" placeholder="e.g. https://example.com/image.jpg"
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon text-slate-800 dark:text-white">
+                </div>
+            </form>
+        </div>
+
+        <div
+            class="p-6 border-t border-slate-100 dark:border-dark-border bg-slate-50 dark:bg-slate-800/50 flex justify-end gap-3">
+            <button type="button" onclick="closeAddProductModal()"
+                class="px-5 py-2.5 rounded-xl font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Cancel</button>
+            <button type="button" onclick="submitNewProduct()"
+                class="px-5 py-2.5 rounded-xl font-medium bg-brand-maroon hover:bg-brand-maroonLight text-white shadow-lg shadow-brand-maroon/30 transition-all flex items-center gap-2">
+                <i class="ph ph-check-circle"></i> Save Product
+            </button>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
