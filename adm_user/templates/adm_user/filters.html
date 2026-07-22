@@ -25,6 +25,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
                 id="colorFormTitle">Add New Color</h3>
             <form id="colorForm" onsubmit="handleColorSubmit(event)" class="flex flex-col md:flex-row items-end gap-4">
+                {% csrf_token %}
                 <div class="flex-1 w-full">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Color
                         Name <span class="text-red-500">*</span></label>
@@ -87,6 +88,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                 id="fabricFormTitle">Add New Fabric</h3>
             <form id="fabricForm" onsubmit="handleFabricSubmit(event)"
                 class="flex flex-col md:flex-row items-end gap-4">
+                {% csrf_token %}
                 <div class="flex-1 w-full">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fabric
                         Name <span class="text-red-500">*</span></label>
@@ -135,6 +137,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
                 id="printFormTitle">Add New Print</h3>
             <form id="printForm" onsubmit="handlePrintSubmit(event)" class="flex flex-col md:flex-row items-end gap-4">
+                {% csrf_token %}
                 <div class="flex-1 w-full">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Print
                         Name <span class="text-red-500">*</span></label>
