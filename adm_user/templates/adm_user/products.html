@@ -238,20 +238,29 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                 </div>
             </div>
 
-            <!-- Attributes -->
+            <!-- Attributes & Variants (Amazon Style) -->
             <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                    <i class="ph ph-tag text-brand-maroon"></i> Attributes & Filters
+                    <i class="ph ph-palette text-brand-maroon"></i> Color Variants & Media
                 </h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Available Colours</label>
-                        <input type="text" id="prodColors" placeholder="e.g. Red, Gold, Green" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Search Filters / Tags</label>
-                        <input type="text" id="prodFilters" placeholder="e.g. Wedding, Pure Silk" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
-                    </div>
+                <p class="text-xs text-slate-500 mb-5">Amazon-style variants: Add a color below to upload specific images, manage stock, and set pricing for that specific variant.</p>
+                
+                <!-- Add Color Input -->
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="newColorName" placeholder="e.g. Royal Red, Emerald Green..." class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon focus:border-brand-maroon dark:text-white">
+                    <button type="button" onclick="addColorVariant()" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                        <i class="ph ph-plus"></i> Add Color Variant
+                    </button>
+                </div>
+
+                <!-- Variants Container -->
+                <div id="variantsContainer" class="space-y-4">
+                    <!-- Dynamic variants will be injected here via JS -->
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-slate-100 dark:border-dark-border">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Search Filters / Tags</label>
+                    <input type="text" id="prodFilters" placeholder="e.g. Wedding, Pure Silk, Party Wear (comma separated)" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
                 </div>
             </div>
         </div>
@@ -261,8 +270,9 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             <!-- Media -->
             <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                    <i class="ph ph-image text-brand-maroon"></i> Product Images
+                    <i class="ph ph-image text-brand-maroon"></i> Default Images
                 </h3>
+                <p class="text-xs text-slate-500 mb-4">These images will show if no specific color is selected.</p>
                 
                 <div class="border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-6 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors">
                     <div class="w-12 h-12 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center mx-auto mb-3">
@@ -406,5 +416,66 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             renderProductsTable(productsDB);
         }
     };
+    
+    // Amazon-style Dynamic Variant Manager
+    window.addColorVariant = function() {
+        const input = document.getElementById('newColorName');
+        const color = input.value.trim();
+        if(!color) return;
+        
+        const variantId = 'var_' + Date.now();
+        const container = document.getElementById('variantsContainer');
+        
+        const html = `
+        <div id="${variantId}" class="border border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-slate-50/50 dark:bg-slate-800/30 relative group">
+            <button type="button" onclick="document.getElementById('${variantId}').remove()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-dark-panel border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 shadow-sm transition-colors">
+                <i class="ph ph-trash text-lg"></i>
+            </button>
+            
+            <h4 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-3">
+                <div class="w-5 h-5 rounded-full shadow-inner border border-slate-200 dark:border-slate-600 flex items-center justify-center bg-white"><i class="ph ph-drop text-xs text-brand-maroon"></i></div> 
+                ${color} Variant
+            </h4>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Variant Specific Details -->
+                <div class="lg:col-span-1 space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Stock for ${color}</label>
+                        <input type="number" placeholder="0" class="w-full bg-white dark:bg-dark-panel border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Specific Price (Optional)</label>
+                        <input type="number" placeholder="Leave blank for base" class="w-full bg-white dark:bg-dark-panel border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white shadow-sm">
+                    </div>
+                </div>
+                
+                <!-- Variant Specific Images -->
+                <div class="lg:col-span-2">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Upload Images exactly for ${color}</label>
+                    <div class="flex gap-3 overflow-x-auto custom-scrollbar pb-2 items-center">
+                        <!-- Upload Button -->
+                        <div class="w-24 h-24 flex-shrink-0 border-2 border-dashed border-brand-maroon/40 rounded-xl flex flex-col items-center justify-center text-brand-maroon cursor-pointer hover:bg-brand-maroon/5 transition-colors bg-white dark:bg-dark-panel shadow-sm">
+                            <i class="ph ph-upload-simple text-xl mb-1"></i>
+                            <span class="text-[10px] font-semibold tracking-wide uppercase">Add</span>
+                        </div>
+                        
+                        <!-- Example Placeholder (Visual only) -->
+                        <div class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 flex flex-col items-center justify-center text-slate-400 relative group/img overflow-hidden shadow-sm">
+                            <i class="ph ph-image text-2xl mb-1 opacity-50"></i>
+                            <span class="text-[9px] opacity-50">Preview</span>
+                            <div class="absolute inset-0 bg-slate-900/60 hidden group-hover/img:flex items-center justify-center backdrop-blur-sm transition-all">
+                                <button type="button" class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="ph ph-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', html);
+        input.value = '';
+    }
 </script>
 {% endblock %}
