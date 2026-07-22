@@ -534,14 +534,14 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             const reader = new FileReader();
             reader.onload = function(e) {
                 const imgId = 'img_' + Date.now() + Math.random().toString(36).substr(2, 5);
-                const html = \`
-                    <div id="\${imgId}" class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 relative group overflow-hidden shadow-sm">
-                        <img src="\${e.target.result}" class="w-full h-full object-cover">
+                const html = `
+                    <div id="${imgId}" class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 relative group overflow-hidden shadow-sm">
+                        <img src="${e.target.result}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-slate-900/60 hidden group-hover:flex items-center justify-center backdrop-blur-sm transition-all">
-                            <button type="button" onclick="document.getElementById('\${imgId}').remove()" class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="ph ph-trash"></i></button>
+                            <button type="button" onclick="document.getElementById('${imgId}').remove()" class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="ph ph-trash"></i></button>
                         </div>
                     </div>
-                \`;
+                `;
                 container.insertAdjacentHTML('beforeend', html);
             }
             reader.readAsDataURL(file);
