@@ -128,6 +128,7 @@ class Color(SlugMixin, TimeStampedModel):
             models.UniqueConstraint(
                 Lower("name"),
                 name="unique_color_name_ci",
+                violation_error_message="This color already exists.",
             ),
         ]
 
@@ -146,6 +147,7 @@ class Fabric(SlugMixin, TimeStampedModel):
             models.UniqueConstraint(
                 Lower("name"),
                 name="unique_fabric_name_ci",
+                violation_error_message="This color already exists.",
             ),
         ]
 
@@ -164,6 +166,7 @@ class Print(SlugMixin, TimeStampedModel):
             models.UniqueConstraint(
                 Lower("name"),
                 name="unique_print_name_ci",
+                violation_error_message="This color already exists.",
             ),
         ]
 

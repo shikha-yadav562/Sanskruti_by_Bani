@@ -185,23 +185,53 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
     let fabricsDB = [];
     let printsDB = [];
 
-    function loadFiltersData() {
-        const savedColors = localStorage.getItem('sbb_colors');
-        colorsDB = savedColors ? JSON.parse(savedColors) : [];
+    const COLOR_LIST_URL = "{% url 'adm_user:color_list_create' %}";
+    const FABRIC_LIST_URL = "{% url 'adm_user:fabric_list_create' %}";
+    const PRINT_LIST_URL = "{% url 'adm_user:print_list_create' %}";
 
-        const savedFabrics = localStorage.getItem('sbb_fabrics');
-        fabricsDB = savedFabrics ? JSON.parse(savedFabrics) : [];
+    // ==========================================
+    // API HELPERS
+    // ==========================================
 
-        const savedPrints = localStorage.getItem('sbb_prints');
-        printsDB = savedPrints ? JSON.parse(savedPrints) : [];
+    function getCookie(name) {
+        const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return match ? match.pop() : '';
+    }
+    const CSRF_TOKEN = getCookie('csrftoken');
+
+    async function apiRequest(url, options = {}) {
+        const resp = await fetch(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN,
+            },
+            ...options,
+        });
+        let data = null;
+        try { data = await resp.json(); } catch (e) { /* e.g. 204/empty body */ }
+        if (!resp.ok) {
+            throw new Error((data && data.error) || `Request failed (${resp.status})`);
+        }
+        return data;
     }
 
-    function saveColors() { localStorage.setItem('sbb_colors', JSON.stringify(colorsDB)); }
-    function saveFabrics() { localStorage.setItem('sbb_fabrics', JSON.stringify(fabricsDB)); }
-    function savePrints() { localStorage.setItem('sbb_prints', JSON.stringify(printsDB)); }
+    async function loadFiltersData() {
+        const [colors, fabrics, prints] = await Promise.all([
+            apiRequest(COLOR_LIST_URL),
+            apiRequest(FABRIC_LIST_URL),
+            apiRequest(PRINT_LIST_URL),
+        ]);
+        colorsDB = colors.colors;
+        fabricsDB = fabrics.fabrics;
+        printsDB = prints.prints;
+    }
 
-    function initPageModule() {
-        loadFiltersData();
+    async function initPageModule() {
+        try {
+            await loadFiltersData();
+        } catch (e) {
+            alert('Could not load filters: ' + e.message);
+        }
         renderColors();
         renderFabrics();
         renderPrints();
@@ -228,59 +258,69 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             row.className = "hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group border-b border-slate-100 dark:border-dark-border last:border-0";
             row.innerHTML = `
             <td class="p-4 font-bold text-slate-800 dark:text-white">${i + 1}</td>
-            <td class="p-4"><div class="w-8 h-8 rounded-full border border-slate-200 shadow-sm" style="background-color:${c.hex};"></div></td>
+            <td class="p-4"><div class="w-8 h-8 rounded-full border border-slate-200 shadow-sm" style="background-color:${c.hex_code};"></div></td>
             <td class="p-4 text-slate-700 dark:text-slate-300">${c.name}</td>
             <td class="p-4">
                 <div class="flex justify-center gap-3">
-                    <button onclick="editColor(${i})" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/20 font-medium text-xs transition-colors">Edit</button>
-                    <button onclick="deleteColor(${i})" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 font-medium text-xs transition-colors">Delete</button>
+                    <button onclick="editColor(${c.id})" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/20 font-medium text-xs transition-colors">Edit</button>
+                    <button onclick="deleteColor(${c.id})" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 font-medium text-xs transition-colors">Delete</button>
                 </div>
             </td>`;
             tbody.appendChild(row);
         });
     }
 
-    window.handleColorSubmit = function (e) {
+    window.handleColorSubmit = async function (e) {
         e.preventDefault();
         const name = document.getElementById("colorName").value.trim();
-        const hex = document.getElementById("colorPicker").value;
-        const idx = parseInt(document.getElementById("colorEditIndex").value);
+        const hex_code = document.getElementById("colorPicker").value;
+        const editId = document.getElementById("colorEditIndex").value;
 
         if (!name) return;
 
-        if (idx === -1) {
-            if (colorsDB.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-                alert("This color already exists!"); return;
+        try {
+            if (editId === "-1") {
+                await apiRequest(COLOR_LIST_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ name, hex_code }),
+                });
+            } else {
+                await apiRequest(`${COLOR_LIST_URL}${editId}/update/`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ name, hex_code }),
+                });
             }
-            colorsDB.push({ name, hex });
-        } else {
-            if (colorsDB.some((c, i) => i !== idx && c.name.toLowerCase() === name.toLowerCase())) {
-                alert("Another color shares this name!"); return;
-            }
-            colorsDB[idx] = { name, hex };
+            await loadFiltersData();
+            resetColorForm();
+            renderColors();
+        } catch (err) {
+            alert(err.message);
         }
-        saveColors();
-        resetColorForm();
-        renderColors();
     };
 
-    window.editColor = function (i) {
-        document.getElementById("colorName").value = colorsDB[i].name;
-        document.getElementById("colorPicker").value = colorsDB[i].hex;
+    window.editColor = function (id) {
+        const c = colorsDB.find(c => c.id === id);
+        if (!c) return;
+        document.getElementById("colorName").value = c.name;
+        document.getElementById("colorPicker").value = c.hex_code;
         updateColorPreview();
-        document.getElementById("colorEditIndex").value = i;
+        document.getElementById("colorEditIndex").value = id;
         document.getElementById("colorFormTitle").textContent = "Modify Color Entry";
         document.getElementById("colorSubmitBtn").innerHTML = "Update Color";
         document.getElementById("colorCancelBtn").classList.remove("hidden");
         document.getElementById("colorName").focus();
     };
 
-    window.deleteColor = function (i) {
-        if (confirm(`Delete "${colorsDB[i].name}"?`)) {
-            colorsDB.splice(i, 1);
-            saveColors();
+    window.deleteColor = async function (id) {
+        const c = colorsDB.find(c => c.id === id);
+        if (!c || !confirm(`Delete "${c.name}"?`)) return;
+        try {
+            await apiRequest(`${COLOR_LIST_URL}${id}/delete/`, { method: 'DELETE' });
+            await loadFiltersData();
             resetColorForm();
             renderColors();
+        } catch (err) {
+            alert(err.message);
         }
     };
 
@@ -310,55 +350,65 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             row.className = "hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group border-b border-slate-100 dark:border-dark-border last:border-0";
             row.innerHTML = `
             <td class="p-4 font-bold text-slate-800 dark:text-white">${i + 1}</td>
-            <td class="p-4 text-slate-700 dark:text-slate-300">${f}</td>
+            <td class="p-4 text-slate-700 dark:text-slate-300">${f.name}</td>
             <td class="p-4">
                 <div class="flex justify-center gap-3">
-                    <button onclick="editFabric(${i})" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/20 font-medium text-xs transition-colors">Edit</button>
-                    <button onclick="deleteFabric(${i})" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 font-medium text-xs transition-colors">Delete</button>
+                    <button onclick="editFabric(${f.id})" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/20 font-medium text-xs transition-colors">Edit</button>
+                    <button onclick="deleteFabric(${f.id})" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 font-medium text-xs transition-colors">Delete</button>
                 </div>
             </td>`;
             tbody.appendChild(row);
         });
     }
 
-    window.handleFabricSubmit = function (e) {
+    window.handleFabricSubmit = async function (e) {
         e.preventDefault();
         const name = document.getElementById("fabricName").value.trim();
-        const idx = parseInt(document.getElementById("fabricEditIndex").value);
+        const editId = document.getElementById("fabricEditIndex").value;
 
         if (!name) return;
 
-        if (idx === -1) {
-            if (fabricsDB.some(f => f.toLowerCase() === name.toLowerCase())) {
-                alert("This fabric already exists!"); return;
+        try {
+            if (editId === "-1") {
+                await apiRequest(FABRIC_LIST_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ name }),
+                });
+            } else {
+                await apiRequest(`${FABRIC_LIST_URL}${editId}/update/`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ name }),
+                });
             }
-            fabricsDB.push(name);
-        } else {
-            if (fabricsDB.some((f, i) => i !== idx && f.toLowerCase() === name.toLowerCase())) {
-                alert("Another fabric shares this name!"); return;
-            }
-            fabricsDB[idx] = name;
+            await loadFiltersData();
+            resetFabricForm();
+            renderFabrics();
+        } catch (err) {
+            alert(err.message);
         }
-        saveFabrics();
-        resetFabricForm();
-        renderFabrics();
     };
 
-    window.editFabric = function (i) {
-        document.getElementById("fabricName").value = fabricsDB[i];
-        document.getElementById("fabricEditIndex").value = i;
+    window.editFabric = function (id) {
+        const f = fabricsDB.find(f => f.id === id);
+        if (!f) return;
+        document.getElementById("fabricName").value = f.name;
+        document.getElementById("fabricEditIndex").value = id;
         document.getElementById("fabricFormTitle").textContent = "Modify Fabric Entry";
         document.getElementById("fabricSubmitBtn").innerHTML = "Update Fabric";
         document.getElementById("fabricCancelBtn").classList.remove("hidden");
         document.getElementById("fabricName").focus();
     };
 
-    window.deleteFabric = function (i) {
-        if (confirm(`Delete "${fabricsDB[i]}"?`)) {
-            fabricsDB.splice(i, 1);
-            saveFabrics();
+    window.deleteFabric = async function (id) {
+        const f = fabricsDB.find(f => f.id === id);
+        if (!f || !confirm(`Delete "${f.name}"?`)) return;
+        try {
+            await apiRequest(`${FABRIC_LIST_URL}${id}/delete/`, { method: 'DELETE' });
+            await loadFiltersData();
             resetFabricForm();
             renderFabrics();
+        } catch (err) {
+            alert(err.message);
         }
     };
 
@@ -386,55 +436,65 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             row.className = "hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group border-b border-slate-100 dark:border-dark-border last:border-0";
             row.innerHTML = `
             <td class="p-4 font-bold text-slate-800 dark:text-white">${i + 1}</td>
-            <td class="p-4 text-slate-700 dark:text-slate-300">${p}</td>
+            <td class="p-4 text-slate-700 dark:text-slate-300">${p.name}</td>
             <td class="p-4">
                 <div class="flex justify-center gap-3">
-                    <button onclick="editPrint(${i})" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/20 font-medium text-xs transition-colors">Edit</button>
-                    <button onclick="deletePrint(${i})" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 font-medium text-xs transition-colors">Delete</button>
+                    <button onclick="editPrint(${p.id})" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/20 font-medium text-xs transition-colors">Edit</button>
+                    <button onclick="deletePrint(${p.id})" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 font-medium text-xs transition-colors">Delete</button>
                 </div>
             </td>`;
             tbody.appendChild(row);
         });
     }
 
-    window.handlePrintSubmit = function (e) {
+    window.handlePrintSubmit = async function (e) {
         e.preventDefault();
         const name = document.getElementById("printName").value.trim();
-        const idx = parseInt(document.getElementById("printEditIndex").value);
+        const editId = document.getElementById("printEditIndex").value;
 
         if (!name) return;
 
-        if (idx === -1) {
-            if (printsDB.some(p => p.toLowerCase() === name.toLowerCase())) {
-                alert("This print already exists!"); return;
+        try {
+            if (editId === "-1") {
+                await apiRequest(PRINT_LIST_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ name }),
+                });
+            } else {
+                await apiRequest(`${PRINT_LIST_URL}${editId}/update/`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ name }),
+                });
             }
-            printsDB.push(name);
-        } else {
-            if (printsDB.some((p, i) => i !== idx && p.toLowerCase() === name.toLowerCase())) {
-                alert("Another print shares this name!"); return;
-            }
-            printsDB[idx] = name;
+            await loadFiltersData();
+            resetPrintForm();
+            renderPrints();
+        } catch (err) {
+            alert(err.message);
         }
-        savePrints();
-        resetPrintForm();
-        renderPrints();
     };
 
-    window.editPrint = function (i) {
-        document.getElementById("printName").value = printsDB[i];
-        document.getElementById("printEditIndex").value = i;
+    window.editPrint = function (id) {
+        const p = printsDB.find(p => p.id === id);
+        if (!p) return;
+        document.getElementById("printName").value = p.name;
+        document.getElementById("printEditIndex").value = id;
         document.getElementById("printFormTitle").textContent = "Modify Print Entry";
         document.getElementById("printSubmitBtn").innerHTML = "Update Print";
         document.getElementById("printCancelBtn").classList.remove("hidden");
         document.getElementById("printName").focus();
     };
 
-    window.deletePrint = function (i) {
-        if (confirm(`Delete "${printsDB[i]}"?`)) {
-            printsDB.splice(i, 1);
-            savePrints();
+    window.deletePrint = async function (id) {
+        const p = printsDB.find(p => p.id === id);
+        if (!p || !confirm(`Delete "${p.name}"?`)) return;
+        try {
+            await apiRequest(`${PRINT_LIST_URL}${id}/delete/`, { method: 'DELETE' });
+            await loadFiltersData();
             resetPrintForm();
             renderPrints();
+        } catch (err) {
+            alert(err.message);
         }
     };
 
