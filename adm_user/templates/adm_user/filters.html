@@ -2,196 +2,448 @@
 {% load static %}
 {% block title %}Add Filters - Sanskruti by Bani{% endblock %}
 {% block page_title %}Add Filters{% endblock %}
-{% block nav_class_dashboard %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}
-{% block nav_class_filters %}nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-brand-maroon bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium transition-colors{% endblock %}
+{% block nav_class_dashboard %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600
+dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold
+font-medium transition-colors{% endblock %}
+{% block nav_class_filters %}nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-brand-maroon
+bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium transition-colors{% endblock %}
 
 {% block content %}
-                <section id="view-filters" class="view-section flex-col gap-8">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Add Filters</h2>
-                            <p class="text-slate-500 dark:text-slate-400 mt-1">Manage global product filters like
-                                Colors, Fabrics, and Prints</p>
-                        </div>
-                    </div>
+<section id="view-filters" class="view-section flex-col gap-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Add Filters</h2>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Manage global product filters like
+                Colors, Fabrics, and Prints</p>
+        </div>
+    </div>
 
-                    <!-- 1. COLORS -->
-                    <div class="space-y-4">
-                        <div
-                            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
-                            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
-                                id="colorFormTitle">Add New Color</h3>
-                            <form id="colorForm" onsubmit="handleColorSubmit(event)"
-                                class="flex flex-col md:flex-row items-end gap-4">
-                                <div class="flex-1 w-full">
-                                    <label
-                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Color
-                                        Name <span class="text-red-500">*</span></label>
-                                    <input type="text" id="colorName" placeholder="e.g. Royal Blue, Ivory" required
-                                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
-                                </div>
-                                <div class="w-full md:w-auto">
-                                    <label
-                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Pick
-                                        Color</label>
-                                    <div
-                                        class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 h-[42px]">
-                                        <div id="colorPreview"
-                                            class="w-6 h-6 rounded-full border border-slate-200 shadow-sm"
-                                            style="background-color: #c0392b;"></div>
-                                        <input type="color" id="colorPicker" value="#c0392b"
-                                            oninput="updateColorPreview()"
-                                            class="w-6 h-6 cursor-pointer border-0 bg-transparent p-0">
-                                    </div>
-                                </div>
-                                <input type="hidden" id="colorEditIndex" value="-1">
-                                <div class="flex gap-2 w-full md:w-auto">
-                                    <button type="button" id="colorCancelBtn" onclick="resetColorForm()"
-                                        class="hidden px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors w-full md:w-auto">Cancel</button>
-                                    <button type="submit" id="colorSubmitBtn"
-                                        class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-md w-full md:w-auto flex items-center justify-center gap-2">
-                                        <i class="ph ph-plus"></i> Add Color
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <div
-                            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
-                            <div class="p-5 border-b border-slate-100 dark:border-dark-border">
-                                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Existing Colors</h3>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse min-w-[500px]">
-                                    <thead>
-                                        <tr
-                                            class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
-                                            <th
-                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">
-                                                Sr. No.</th>
-                                            <th
-                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-24">
-                                                Color</th>
-                                            <th
-                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                                Color Name</th>
-                                            <th
-                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center w-48">
-                                                Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="colorTableBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
+    <!-- 1. COLORS -->
+    <div class="space-y-4">
+        <div
+            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
+                id="colorFormTitle">Add New Color</h3>
+            <form id="colorForm" onsubmit="handleColorSubmit(event)" class="flex flex-col md:flex-row items-end gap-4">
+                <div class="flex-1 w-full">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Color
+                        Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="colorName" placeholder="e.g. Royal Blue, Ivory" required
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                </div>
+                <div class="w-full md:w-auto">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Pick
+                        Color</label>
+                    <div
+                        class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 h-[42px]">
+                        <div id="colorPreview" class="w-6 h-6 rounded-full border border-slate-200 shadow-sm"
+                            style="background-color: #c0392b;"></div>
+                        <input type="color" id="colorPicker" value="#c0392b" oninput="updateColorPreview()"
+                            class="w-6 h-6 cursor-pointer border-0 bg-transparent p-0">
                     </div>
+                </div>
+                <input type="hidden" id="colorEditIndex" value="-1">
+                <div class="flex gap-2 w-full md:w-auto">
+                    <button type="button" id="colorCancelBtn" onclick="resetColorForm()"
+                        class="hidden px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors w-full md:w-auto">Cancel</button>
+                    <button type="submit" id="colorSubmitBtn"
+                        class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-md w-full md:w-auto flex items-center justify-center gap-2">
+                        <i class="ph ph-plus"></i> Add Color
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100 dark:border-dark-border">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Existing Colors</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[500px]">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">
+                                Sr. No.</th>
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-24">
+                                Color</th>
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                Color Name</th>
+                            <th
+                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center w-48">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="colorTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-                    <!-- 2. FABRICS -->
-                    <div class="space-y-4">
-                        <div
-                            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
-                            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
-                                id="fabricFormTitle">Add New Fabric</h3>
-                            <form id="fabricForm" onsubmit="handleFabricSubmit(event)"
-                                class="flex flex-col md:flex-row items-end gap-4">
-                                <div class="flex-1 w-full">
-                                    <label
-                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fabric
-                                        Name <span class="text-red-500">*</span></label>
-                                    <input type="text" id="fabricName" placeholder="e.g. Pure Silk, Chiffon, Cotton"
-                                        required
-                                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
-                                </div>
-                                <input type="hidden" id="fabricEditIndex" value="-1">
-                                <div class="flex gap-2 w-full md:w-auto">
-                                    <button type="button" id="fabricCancelBtn" onclick="resetFabricForm()"
-                                        class="hidden px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors w-full md:w-auto">Cancel</button>
-                                    <button type="submit" id="fabricSubmitBtn"
-                                        class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-md w-full md:w-auto flex items-center justify-center gap-2">
-                                        <i class="ph ph-plus"></i> Add Fabric
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <div
-                            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
-                            <div class="p-5 border-b border-slate-100 dark:border-dark-border">
-                                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Existing Fabrics</h3>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse min-w-[500px]">
-                                    <thead>
-                                        <tr
-                                            class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
-                                            <th
-                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">
-                                                Sr. No.</th>
-                                            <th
-                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                                Fabric Name</th>
-                                            <th
-                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center w-48">
-                                                Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="fabricTableBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+    <!-- 2. FABRICS -->
+    <div class="space-y-4">
+        <div
+            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
+                id="fabricFormTitle">Add New Fabric</h3>
+            <form id="fabricForm" onsubmit="handleFabricSubmit(event)"
+                class="flex flex-col md:flex-row items-end gap-4">
+                <div class="flex-1 w-full">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fabric
+                        Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="fabricName" placeholder="e.g. Pure Silk, Chiffon, Cotton" required
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                </div>
+                <input type="hidden" id="fabricEditIndex" value="-1">
+                <div class="flex gap-2 w-full md:w-auto">
+                    <button type="button" id="fabricCancelBtn" onclick="resetFabricForm()"
+                        class="hidden px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors w-full md:w-auto">Cancel</button>
+                    <button type="submit" id="fabricSubmitBtn"
+                        class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-md w-full md:w-auto flex items-center justify-center gap-2">
+                        <i class="ph ph-plus"></i> Add Fabric
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100 dark:border-dark-border">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Existing Fabrics</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[500px]">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">
+                                Sr. No.</th>
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                Fabric Name</th>
+                            <th
+                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center w-48">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fabricTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-                    <!-- 3. PRINTS -->
-                    <div class="space-y-4">
-                        <div
-                            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
-                            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
-                                id="printFormTitle">Add New Print</h3>
-                            <form id="printForm" onsubmit="handlePrintSubmit(event)"
-                                class="flex flex-col md:flex-row items-end gap-4">
-                                <div class="flex-1 w-full">
-                                    <label
-                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Print
-                                        Name <span class="text-red-500">*</span></label>
-                                    <input type="text" id="printName" placeholder="e.g. Floral, Paisley, Geometric"
-                                        required
-                                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
-                                </div>
-                                <input type="hidden" id="printEditIndex" value="-1">
-                                <div class="flex gap-2 w-full md:w-auto">
-                                    <button type="button" id="printCancelBtn" onclick="resetPrintForm()"
-                                        class="hidden px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors w-full md:w-auto">Cancel</button>
-                                    <button type="submit" id="printSubmitBtn"
-                                        class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-md w-full md:w-auto flex items-center justify-center gap-2">
-                                        <i class="ph ph-plus"></i> Add Print
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <div
-                            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
-                            <div class="p-5 border-b border-slate-100 dark:border-dark-border">
-                                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Existing Prints</h3>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse min-w-[500px]">
-                                    <thead>
-                                        <tr
-                                            class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
-                                            <th
-                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">
-                                                Sr. No.</th>
-                                            <th
-                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                                Print Name</th>
-                                            <th
-                                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center w-48">
-                                                Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="printTableBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+    <!-- 3. PRINTS -->
+    <div class="space-y-4">
+        <div
+            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
+                id="printFormTitle">Add New Print</h3>
+            <form id="printForm" onsubmit="handlePrintSubmit(event)" class="flex flex-col md:flex-row items-end gap-4">
+                <div class="flex-1 w-full">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Print
+                        Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="printName" placeholder="e.g. Floral, Paisley, Geometric" required
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                </div>
+                <input type="hidden" id="printEditIndex" value="-1">
+                <div class="flex gap-2 w-full md:w-auto">
+                    <button type="button" id="printCancelBtn" onclick="resetPrintForm()"
+                        class="hidden px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors w-full md:w-auto">Cancel</button>
+                    <button type="submit" id="printSubmitBtn"
+                        class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-md w-full md:w-auto flex items-center justify-center gap-2">
+                        <i class="ph ph-plus"></i> Add Print
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100 dark:border-dark-border">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Existing Prints</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[500px]">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">
+                                Sr. No.</th>
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                Print Name</th>
+                            <th
+                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center w-48">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="printTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
 
+{% block extra_scripts %}
+<script>
+
+    let colorsDB = [];
+    let fabricsDB = [];
+    let printsDB = [];
+
+    function loadFiltersData() {
+        const savedColors = localStorage.getItem('sbb_colors');
+        colorsDB = savedColors ? JSON.parse(savedColors) : [];
+
+        const savedFabrics = localStorage.getItem('sbb_fabrics');
+        fabricsDB = savedFabrics ? JSON.parse(savedFabrics) : [];
+
+        const savedPrints = localStorage.getItem('sbb_prints');
+        printsDB = savedPrints ? JSON.parse(savedPrints) : [];
+    }
+
+    function saveColors() { localStorage.setItem('sbb_colors', JSON.stringify(colorsDB)); }
+    function saveFabrics() { localStorage.setItem('sbb_fabrics', JSON.stringify(fabricsDB)); }
+    function savePrints() { localStorage.setItem('sbb_prints', JSON.stringify(printsDB)); }
+
+    function initPageModule() {
+        loadFiltersData();
+        renderColors();
+        renderFabrics();
+        renderPrints();
+    }
+
+    // ==========================================
+    // COLORS
+    // ==========================================
+    window.updateColorPreview = function () {
+        const hex = document.getElementById("colorPicker").value;
+        document.getElementById("colorPreview").style.backgroundColor = hex;
+    };
+
+    function renderColors() {
+        const tbody = document.getElementById("colorTableBody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        if (colorsDB.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-500 italic">No colors added yet. Add your first above!</td></tr>`;
+            return;
+        }
+        colorsDB.forEach((c, i) => {
+            const row = document.createElement("tr");
+            row.className = "hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group border-b border-slate-100 dark:border-dark-border last:border-0";
+            row.innerHTML = `
+            <td class="p-4 font-bold text-slate-800 dark:text-white">${i + 1}</td>
+            <td class="p-4"><div class="w-8 h-8 rounded-full border border-slate-200 shadow-sm" style="background-color:${c.hex};"></div></td>
+            <td class="p-4 text-slate-700 dark:text-slate-300">${c.name}</td>
+            <td class="p-4">
+                <div class="flex justify-center gap-3">
+                    <button onclick="editColor(${i})" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/20 font-medium text-xs transition-colors">Edit</button>
+                    <button onclick="deleteColor(${i})" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 font-medium text-xs transition-colors">Delete</button>
+                </div>
+            </td>`;
+            tbody.appendChild(row);
+        });
+    }
+
+    window.handleColorSubmit = function (e) {
+        e.preventDefault();
+        const name = document.getElementById("colorName").value.trim();
+        const hex = document.getElementById("colorPicker").value;
+        const idx = parseInt(document.getElementById("colorEditIndex").value);
+
+        if (!name) return;
+
+        if (idx === -1) {
+            if (colorsDB.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+                alert("This color already exists!"); return;
+            }
+            colorsDB.push({ name, hex });
+        } else {
+            if (colorsDB.some((c, i) => i !== idx && c.name.toLowerCase() === name.toLowerCase())) {
+                alert("Another color shares this name!"); return;
+            }
+            colorsDB[idx] = { name, hex };
+        }
+        saveColors();
+        resetColorForm();
+        renderColors();
+    };
+
+    window.editColor = function (i) {
+        document.getElementById("colorName").value = colorsDB[i].name;
+        document.getElementById("colorPicker").value = colorsDB[i].hex;
+        updateColorPreview();
+        document.getElementById("colorEditIndex").value = i;
+        document.getElementById("colorFormTitle").textContent = "Modify Color Entry";
+        document.getElementById("colorSubmitBtn").innerHTML = "Update Color";
+        document.getElementById("colorCancelBtn").classList.remove("hidden");
+        document.getElementById("colorName").focus();
+    };
+
+    window.deleteColor = function (i) {
+        if (confirm(`Delete "${colorsDB[i].name}"?`)) {
+            colorsDB.splice(i, 1);
+            saveColors();
+            resetColorForm();
+            renderColors();
+        }
+    };
+
+    window.resetColorForm = function () {
+        document.getElementById("colorName").value = "";
+        document.getElementById("colorPicker").value = "#c0392b";
+        updateColorPreview();
+        document.getElementById("colorEditIndex").value = "-1";
+        document.getElementById("colorFormTitle").textContent = "Add New Color";
+        document.getElementById("colorSubmitBtn").innerHTML = '<i class="ph ph-plus"></i> Add Color';
+        document.getElementById("colorCancelBtn").classList.add("hidden");
+    };
+
+    // ==========================================
+    // FABRICS
+    // ==========================================
+    function renderFabrics() {
+        const tbody = document.getElementById("fabricTableBody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        if (fabricsDB.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-500 italic">No fabrics added yet. Add your first above!</td></tr>`;
+            return;
+        }
+        fabricsDB.forEach((f, i) => {
+            const row = document.createElement("tr");
+            row.className = "hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group border-b border-slate-100 dark:border-dark-border last:border-0";
+            row.innerHTML = `
+            <td class="p-4 font-bold text-slate-800 dark:text-white">${i + 1}</td>
+            <td class="p-4 text-slate-700 dark:text-slate-300">${f}</td>
+            <td class="p-4">
+                <div class="flex justify-center gap-3">
+                    <button onclick="editFabric(${i})" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/20 font-medium text-xs transition-colors">Edit</button>
+                    <button onclick="deleteFabric(${i})" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 font-medium text-xs transition-colors">Delete</button>
+                </div>
+            </td>`;
+            tbody.appendChild(row);
+        });
+    }
+
+    window.handleFabricSubmit = function (e) {
+        e.preventDefault();
+        const name = document.getElementById("fabricName").value.trim();
+        const idx = parseInt(document.getElementById("fabricEditIndex").value);
+
+        if (!name) return;
+
+        if (idx === -1) {
+            if (fabricsDB.some(f => f.toLowerCase() === name.toLowerCase())) {
+                alert("This fabric already exists!"); return;
+            }
+            fabricsDB.push(name);
+        } else {
+            if (fabricsDB.some((f, i) => i !== idx && f.toLowerCase() === name.toLowerCase())) {
+                alert("Another fabric shares this name!"); return;
+            }
+            fabricsDB[idx] = name;
+        }
+        saveFabrics();
+        resetFabricForm();
+        renderFabrics();
+    };
+
+    window.editFabric = function (i) {
+        document.getElementById("fabricName").value = fabricsDB[i];
+        document.getElementById("fabricEditIndex").value = i;
+        document.getElementById("fabricFormTitle").textContent = "Modify Fabric Entry";
+        document.getElementById("fabricSubmitBtn").innerHTML = "Update Fabric";
+        document.getElementById("fabricCancelBtn").classList.remove("hidden");
+        document.getElementById("fabricName").focus();
+    };
+
+    window.deleteFabric = function (i) {
+        if (confirm(`Delete "${fabricsDB[i]}"?`)) {
+            fabricsDB.splice(i, 1);
+            saveFabrics();
+            resetFabricForm();
+            renderFabrics();
+        }
+    };
+
+    window.resetFabricForm = function () {
+        document.getElementById("fabricName").value = "";
+        document.getElementById("fabricEditIndex").value = "-1";
+        document.getElementById("fabricFormTitle").textContent = "Add New Fabric";
+        document.getElementById("fabricSubmitBtn").innerHTML = '<i class="ph ph-plus"></i> Add Fabric';
+        document.getElementById("fabricCancelBtn").classList.add("hidden");
+    };
+
+    // ==========================================
+    // PRINTS
+    // ==========================================
+    function renderPrints() {
+        const tbody = document.getElementById("printTableBody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        if (printsDB.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-500 italic">No prints added yet. Add your first above!</td></tr>`;
+            return;
+        }
+        printsDB.forEach((p, i) => {
+            const row = document.createElement("tr");
+            row.className = "hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group border-b border-slate-100 dark:border-dark-border last:border-0";
+            row.innerHTML = `
+            <td class="p-4 font-bold text-slate-800 dark:text-white">${i + 1}</td>
+            <td class="p-4 text-slate-700 dark:text-slate-300">${p}</td>
+            <td class="p-4">
+                <div class="flex justify-center gap-3">
+                    <button onclick="editPrint(${i})" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/20 font-medium text-xs transition-colors">Edit</button>
+                    <button onclick="deletePrint(${i})" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 font-medium text-xs transition-colors">Delete</button>
+                </div>
+            </td>`;
+            tbody.appendChild(row);
+        });
+    }
+
+    window.handlePrintSubmit = function (e) {
+        e.preventDefault();
+        const name = document.getElementById("printName").value.trim();
+        const idx = parseInt(document.getElementById("printEditIndex").value);
+
+        if (!name) return;
+
+        if (idx === -1) {
+            if (printsDB.some(p => p.toLowerCase() === name.toLowerCase())) {
+                alert("This print already exists!"); return;
+            }
+            printsDB.push(name);
+        } else {
+            if (printsDB.some((p, i) => i !== idx && p.toLowerCase() === name.toLowerCase())) {
+                alert("Another print shares this name!"); return;
+            }
+            printsDB[idx] = name;
+        }
+        savePrints();
+        resetPrintForm();
+        renderPrints();
+    };
+
+    window.editPrint = function (i) {
+        document.getElementById("printName").value = printsDB[i];
+        document.getElementById("printEditIndex").value = i;
+        document.getElementById("printFormTitle").textContent = "Modify Print Entry";
+        document.getElementById("printSubmitBtn").innerHTML = "Update Print";
+        document.getElementById("printCancelBtn").classList.remove("hidden");
+        document.getElementById("printName").focus();
+    };
+
+    window.deletePrint = function (i) {
+        if (confirm(`Delete "${printsDB[i]}"?`)) {
+            printsDB.splice(i, 1);
+            savePrints();
+            resetPrintForm();
+            renderPrints();
+        }
+    };
+
+    window.resetPrintForm = function () {
+        document.getElementById("printName").value = "";
+        document.getElementById("printEditIndex").value = "-1";
+        document.getElementById("printFormTitle").textContent = "Add New Print";
+        document.getElementById("printSubmitBtn").innerHTML = '<i class="ph ph-plus"></i> Add Print';
+        document.getElementById("printCancelBtn").classList.add("hidden");
+    };
+</script>
+{% endblock %}

@@ -259,3 +259,116 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
     </div>
 </div>
 {% endblock %}
+
+{% block extra_scripts %}
+<script>
+
+    let productsDB = [];
+
+    function loadProducts() {
+        const saved = localStorage.getItem('sbb_products');
+        productsDB = saved ? JSON.parse(saved) : [
+            { id: 1, name: 'Royal Maroon Paithani', code: 'SBB-PT-001', category: 'Paithani', price: 24500, stock: 14, description: 'Pure silk authentic handwoven paithani', image_path: '../assets/slide11.png' },
+            { id: 2, name: 'Emerald Banarasi', code: 'SBB-BN-042', category: 'Banarasi', price: 18900, stock: 2, description: 'Zari work premium banarasi saree', image_path: '' }
+        ];
+    }
+
+    function saveProducts() {
+        localStorage.setItem('sbb_products', JSON.stringify(productsDB));
+    }
+
+    function initPageModule() {
+        loadProducts();
+        renderProductsTable(productsDB);
+    }
+
+    function renderProductsTable(products) {
+        const tableBody = document.querySelector('#view-products tbody');
+        if (!tableBody) return;
+        tableBody.innerHTML = '';
+
+        if (products.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-500">No products found. Click "Add Product" to create one.</td></tr>';
+            return;
+        }
+
+        products.forEach(product => {
+            const price = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(product.price);
+
+            let stockBadge = '';
+            if (product.stock > 10) {
+                stockBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ${product.stock} in stock</span>`;
+            } else if (product.stock > 0) {
+                stockBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-800"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> ${product.stock} low stock</span>`;
+            } else {
+                stockBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border border-red-200 dark:border-red-800"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Out of stock</span>`;
+            }
+
+            const imgHtml = product.image_path
+                ? `<img src="${product.image_path}" class="w-full h-full object-cover" alt="${product.name}" onerror="this.src='https://placehold.co/100x150?text=No+Image'">`
+                : `<i class="ph ph-image text-2xl text-slate-400"></i>`;
+
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group';
+            tr.innerHTML = `
+            <td class="p-4"><input type="checkbox" class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon"></td>
+            <td class="p-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-16 rounded bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center">${imgHtml}</div>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-brand-maroon transition-colors cursor-pointer">${product.name}</p>
+                        <p class="text-xs text-slate-500 w-48 truncate">${product.description || 'No description'}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="p-4 text-sm text-slate-600 dark:text-slate-300 font-mono text-xs">${product.code}</td>
+            <td class="p-4 text-sm text-slate-600 dark:text-slate-300"><span class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs uppercase tracking-wider">${product.category}</span></td>
+            <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">${price}</td>
+            <td class="p-4">${stockBadge}</td>
+            <td class="p-4 text-right">
+                <button onclick="deleteProduct(${product.id})" class="text-slate-400 hover:text-red-500 p-1"><i class="ph ph-trash text-lg"></i></button>
+            </td>
+        `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    window.openAddProductModal = function () {
+        document.getElementById('addProductModal').classList.remove('hidden');
+        document.getElementById('addProductModal').classList.add('flex');
+    };
+    window.closeAddProductModal = function () {
+        document.getElementById('addProductModal').classList.add('hidden');
+        document.getElementById('addProductModal').classList.remove('flex');
+        document.getElementById('addProductForm').reset();
+    };
+    window.submitNewProduct = function () {
+        const form = document.getElementById('addProductForm');
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+
+        const newProduct = {
+            id: Date.now(),
+            name: document.getElementById('prodName').value,
+            code: document.getElementById('prodCode').value,
+            category: document.getElementById('prodCategory').value,
+            price: parseFloat(document.getElementById('prodPrice').value),
+            stock: parseInt(document.getElementById('prodStock').value),
+            description: document.getElementById('prodDesc').value,
+            image_path: document.getElementById('prodImage') ? document.getElementById('prodImage').value : ''
+        };
+
+        productsDB.unshift(newProduct);
+        saveProducts();
+        closeAddProductModal();
+        renderProductsTable(productsDB);
+        alert("Product saved successfully!");
+    };
+    window.deleteProduct = function (id) {
+        if (confirm("Delete this product?")) {
+            productsDB = productsDB.filter(p => p.id !== id);
+            saveProducts();
+            renderProductsTable(productsDB);
+        }
+    };
+</script>
+{% endblock %}
