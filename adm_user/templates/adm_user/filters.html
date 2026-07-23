@@ -14,12 +14,12 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         <div>
             <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Add Filters</h2>
             <p class="text-slate-500 dark:text-slate-400 mt-1">Manage global product filters like
-                Colors, Fabrics, and Prints</p>
+                Colors, Fabrics, Prints and Tags</p>
         </div>
     </div>
 
     <!-- 1. COLORS -->
-    <div class="space-y-4">
+    <div class="space-y-4 py-2">
         <div
             class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
             <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
@@ -80,8 +80,10 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         </div>
     </div>
 
+    <hr class="border-t border-slate-400 dark:border-dark-border my-6">
+
     <!-- 2. FABRICS -->
-    <div class="space-y-4">
+    <div class="space-y-4 py-2">
         <div
             class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
             <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
@@ -130,8 +132,10 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         </div>
     </div>
 
+    <hr class="border-t border-slate-400 dark:border-dark-border my-6">
+
     <!-- 3. PRINTS -->
-    <div class="space-y-4">
+    <div class="space-y-4 py-2">
         <div
             class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
             <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
@@ -178,6 +182,57 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             </div>
         </div>
     </div>
+
+    <hr class="border-t border-slate-400 dark:border-dark-border my-6">
+
+    <!-- 4. TAGS -->
+    <div class="space-y-4 py-2">
+        <div
+            class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-dark-border pb-2"
+                id="tagFormTitle">Add New Tag</h3>
+            <form id="tagForm" onsubmit="handleTagSubmit(event)" class="flex flex-col md:flex-row items-end gap-4">
+                {% csrf_token %}
+                <div class="flex-1 w-full">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tag
+                        Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="tagName" placeholder="e.g. New Arrival, Bestseller, Limited Edition" required
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 text-slate-800 dark:text-white">
+                </div>
+                <input type="hidden" id="tagEditIndex" value="-1">
+                <div class="flex gap-2 w-full md:w-auto">
+                    <button type="button" id="tagCancelBtn" onclick="resetTagForm()"
+                        class="hidden px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors w-full md:w-auto">Cancel</button>
+                    <button type="submit" id="tagSubmitBtn"
+                        class="px-5 py-2.5 rounded-xl bg-brand-maroon hover:bg-brand-maroonLight text-white font-medium transition-colors shadow-md w-full md:w-auto flex items-center justify-center gap-2">
+                        <i class="ph ph-plus"></i> Add Tag
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div
+            class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100 dark:border-dark-border">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Existing Tags</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[500px]">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border">
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">
+                                Sr. No.</th>
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                Tag Name</th>
+                            <th
+                                class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center w-48">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tagTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </section>
 {% endblock %}
 
@@ -187,10 +242,12 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
     let colorsDB = [];
     let fabricsDB = [];
     let printsDB = [];
+    let tagsDB = [];
 
     const COLOR_LIST_URL = "{% url 'adm_user:color_list_create' %}";
     const FABRIC_LIST_URL = "{% url 'adm_user:fabric_list_create' %}";
     const PRINT_LIST_URL = "{% url 'adm_user:print_list_create' %}";
+    const TAG_LIST_URL = "{% url 'adm_user:tag_list_create' %}";
 
     // ==========================================
     // API HELPERS
@@ -219,14 +276,16 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
     }
 
     async function loadFiltersData() {
-        const [colors, fabrics, prints] = await Promise.all([
+        const [colors, fabrics, prints, tags] = await Promise.all([
             apiRequest(COLOR_LIST_URL),
             apiRequest(FABRIC_LIST_URL),
             apiRequest(PRINT_LIST_URL),
+            apiRequest(TAG_LIST_URL),
         ]);
         colorsDB = colors.colors;
         fabricsDB = fabrics.fabrics;
         printsDB = prints.prints;
+        tagsDB = tags.tags;
     }
 
     async function initPageModule() {
@@ -238,6 +297,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         renderColors();
         renderFabrics();
         renderPrints();
+        renderTags();
     }
 
     // ==========================================
@@ -507,6 +567,93 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         document.getElementById("printFormTitle").textContent = "Add New Print";
         document.getElementById("printSubmitBtn").innerHTML = '<i class="ph ph-plus"></i> Add Print';
         document.getElementById("printCancelBtn").classList.add("hidden");
+    };
+
+
+    // ==========================================
+    // TAGS
+    // ==========================================
+    function renderTags() {
+        const tbody = document.getElementById("tagTableBody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        if (tagsDB.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-500 italic">No tags added yet. Add your first above!</td></tr>`;
+            return;
+        }
+        tagsDB.forEach((t, i) => {
+            const row = document.createElement("tr");
+            row.className = "hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group border-b border-slate-100 dark:border-dark-border last:border-0";
+            row.innerHTML = `
+            <td class="p-4 font-bold text-slate-800 dark:text-white">${i + 1}</td>
+            <td class="p-4 text-slate-700 dark:text-slate-300">${t.name}</td>
+            <td class="p-4">
+                <div class="flex justify-center gap-3">
+                    <button onclick="editTag(${t.id})" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/20 font-medium text-xs transition-colors">Edit</button>
+                    <button onclick="deleteTag(${t.id})" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 font-medium text-xs transition-colors">Delete</button>
+                </div>
+            </td>`;
+            tbody.appendChild(row);
+        });
+    }
+
+    window.handleTagSubmit = async function (e) {
+        e.preventDefault();
+        const name = document.getElementById("tagName").value.trim();
+        const editId = document.getElementById("tagEditIndex").value;
+
+        if (!name) return;
+
+        try {
+            if (editId === "-1") {
+                await apiRequest(TAG_LIST_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ name }),
+                });
+            } else {
+                await apiRequest(`${TAG_LIST_URL}${editId}/update/`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ name }),
+                });
+            }
+            await loadFiltersData();
+            resetTagForm();
+            renderTags();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    window.editTag = function (id) {
+        const t = tagsDB.find(t => t.id === id);
+        if (!t) return;
+        document.getElementById("tagName").value = t.name;
+        document.getElementById("tagEditIndex").value = id;
+        document.getElementById("tagFormTitle").textContent = "Modify Tag Entry";
+        document.getElementById("tagSubmitBtn").innerHTML = "Update Tag";
+        document.getElementById("tagCancelBtn").classList.remove("hidden");
+        document.getElementById("tagName").focus();
+    };
+
+    window.deleteTag = async function (id) {
+        const t = tagsDB.find(t => t.id === id);
+        if (!t || !confirm(`Delete "${t.name}"?`)) return;
+        try {
+            await apiRequest(`${TAG_LIST_URL}${id}/delete/`, { method: 'DELETE' });
+            await loadFiltersData();
+            resetTagForm();
+            renderTags();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    window.resetTagForm = function () {
+        document.getElementById("tagName").value = "";
+        document.getElementById("tagEditIndex").value = "-1";
+        document.getElementById("tagFormTitle").textContent = "Add New Tag";
+        document.getElementById("tagSubmitBtn").innerHTML = '<i class="ph ph-plus"></i> Add Tag';
+        document.getElementById("tagCancelBtn").classList.add("hidden");
     };
 </script>
 {% endblock %}

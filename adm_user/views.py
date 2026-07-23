@@ -6,7 +6,7 @@ from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.db.models import ProtectedError
-from .models import Category, Color, Fabric, Print
+from .models import Category, Color, Fabric, Print, Tag
 
 # Create your views here.
 def index(request):
@@ -359,6 +359,82 @@ def print_delete(request, pk):
         )
     return JsonResponse({"deleted": True})
 
+
+# ==========================================
+# TAGS
+# ==========================================
+
+@require_http_methods(["GET", "POST"])
+def tag_list_create(request):
+    if request.method == "GET":
+        tags = Tag.objects.all().order_by("created_at")
+        data = [{"id": t.id, "name": t.name, "slug": t.slug} for t in tags]
+        return JsonResponse({"tags": data})
+
+    # POST — create a new tag
+    try:
+        payload = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid request."}, status=400)
+
+    name = (payload.get("name") or "").strip()
+    if not name:
+        return JsonResponse({"error": "Tag name is required."}, status=400)
+
+    tag = Tag(name=name)
+    try:
+        tag.full_clean()
+        with transaction.atomic():
+            tag.save()
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    except IntegrityError:
+        return JsonResponse({"error": "This tag already exists."}, status=409)
+
+    return JsonResponse({"id": tag.id, "name": tag.name, "slug": tag.slug}, status=201)
+
+
+@require_http_methods(["PUT"])
+def tag_update(request, pk):
+    try:
+        tag = Tag.objects.get(pk=pk)
+    except Tag.DoesNotExist:
+        return JsonResponse({"error": "Tag not found."}, status=404)
+
+    try:
+        payload = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid request."}, status=400)
+
+    name = (payload.get("name") or "").strip()
+    if not name:
+        return JsonResponse({"error": "Tag name is required."}, status=400)
+
+    if name != tag.name:
+        tag.name = name
+        tag.slug = ""  # forces the mixin to regenerate it on save()
+
+    try:
+        tag.full_clean()
+        with transaction.atomic():
+            tag.save()
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    except IntegrityError:
+        return JsonResponse({"error": "Another tag already has this name."}, status=409)
+
+    return JsonResponse({"id": tag.id, "name": tag.name, "slug": tag.slug})
+
+
+@require_http_methods(["DELETE"])
+def tag_delete(request, pk):
+    try:
+        tag = Tag.objects.get(pk=pk)
+    except Tag.DoesNotExist:
+        return JsonResponse({"error": "Tag not found."}, status=404)
+
+    tag.delete()
+    return JsonResponse({"deleted": True})
 
 def img_manager(request):
     return render(request, 'adm_user/image_manager.html')

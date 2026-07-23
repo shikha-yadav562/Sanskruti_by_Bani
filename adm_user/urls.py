@@ -30,6 +30,11 @@ urlpatterns = [
     path("filters/prints/<int:pk>/update/", views.print_update, name="print_update"),
     path("filters/prints/<int:pk>/delete/", views.print_delete, name="print_delete"),
 
+    # ---- Tags ----
+    path("filters/tags/", views.tag_list_create, name="tag_list_create"),
+    path("filters/tags/<int:pk>/update/", views.tag_update, name="tag_update"),
+    path("filters/tags/<int:pk>/delete/", views.tag_delete, name="tag_delete"),
+
     path('img_manager/', views.img_manager, name='img_manager'),
     path('coming_soon/', views.coming_soon, name='coming_soon'),
 ]
