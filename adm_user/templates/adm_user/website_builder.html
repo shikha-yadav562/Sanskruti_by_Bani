@@ -24,21 +24,21 @@
             <span>Hero Banner</span>
             <i class="ph ph-caret-right"></i>
         </button>
-        <button id="tab-memories" onclick="showEditor('memories')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+        <button id="tab-memories" onclick="showEditor('memories')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-between">
             <span>Sweet Memories</span>
             <i class="ph ph-caret-right"></i>
         </button>
-        <button class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium opacity-50 cursor-not-allowed flex justify-between items-center">
+        <button id="tab-header" onclick="showEditor('header')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center">
             <span>Header & Nav</span>
-            <span class="text-[10px] bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">Soon</span>
+            <i class="ph ph-caret-right"></i>
         </button>
-        <button class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium opacity-50 cursor-not-allowed flex justify-between items-center">
+        <button id="tab-footer" onclick="showEditor('footer')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center">
             <span>Footer & Links</span>
-            <span class="text-[10px] bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">Soon</span>
+            <i class="ph ph-caret-right"></i>
         </button>
-        <button class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium opacity-50 cursor-not-allowed flex justify-between items-center">
+        <button id="tab-about" onclick="showEditor('about')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center">
             <span>About Us Section</span>
-            <span class="text-[10px] bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">Soon</span>
+            <i class="ph ph-caret-right"></i>
         </button>
     </div>
 
@@ -59,12 +59,10 @@
                 </div>
             </div>
 
-            <!-- Hero Typography -->
             <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                     <i class="ph ph-text-t text-brand-maroon"></i> Hero Typography
                 </h4>
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-4">
                         <div>
@@ -94,22 +92,42 @@
                 </div>
             </div>
 
-            <!-- Hero Background Image -->
             <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                    <i class="ph ph-image text-brand-maroon"></i> Background Image
+                    <i class="ph ph-image text-brand-maroon"></i> Background Images
                 </h4>
                 
-                <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-8 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors w-full h-48 flex flex-col items-center justify-center relative overflow-hidden">
-                    <input type="file" accept="image/*" class="hidden" onchange="previewHeroBg(this)">
-                    <img id="heroBgPreview" src="{% static 'user/assets/MAIN/HERO BANNER.JPG' %}" class="absolute inset-0 w-full h-full object-cover opacity-30 z-0">
-                    <div class="relative z-10">
-                        <div class="w-12 h-12 rounded-full bg-white dark:bg-dark-panel shadow-sm text-brand-maroon flex items-center justify-center mx-auto mb-3">
-                            <i class="ph ph-upload-simple text-xl"></i>
-                        </div>
-                        <p class="text-sm font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-black/50 px-3 py-1 rounded backdrop-blur-sm">Click to change background image</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Desktop Image -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Desktop Image (16:9)</label>
+                        <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-8 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors w-full h-48 flex flex-col items-center justify-center relative overflow-hidden">
+                            <input type="file" accept="image/*" class="hidden" onchange="previewImage(this, 'heroBgDesktop')">
+                            <img id="heroBgDesktop" src="{% static 'user/assets/MAIN/HERO BANNER.JPG' %}" class="absolute inset-0 w-full h-full object-cover opacity-30 z-0">
+                            <div class="relative z-10">
+                                <div class="w-12 h-12 rounded-full bg-white dark:bg-dark-panel shadow-sm text-brand-maroon flex items-center justify-center mx-auto mb-3">
+                                    <i class="ph ph-desktop text-xl"></i>
+                                </div>
+                                <p class="text-xs font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-black/50 px-3 py-1 rounded backdrop-blur-sm">Change Desktop Image</p>
+                            </div>
+                        </label>
                     </div>
-                </label>
+
+                    <!-- Mobile Image -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Mobile Image (9:16 portrait)</label>
+                        <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-8 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors mx-auto w-32 h-48 flex flex-col items-center justify-center relative overflow-hidden">
+                            <input type="file" accept="image/*" class="hidden" onchange="previewImage(this, 'heroBgMobile')">
+                            <img id="heroBgMobile" src="{% static 'user/assets/MAIN/HERO BANNER MOBILE.JPG' %}" onerror="this.src='https://placehold.co/300x500?text=Mobile+Image'" class="absolute inset-0 w-full h-full object-cover opacity-30 z-0">
+                            <div class="relative z-10">
+                                <div class="w-10 h-10 rounded-full bg-white dark:bg-dark-panel shadow-sm text-brand-maroon flex items-center justify-center mx-auto mb-2">
+                                    <i class="ph ph-device-mobile text-lg"></i>
+                                </div>
+                                <p class="text-[10px] font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-black/50 px-2 py-1 rounded backdrop-blur-sm leading-tight text-center">Change<br>Mobile</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -127,12 +145,10 @@
                 </div>
             </div>
 
-            <!-- Typography & Theme -->
             <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                     <i class="ph ph-text-aa text-brand-maroon"></i> Typography & Theme
                 </h4>
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-4">
                         <div>
@@ -163,7 +179,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Paragraph Text</label>
-                        <textarea rows="8" class="w-full h-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white custom-scrollbar">Some moments stay forever.
+                        <textarea rows="8" class="w-full h-[calc(100%-24px)] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white custom-scrollbar">Some moments stay forever.
 
 A wedding morning.
 A family celebration.
@@ -178,7 +194,6 @@ Because special moments deserve something timeless.</textarea>
                 </div>
             </div>
 
-            <!-- Slider Frames -->
             <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h4 class="text-md font-semibold text-slate-800 dark:text-white flex items-center gap-2">
@@ -186,29 +201,208 @@ Because special moments deserve something timeless.</textarea>
                     </h4>
                     <span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded">Drag to reorder</span>
                 </div>
-                
                 <p class="text-xs text-slate-500 mb-4">Upload and manage the sliding photos of customers and memories.</p>
-
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="memoryImagesContainer">
-                    
-                    <!-- Add Image Button -->
                     <label class="aspect-[3/4] rounded-xl border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 flex flex-col items-center justify-center text-brand-maroon cursor-pointer hover:bg-brand-maroon/10 transition-colors">
                         <input type="file" multiple accept="image/*" class="hidden" onchange="handleMemoryImages(this)">
                         <i class="ph ph-plus-circle text-3xl mb-2"></i>
                         <span class="text-xs font-medium">Add Photos</span>
                     </label>
-
-                    <!-- Existing Images (Mock) -->
                     <div class="aspect-[3/4] rounded-xl bg-slate-200 relative group overflow-hidden shadow-sm">
                         <img src="{% static 'user/assets/SPECIAL MEMORIES/CARE FOR HER DAUGHTER.JPG' %}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x400?text=No+Image'">
                         <div class="absolute inset-0 bg-slate-900/60 hidden group-hover:flex items-center justify-center backdrop-blur-sm transition-all">
                             <button type="button" onclick="this.parentElement.parentElement.remove()" class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="ph ph-trash"></i></button>
                         </div>
                     </div>
-                    <div class="aspect-[3/4] rounded-xl bg-slate-200 relative group overflow-hidden shadow-sm">
-                        <img src="{% static 'user/assets/SPECIAL MEMORIES/HEART TOUCHING FEELING WITH WEDDING SAREE.JPG' %}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x400?text=No+Image'">
-                        <div class="absolute inset-0 bg-slate-900/60 hidden group-hover:flex items-center justify-center backdrop-blur-sm transition-all">
-                            <button type="button" onclick="this.parentElement.parentElement.remove()" class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="ph ph-trash"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HEADER & NAV EDITOR -->
+        <div id="editor-header" class="space-y-6 hidden">
+            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                        <i class="ph ph-layout text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">Header & Top Offer Bar</h3>
+                        <p class="text-sm text-slate-500">Manage the scrolling offers at the top and the navigation logo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Offer Bar -->
+            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+                <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                    <i class="ph ph-megaphone text-brand-maroon"></i> Scrolling Offer Bar
+                </h4>
+                <div class="space-y-4" id="offerBarContainer">
+                    <div class="flex items-center gap-3">
+                        <input type="text" value="Free Discount" class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i class="ph ph-trash"></i></button>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="text" value="COD across India" class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i class="ph ph-trash"></i></button>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="text" value="Easy Return & Exchange*" class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i class="ph ph-trash"></i></button>
+                    </div>
+                </div>
+                <button type="button" onclick="addOfferField()" class="mt-4 text-sm font-medium text-brand-maroon flex items-center gap-1 hover:underline"><i class="ph ph-plus-circle"></i> Add Another Offer</button>
+            </div>
+            
+            <!-- Logo Section -->
+            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+                <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                    <i class="ph ph-image-square text-brand-maroon"></i> Brand Splash Logo
+                </h4>
+                <label class="inline-block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-4 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors w-40 h-40 flex flex-col items-center justify-center relative overflow-hidden">
+                    <input type="file" accept="image/*" class="hidden" onchange="previewImage(this, 'logoPreview')">
+                    <img id="logoPreview" src="{% static 'user/assets/logo.png' %}" class="absolute inset-0 w-full h-full object-contain p-2 z-0">
+                    <div class="relative z-10 hidden group-hover:block bg-white/80 w-full h-full pt-8">
+                        <i class="ph ph-upload-simple text-xl text-brand-maroon"></i>
+                        <p class="text-xs text-slate-800 mt-1">Change</p>
+                    </div>
+                </label>
+                <p class="text-xs text-slate-500 mt-2">Recommended size: 200x200px PNG transparent.</p>
+            </div>
+        </div>
+
+        <!-- FOOTER & LINKS EDITOR -->
+        <div id="editor-footer" class="space-y-6 hidden">
+            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center">
+                        <i class="ph ph-link text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">Footer & Contact Settings</h3>
+                        <p class="text-sm text-slate-500">Edit your brand description, address, and social media links.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Brand Info -->
+                <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+                    <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4">Brand Information</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Footer Brand Name</label>
+                            <input type="text" value="Sanskruti By Bani" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Brand Description</label>
+                            <textarea rows="4" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">Celebrating timeless Indian heritage through handcrafted Paithani, Banarasi, Kanjivaram and luxury saree collections woven with elegance, culture and emotion.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact & Socials -->
+                <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+                    <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4">Contact & Social</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Store Address</label>
+                            <input type="text" value="Pune, Maharashtra, India" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
+                            <input type="text" value="+91 98765 43210" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
+                            <input type="email" value="info@sanskrutibybani.com" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        </div>
+                        <div class="pt-4 border-t border-slate-100 dark:border-dark-border grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Instagram Link</label>
+                                <input type="url" placeholder="https://instagram.com/..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">WhatsApp Number</label>
+                                <input type="text" placeholder="+91..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABOUT US EDITOR -->
+        <div id="editor-about" class="space-y-6 hidden">
+            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center">
+                        <i class="ph ph-identification-card text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">About Us Section</h3>
+                        <p class="text-sm text-slate-500">Edit the history, mission, and background image for your brand's About section.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Text Content -->
+                <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+                    <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4">Text Content</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Small Title</label>
+                            <input type="text" value="About Us" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Main Heading</label>
+                            <input type="text" value="Sanskruti By – Bani" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Highlight Quote (Gold Text)</label>
+                            <textarea rows="2" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">“Paithani म्हणजे फक्त साडी नाही... ती प्रत्येक स्त्रीची जपलेली आठवण आहे.”</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Main Paragraph Text</label>
+                            <textarea rows="6" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">संस्कृती... म्हणजे फक्त परंपरा नाही, तर पिढ्यानपिढ्या चालत आलेला भावनांचा आणि आठवणींचा वारसा आहे...
+
+Sanskruti By - Bani ही त्या संस्कृतीची सुरुवात आहे… प्रत्येक साडी ही एक भावना, एक आठवण आणि एक ओळख आहे.
+
+आमच्या brand ची खरी ओळख असेल — Paithani. कारण प्रत्येक Paithani मागे एक खास कथा दडलली आहे.</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Ending Sign-off</label>
+                            <input type="text" value="– संस्कृतीतून उमटलेलं सौंदर्य" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media -->
+                <div class="space-y-6">
+                    <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+                        <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4">About Section Image</h4>
+                        <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors w-full h-80 flex flex-col items-center justify-center relative overflow-hidden">
+                            <input type="file" accept="image/*" class="hidden" onchange="previewImage(this, 'aboutImgPreview')">
+                            <img id="aboutImgPreview" src="{% static 'user/assets/about-1.jpeg' %}" class="absolute inset-0 w-full h-full object-cover z-0">
+                            <div class="relative z-10 bg-white/70 dark:bg-black/70 w-full py-4 backdrop-blur-sm opacity-0 hover:opacity-100 transition-opacity absolute bottom-0">
+                                <i class="ph ph-upload-simple text-xl text-brand-maroon"></i>
+                                <p class="text-sm font-medium text-slate-900 dark:text-white">Click to change</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+                        <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4">Floating Card Text</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Top Text (Small)</label>
+                                <input type="text" value="Legacy of" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bottom Text (Large)</label>
+                                <input type="text" value="Paithani" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -221,21 +415,25 @@ Because special moments deserve something timeless.</textarea>
 <script>
     function showEditor(section) {
         // Hide all editors
-        document.getElementById('editor-hero').classList.add('hidden');
-        document.getElementById('editor-memories').classList.add('hidden');
+        const sections = ['hero', 'memories', 'header', 'footer', 'about'];
+        sections.forEach(sec => {
+            document.getElementById('editor-' + sec).classList.add('hidden');
+            document.getElementById('editor-' + sec).classList.remove('block');
+        });
         
         // Reset all tabs
         const activeClass = 'bg-white dark:bg-dark-panel border border-brand-maroon shadow-sm text-brand-maroon dark:text-brand-gold'.split(' ');
         const inactiveClass = 'bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'.split(' ');
         
-        const tabs = [document.getElementById('tab-hero'), document.getElementById('tab-memories')];
-        tabs.forEach(tab => {
+        sections.forEach(sec => {
+            const tab = document.getElementById('tab-' + sec);
             tab.classList.remove(...activeClass);
             tab.classList.add(...inactiveClass);
         });
 
         // Show active editor and tab
         document.getElementById('editor-' + section).classList.remove('hidden');
+        document.getElementById('editor-' + section).classList.add('block');
         const activeTab = document.getElementById('tab-' + section);
         activeTab.classList.remove(...inactiveClass);
         activeTab.classList.add(...activeClass);
@@ -245,12 +443,15 @@ Because special moments deserve something timeless.</textarea>
         alert("Frontend UI preview successfully processed. (Backend integration pending)");
     }
 
-    function previewHeroBg(input) {
+    function previewImage(input, previewId) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('heroBgPreview').src = e.target.result;
-                document.getElementById('heroBgPreview').style.opacity = '1';
+                const img = document.getElementById(previewId);
+                img.src = e.target.result;
+                if(previewId === 'heroBgPreview') {
+                    img.style.opacity = '1';
+                }
             }
             reader.readAsDataURL(input.files[0]);
         }
@@ -278,6 +479,17 @@ Because special moments deserve something timeless.</textarea>
         });
         
         input.value = '';
+    }
+
+    function addOfferField() {
+        const container = document.getElementById('offerBarContainer');
+        const html = `
+            <div class="flex items-center gap-3 mt-4">
+                <input type="text" placeholder="New offer text..." class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                <button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i class="ph ph-trash"></i></button>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
     }
 </script>
 {% endblock %}
