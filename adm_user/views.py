@@ -106,5 +106,8 @@ def filters(request):
 def img_manager(request):
     return render(request, 'adm_user/image_manager.html')
 
+def website_builder(request):
+    return render(request, 'adm_user/website_builder.html')
+
 def coming_soon(request):
     return render(request, 'adm_user/coming-soon.html')

@@ -12,5 +12,6 @@ urlpatterns = [
     path('api/categories/<int:pk>/delete/', views.category_delete, name='api_categories_delete'),
     path('filters/', views.filters, name='filters'),
     path('img_manager/', views.img_manager, name='img_manager'),
+    path('website-builder/', views.website_builder, name='website_builder'),
     path('coming_soon/', views.coming_soon, name='coming_soon'),
 ]
