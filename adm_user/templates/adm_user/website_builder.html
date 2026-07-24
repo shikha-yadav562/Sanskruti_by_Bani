@@ -54,81 +54,153 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-slate-800 dark:text-white">Hero Banner Section</h3>
-                        <p class="text-sm text-slate-500">Edit the top banner text and background image of your website.</p>
+                        <p class="text-sm text-slate-500">Manage all 3 rotating slides of your top hero banner.</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
-                <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                    <i class="ph ph-text-t text-brand-maroon"></i> Hero Typography
-                </h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Small Tagline (Over Title)</label>
-                            <input type="text" value="Sanskruti By Bani" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Title Line 1</label>
-                            <input type="text" value="A Legacy of Cherished Memories…" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Title Line 2</label>
-                            <input type="text" value="The Warmth of Traditions…" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Title Line 3 (Gold Text)</label>
-                            <input type="text" value="And Every Bond Beautifully Woven With Emotions." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white text-brand-gold">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Hero Description Text</label>
-                        <textarea rows="4" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">Discover the timeless elegance of Paithani. Where every thread tells a story of heritage, love, and unmatched craftsmanship.</textarea>
-                        
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mt-6 mb-1">Button Text</label>
-                        <input type="text" value="Explore Collection" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
-                <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                    <i class="ph ph-image text-brand-maroon"></i> Background Images
-                </h4>
+            <!-- SLIDE 1 (Main Hero) -->
+            <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-slate-200 dark:border-slate-700 p-6">
+                <h3 class="text-xl font-bold text-brand-maroon dark:text-brand-gold mb-6 border-b border-slate-200 dark:border-slate-700 pb-2">SLIDE 1: Main Calligraphy</h3>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Desktop Image -->
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Desktop Image (16:9)</label>
-                        <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-8 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors w-full h-48 flex flex-col items-center justify-center relative overflow-hidden">
-                            <input type="file" accept="image/*" class="hidden" onchange="previewImage(this, 'heroBgDesktop')">
-                            <img id="heroBgDesktop" src="{% static 'user/assets/MAIN/HERO BANNER.JPG' %}" class="absolute inset-0 w-full h-full object-cover opacity-30 z-0">
-                            <div class="relative z-10">
-                                <div class="w-12 h-12 rounded-full bg-white dark:bg-dark-panel shadow-sm text-brand-maroon flex items-center justify-center mx-auto mb-3">
-                                    <i class="ph ph-desktop text-xl"></i>
+                <div class="space-y-6">
+                    <div class="bg-white dark:bg-dark-panel rounded-xl border border-slate-100 dark:border-dark-border p-5 shadow-sm">
+                        <h4 class="text-sm font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                            <i class="ph ph-text-t text-brand-maroon"></i> Slide 1 Typography
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Small Tagline (Over Title)</label>
+                                    <input type="text" value="Sanskruti By Bani" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
                                 </div>
-                                <p class="text-xs font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-black/50 px-3 py-1 rounded backdrop-blur-sm">Change Desktop Image</p>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Title Line 1</label>
+                                    <input type="text" value="A Legacy of Cherished Memories…" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Title Line 2</label>
+                                    <input type="text" value="The Warmth of Traditions…" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Title Line 3 (Gold Text)</label>
+                                    <input type="text" value="And Every Bond Beautifully Woven With Emotions." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white text-brand-gold">
+                                </div>
                             </div>
-                        </label>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Hero Description Text</label>
+                                <textarea rows="3" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">Preserving the timeless elegance of Indian heritage, every saree reflects love, grace, celebration and the soulful essence of our culture.</textarea>
+                                
+                                <div class="flex gap-4 mt-4">
+                                    <div class="flex-1">
+                                        <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Button 1 Text</label>
+                                        <input type="text" value="Explore Collection" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
+                                    </div>
+                                    <div class="flex-1">
+                                        <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Button 2 Text</label>
+                                        <input type="text" value="Shop Now" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Mobile Image -->
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Mobile Image (9:16 portrait)</label>
-                        <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-8 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors mx-auto w-32 h-48 flex flex-col items-center justify-center relative overflow-hidden">
-                            <input type="file" accept="image/*" class="hidden" onchange="previewImage(this, 'heroBgMobile')">
-                            <img id="heroBgMobile" src="{% static 'user/assets/MAIN/HERO BANNER MOBILE.JPG' %}" onerror="this.src='https://placehold.co/300x500?text=Mobile+Image'" class="absolute inset-0 w-full h-full object-cover opacity-30 z-0">
-                            <div class="relative z-10">
-                                <div class="w-10 h-10 rounded-full bg-white dark:bg-dark-panel shadow-sm text-brand-maroon flex items-center justify-center mx-auto mb-2">
-                                    <i class="ph ph-device-mobile text-lg"></i>
-                                </div>
-                                <p class="text-[10px] font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-black/50 px-2 py-1 rounded backdrop-blur-sm leading-tight text-center">Change<br>Mobile</p>
+                    <div class="bg-white dark:bg-dark-panel rounded-xl border border-slate-100 dark:border-dark-border p-5 shadow-sm">
+                        <h4 class="text-sm font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                            <i class="ph ph-image text-brand-maroon"></i> Slide 1 Images
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Desktop Image (16:9)</label>
+                                <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-4 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors w-full h-40 flex flex-col items-center justify-center relative overflow-hidden">
+                                    <input type="file" accept="image/*" class="hidden" onchange="previewImage(this, 's1Desktop')">
+                                    <img id="s1Desktop" src="{% static 'user/assets/slide1.png' %}" class="absolute inset-0 w-full h-full object-cover opacity-80 z-0">
+                                    <div class="relative z-10 p-2 bg-white/70 dark:bg-black/70 rounded-lg backdrop-blur-sm shadow-sm hidden group-hover:block transition-all">
+                                        <i class="ph ph-upload-simple text-brand-maroon"></i> Change Desktop
+                                    </div>
+                                </label>
                             </div>
-                        </label>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Mobile Image (9:16)</label>
+                                <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-4 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors mx-auto w-24 h-40 flex flex-col items-center justify-center relative overflow-hidden">
+                                    <input type="file" accept="image/*" class="hidden" onchange="previewImage(this, 's1Mobile')">
+                                    <img id="s1Mobile" src="{% static 'user/assets/344941.png' %}" class="absolute inset-0 w-full h-full object-cover opacity-80 z-0">
+                                    <div class="relative z-10 p-1 bg-white/70 dark:bg-black/70 rounded-lg backdrop-blur-sm shadow-sm hidden group-hover:block transition-all text-[10px]">
+                                        <i class="ph ph-upload-simple text-brand-maroon"></i> Change
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- SLIDE 2 (Image Only) -->
+            <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-slate-200 dark:border-slate-700 p-6">
+                <h3 class="text-xl font-bold text-brand-maroon dark:text-brand-gold mb-6 border-b border-slate-200 dark:border-slate-700 pb-2">SLIDE 2: Full Image Banner</h3>
+                
+                <div class="bg-white dark:bg-dark-panel rounded-xl border border-slate-100 dark:border-dark-border p-5 shadow-sm">
+                    <p class="text-xs text-slate-500 mb-4">This slide only contains images (no text overlay). Upload high-quality banners.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Desktop Image (16:9)</label>
+                            <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-4 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors w-full h-40 flex flex-col items-center justify-center relative overflow-hidden">
+                                <input type="file" accept="image/*" class="hidden" onchange="previewImage(this, 's2Desktop')">
+                                <img id="s2Desktop" src="{% static 'user/assets/slide21.png' %}" class="absolute inset-0 w-full h-full object-cover z-0">
+                                <div class="relative z-10 p-2 bg-white/70 dark:bg-black/70 rounded-lg backdrop-blur-sm shadow-sm opacity-0 hover:opacity-100 transition-all absolute inset-0 flex flex-col items-center justify-center">
+                                    <i class="ph ph-upload-simple text-xl text-brand-maroon"></i>
+                                    <span class="text-sm font-medium">Change Desktop</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Mobile Image (9:16)</label>
+                            <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-4 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors mx-auto w-24 h-40 flex flex-col items-center justify-center relative overflow-hidden">
+                                <input type="file" accept="image/*" class="hidden" onchange="previewImage(this, 's2Mobile')">
+                                <img id="s2Mobile" src="{% static 'user/assets/slide21-mobile.png' %}" class="absolute inset-0 w-full h-full object-cover z-0">
+                                <div class="relative z-10 p-2 bg-white/70 dark:bg-black/70 rounded-lg backdrop-blur-sm shadow-sm opacity-0 hover:opacity-100 transition-all absolute inset-0 flex flex-col items-center justify-center text-center leading-tight">
+                                    <i class="ph ph-upload-simple text-lg text-brand-maroon mb-1"></i>
+                                    <span class="text-[10px] font-medium">Change<br>Mobile</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3 (Offer Slide) -->
+            <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-slate-200 dark:border-slate-700 p-6">
+                <h3 class="text-xl font-bold text-brand-maroon dark:text-brand-gold mb-6 border-b border-slate-200 dark:border-slate-700 pb-2">SLIDE 3: Offer Call-To-Action</h3>
+                
+                <div class="bg-white dark:bg-dark-panel rounded-xl border border-slate-100 dark:border-dark-border p-5 shadow-sm">
+                    <h4 class="text-sm font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                        <i class="ph ph-tag text-brand-maroon"></i> Offer Text
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Small Top Text</label>
+                                <input type="text" value="Limited Time Offer" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Big Highlight Text</label>
+                                <input type="text" value="Flat 25% OFF" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Subtext (Bottom)</label>
+                                <input type="text" value="On Festive Saree Collection" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Button Text</label>
+                                <input type="text" value="Grab Offer" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
 
         <!-- SWEET MEMORIES EDITOR -->
