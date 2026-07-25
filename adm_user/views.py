@@ -444,3 +444,9 @@ def website_builder(request):
 
 def coming_soon(request):
     return render(request, 'adm_user/coming-soon.html')
+
+def login(request):
+    return render(request, 'adm_user/login.html')
+
+def signup(request):
+    return render(request, 'adm_user/signup.html')

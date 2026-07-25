@@ -38,4 +38,6 @@ urlpatterns = [
     path('img_manager/', views.img_manager, name='img_manager'),
     path('website-builder/', views.website_builder, name='website_builder'),
     path('coming_soon/', views.coming_soon, name='coming_soon'),
+    path('login/', views.login, name='login'),
+    path('signup/', views.signup, name='signup'),
 ]

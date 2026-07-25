@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Sanskruti By Bani</title>
+    {% load static %}
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            maroon: '#71041a',
+                            maroonLight: '#8a0a25',
+                            gold: '#e7c27a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Cinzel', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full font-sans antialiased text-slate-900 selection:bg-brand-maroon selection:text-white">
+
+    <div class="flex min-h-screen">
+        
+        <!-- Left Image Section (Hidden on Mobile) -->
+        <div class="hidden lg:flex lg:w-1/2 relative bg-brand-maroon flex-col justify-end pb-12 px-12 overflow-hidden">
+            <!-- Using a different luxury image for login if available, else same -->
+            <img src="{% static 'user/assets/p5.jpg' %}" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay" alt="Sanskruti By Bani Saree">
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-maroon via-brand-maroon/70 to-brand-maroon/30"></div>
+            
+            <div class="relative z-10 text-white max-w-xl">
+                <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20 mb-8">
+                    <i class="ph ph-crown text-3xl text-brand-gold"></i>
+                </div>
+                <h1 class="font-serif text-4xl lg:text-5xl font-bold leading-tight mb-4 text-brand-gold">
+                    Welcome Back
+                </h1>
+                <p class="text-white/80 text-lg leading-relaxed">
+                    Log in to the admin panel to manage orders, update the exclusive catalogue, and maintain the heritage of Sanskruti By Bani.
+                </p>
+            </div>
+        </div>
+
+        <!-- Right Form Section -->
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white relative">
+            
+            <!-- Mobile Logo -->
+            <div class="absolute top-8 left-8 lg:hidden flex items-center gap-2">
+                <div class="w-10 h-10 bg-brand-maroon rounded-xl flex items-center justify-center">
+                    <i class="ph ph-crown text-xl text-brand-gold"></i>
+                </div>
+                <span class="font-serif font-bold text-xl text-brand-maroon">Sanskruti</span>
+            </div>
+
+            <div class="w-full max-w-md mx-auto">
+                
+                <div class="mb-10 text-center lg:text-left">
+                    <h2 class="text-3xl font-bold text-slate-900 mb-2">Admin Login</h2>
+                    <p class="text-slate-500">Sign in with your credentials to access the dashboard.</p>
+                </div>
+
+                <form action="#" method="POST" class="space-y-5">
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1.5">Email or Username</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                <i class="ph ph-user"></i>
+                            </div>
+                            <input type="text" name="username" required placeholder="admin@sanskruti.com" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon transition-all outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                <i class="ph ph-lock-key"></i>
+                            </div>
+                            <input type="password" name="password" required placeholder="••••••••" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon transition-all outline-none">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 text-brand-maroon border-slate-300 rounded focus:ring-brand-maroon">
+                            <span class="text-sm text-slate-600">Remember me</span>
+                        </label>
+                        <a href="#" class="text-sm font-medium text-brand-maroon hover:underline">Forgot password?</a>
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" class="w-full flex items-center justify-center gap-2 bg-brand-maroon hover:bg-brand-maroonLight text-white px-4 py-3.5 rounded-xl font-medium transition-colors shadow-lg shadow-brand-maroon/25">
+                            Sign In
+                            <i class="ph ph-sign-in"></i>
+                        </button>
+                    </div>
+
+                </form>
+
+                <p class="mt-8 text-center text-sm text-slate-500">
+                    Don't have an account? 
+                    <a href="{% url 'adm_user:signup' %}" class="font-medium text-brand-maroon hover:underline">Create one</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
