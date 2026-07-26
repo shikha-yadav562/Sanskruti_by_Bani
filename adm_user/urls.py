@@ -4,7 +4,7 @@ app_name="adm_user"
 urlpatterns = [
     # path('', views.index, name='index'),
     path('', views.dashboard, name='dashboard'),
-    path('products/', views.products, name='products'),
+    
 
     # URLs for Categories
     path('categories/', views.categories, name='categories'),
@@ -34,6 +34,13 @@ urlpatterns = [
     path("filters/tags/", views.tag_list_create, name="tag_list_create"),
     path("filters/tags/<int:pk>/update/", views.tag_update, name="tag_update"),
     path("filters/tags/<int:pk>/delete/", views.tag_delete, name="tag_delete"),
+
+    # ---- Products ----
+    path('products/', views.products, name='products'),
+    path("product/add/", views.product_create, name="create"),
+    path("product/<slug:slug>/edit/", views.product_update, name="update"),
+    path("product/<slug:slug>/delete/", views.product_delete, name="delete"),
+    path('product/<slug:slug>/', views.product_detail, name='detail'),
 
     path('img_manager/', views.img_manager, name='img_manager'),
     path('website-builder/', views.website_builder, name='website_builder'),

@@ -1,12 +1,17 @@
-from django.shortcuts import render
-import json
 
+import json
+import uuid
+from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.core.files.storage import default_storage
 from django.db import IntegrityError, transaction
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
 from django.db.models import ProtectedError
-from .models import Category, Color, Fabric, Print, Tag
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.text import get_valid_filename
+from django.views.decorators.http import require_http_methods
+
+from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage
 
 # Create your views here.
 def index(request):
@@ -14,9 +19,6 @@ def index(request):
 
 def dashboard(request):
     return render(request, 'adm_user/dashboard.html')
-
-def products(request):
-    return render(request, 'adm_user/products.html')
 
 
 # Views For CATEGORY
@@ -435,6 +437,218 @@ def tag_delete(request, pk):
 
     tag.delete()
     return JsonResponse({"deleted": True})
+
+# ==========================================
+# PRODUCTS
+# ==========================================
+
+@require_http_methods(["GET"])
+def products(request):
+    context = {"products": Product.objects.filter(is_active=True).select_related("category")}
+    context.update(_product_form_context())   # adds categories, fabrics, prints, colors, tags
+    return render(request, FORM_TEMPLATE, context)
+
+
+FORM_TEMPLATE = "adm_user/products.html"
+
+def _save_uploaded_image(request, file_obj):
+    safe_name = get_valid_filename(file_obj.name)
+    path = default_storage.save(f"products/{uuid.uuid4().hex}_{safe_name}", file_obj)
+    return request.build_absolute_uri(default_storage.url(path))
+
+def _product_form_context(product=None):
+    context = {
+        "categories": Category.objects.filter(is_active=True),
+        "fabrics": Fabric.objects.filter(is_active=True),
+        "prints": Print.objects.filter(is_active=True),
+        "colors": Color.objects.filter(is_active=True),
+        "tags": Tag.objects.all(),
+    }
+    if product is not None and product.pk:
+        context["product_tag_ids"] = set(
+            product.tags.values_list("id", flat=True)
+        )
+        context["existing_variant_color_ids"] = set(
+            product.variants.filter(is_active=True).values_list("color_id", flat=True)
+        )
+    return context
+
+def _parse_bool(value):
+    return str(value).strip().lower() in ("yes", "true", "1", "on")
+
+def _get_selected_tags(request):
+    tag_ids = [tid for tid in request.POST.getlist("tags") if tid]
+    return Tag.objects.filter(id__in=tag_ids)
+
+def _save_product_fields(product, request):
+    post = request.POST
+    product.name = post.get("name", "").strip()
+    if not product.name:
+        raise ValueError("Product name is required.")
+    product.description = post.get("description", "").strip()
+    product.product_code = post.get("product_code", "").strip() or None
+
+    category_id = post.get("category")
+    if not category_id:
+        raise ValueError("Category is required.")
+    product.category = get_object_or_404(Category, pk=category_id, is_active=True)
+
+    fabric_id = post.get("fabric")
+    if not fabric_id:
+        raise ValueError("Fabric is required.")
+    product.fabric = get_object_or_404(Fabric, pk=fabric_id, is_active=True)
+
+    print_id = post.get("print_type")
+    product.print_type = get_object_or_404(Print, pk=print_id, is_active=True) if print_id else None
+
+    try:
+        product.base_price = post.get("base_price") or 0
+        product.discount_price = post.get("discount_price") or None
+        product.stock_quantity = post.get("stock_quantity") or 0
+    except (TypeError, ValueError):
+        raise ValueError("Price and stock fields must be numbers.")
+
+    if product.discount_price is not None and product.discount_price >= product.base_price:
+        raise ValueError("Discount price must be less than the base price.")
+
+    product.saree_length = post.get("saree_length", "").strip()
+    product.blouse_included = _parse_bool(post.get("blouse_included", "Yes"))
+    product.blouse_type = post.get("blouse_type", "").strip()
+    product.blouse_size = post.get("blouse_size", "").strip()
+    product.weaving_style = post.get("weaving_style", "").strip()
+    product.border_style = post.get("border_style", "").strip()
+    product.care_instructions = post.get("care_instructions", "").strip()
+
+def _save_variants_and_images(product, request):
+    color_ids = request.POST.getlist("variant_color_id")
+    stocks = request.POST.getlist("variant_stock")
+    prices = request.POST.getlist("variant_price")
+
+    kept_variant_ids = []
+
+    for color_id, stock, price in zip(color_ids, stocks, prices):
+        if not color_id:
+            continue
+        color = get_object_or_404(Color, pk=color_id, is_active=True)
+
+        variant, _created = ProductVariant.objects.update_or_create(
+            product=product,
+            color=color,
+            defaults={
+                "stock_quantity": stock or 0,
+                "price": price or None,
+                "is_active": True,
+            },
+        )
+        kept_variant_ids.append(variant.id)
+
+        for image_file in request.FILES.getlist(f"variant_images_{color_id}"):
+            url = _save_uploaded_image(request, image_file)
+            ProductImage.objects.create(
+                product=product,
+                variant=variant,
+                image_url=url,
+                display_order=variant.images.count(),
+            )
+
+    product.variants.exclude(id__in=kept_variant_ids).update(is_active=False)
+
+    for image_file in request.FILES.getlist("default_images"):
+        url = _save_uploaded_image(request, image_file)
+        ProductImage.objects.create(
+            product=product,
+            variant=None,
+            image_url=url,
+            display_order=product.images.filter(variant__isnull=True).count(),
+        )
+
+def _handle_save_errors(request, exc, product=None):
+    if isinstance(exc, IntegrityError):
+        messages.error(
+            request,
+            "Couldn't save that product — check the product code isn't already "
+            "used, and that the same color wasn't added twice.",
+        )
+    else:
+        messages.error(request, str(exc))
+    context = _product_form_context(product)   # was: _product_form_context()
+    if product is not None:
+        context["product"] = product
+    return render(request, FORM_TEMPLATE, context)
+
+
+@require_http_methods(["GET"])
+def product_detail(request, slug):
+    product = get_object_or_404(
+        Product.objects.select_related("category", "fabric", "print_type").prefetch_related(
+            "tags",
+            "variants__color",
+            "variants__images",
+            "images",
+        ),
+        slug=slug,
+        is_active=True,
+    )
+    context = {
+        "product": product,
+        "default_images": product.images.filter(variant__isnull=True),
+        "variants": product.variants.filter(is_active=True),
+    }
+    return render(request, "adm_user/product_detail.html", context)
+
+
+@require_http_methods(["GET", "POST"])
+def product_create(request):
+    if request.method == "POST":
+        try:
+            with transaction.atomic():
+                product = Product()
+                _save_product_fields(product, request)
+                product.save()
+                product.tags.set(_get_selected_tags(request))
+                _save_variants_and_images(product, request)
+        except (IntegrityError, ValueError, ValidationError) as exc:
+            return _handle_save_errors(request, exc)
+
+        messages.success(request, f'"{product.name}" was added to the catalog.')
+        return redirect("adm_user:products")
+
+    return render(request, FORM_TEMPLATE, _product_form_context())
+
+@require_http_methods(["GET", "POST"])
+def product_update(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+
+    if request.method == "POST":
+        try:
+            with transaction.atomic():
+                _save_product_fields(product, request)
+                product.save()
+                product.tags.set(_get_selected_tags(request))
+                _save_variants_and_images(product, request)
+        except (IntegrityError, ValueError, ValidationError) as exc:
+            return _handle_save_errors(request, exc, product=product)
+
+        messages.success(request, f'"{product.name}" was updated.')
+        return redirect("adm_user:products")
+
+    context = _product_form_context(product)   # was: _product_form_context() + separate line
+    context["product"] = product
+    return render(request, FORM_TEMPLATE, context)
+
+
+@require_http_methods(["POST"])
+def product_delete(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    product.is_active = False
+    product.save(update_fields=["is_active"])
+    product.variants.update(is_active=False)
+
+    messages.success(request, f'"{product.name}" was removed from the catalog.')
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({"ok": True, "id": product.id})
+    return redirect("adm_user:products")
 
 def img_manager(request):
     return render(request, 'adm_user/image_manager.html')

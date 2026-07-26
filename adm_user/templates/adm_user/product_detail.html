@@ -1,0 +1,190 @@
+{% extends "adm_user/base_admin.html" %}
+{% block title %}{{ product.name }} - Sanskruti by Bani{% endblock %}
+{% block page_title %}Product Details{% endblock %}
+{% block nav_class_dashboard %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600
+dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold
+font-medium transition-colors{% endblock %}
+{% block nav_class_products %}nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-brand-maroon
+bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium transition-colors{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+    <div>
+        <a href="{% url 'adm_user:products' %}" class="text-sm text-slate-500 hover:text-brand-maroon flex items-center gap-1 mb-2">
+            <i class="ph ph-arrow-left"></i> Back to Products
+        </a>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ product.name }}</h2>
+        <p class="text-slate-500 dark:text-slate-400">{{ product.product_code|default:"No product code" }}</p>
+    </div>
+    <div class="flex gap-3">
+        <a href="{% url 'adm_user:update' product.slug %}"
+            class="flex items-center gap-2 bg-brand-maroon hover:bg-brand-maroonLight text-white px-5 py-2 rounded-xl font-medium transition-all">
+            <i class="ph ph-pencil-simple"></i> Edit Product
+        </a>
+    </div>
+</div>
+
+<div class="flex flex-col lg:flex-row gap-6">
+    <!-- Main Column -->
+    <div class="flex-1 space-y-6">
+
+        <!-- Default Images -->
+        <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <i class="ph ph-image text-brand-maroon"></i> Default Images
+            </h3>
+            {% if default_images %}
+            <div class="flex flex-wrap gap-3">
+                {% for img in default_images %}
+                <div class="w-28 h-28 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <img src="{{ img.image_url }}" class="w-full h-full object-cover" alt="{{ product.name }}">
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-sm text-slate-400">No default images uploaded.</p>
+            {% endif %}
+        </div>
+
+        <!-- General Info -->
+        <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <i class="ph ph-info text-brand-maroon"></i> General Information
+            </h3>
+            <dl class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Category</dt>
+                    <dd class="text-slate-800 dark:text-white font-medium">{{ product.category.name }}</dd>
+                </div>
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Fabric</dt>
+                    <dd class="text-slate-800 dark:text-white font-medium">{{ product.fabric.name }}</dd>
+                </div>
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Print</dt>
+                    <dd class="text-slate-800 dark:text-white font-medium">{{ product.print_type.name|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Saree Length</dt>
+                    <dd class="text-slate-800 dark:text-white font-medium">{{ product.saree_length|default:"—" }}</dd>
+                </div>
+            </dl>
+            {% if product.description %}
+            <div class="mt-4 pt-4 border-t border-slate-100 dark:border-dark-border">
+                <dt class="text-slate-500 dark:text-slate-400 text-sm mb-1">Description</dt>
+                <dd class="text-slate-700 dark:text-slate-300 text-sm">{{ product.description }}</dd>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Saree Specs -->
+        <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <i class="ph ph-scissors text-brand-maroon"></i> Specifications
+            </h3>
+            <dl class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Blouse Included</dt>
+                    <dd class="text-slate-800 dark:text-white font-medium">{{ product.blouse_included|yesno:"Yes,No" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Blouse Type</dt>
+                    <dd class="text-slate-800 dark:text-white font-medium">{{ product.blouse_type|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Blouse Size</dt>
+                    <dd class="text-slate-800 dark:text-white font-medium">{{ product.blouse_size|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Weaving Style</dt>
+                    <dd class="text-slate-800 dark:text-white font-medium">{{ product.weaving_style|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Border Style</dt>
+                    <dd class="text-slate-800 dark:text-white font-medium">{{ product.border_style|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Care Instructions</dt>
+                    <dd class="text-slate-800 dark:text-white font-medium">{{ product.care_instructions|default:"—" }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Variants -->
+        <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <i class="ph ph-palette text-brand-maroon"></i> Color Variants
+            </h3>
+            {% if variants %}
+            <div class="space-y-4">
+                {% for v in variants %}
+                <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex flex-col sm:flex-row gap-4">
+                    <div class="flex items-center gap-2 sm:w-40 shrink-0">
+                        <div class="w-5 h-5 rounded-full border border-slate-200 dark:border-slate-600"
+                            style="background-color: {{ v.color.hex_code }};"></div>
+                        <span class="font-medium text-slate-800 dark:text-white">{{ v.color.name }}</span>
+                    </div>
+                    <div class="text-sm text-slate-600 dark:text-slate-300 sm:w-48 shrink-0">
+                        <p>Stock: <span class="font-medium text-slate-800 dark:text-white">{{ v.stock_quantity }}</span></p>
+                        <p>Price: <span class="font-medium text-slate-800 dark:text-white">
+                            ₹{{ v.price|default:product.base_price|floatformat:0 }}</span></p>
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
+                        {% for img in v.images.all %}
+                        <div class="w-16 h-16 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden">
+                            <img src="{{ img.image_url }}" class="w-full h-full object-cover" alt="{{ v.color.name }}">
+                        </div>
+                        {% empty %}
+                        <span class="text-xs text-slate-400">No images for this color.</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-sm text-slate-400">No color variants added — using base price/stock only.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="w-full lg:w-80 space-y-6 shrink-0">
+        <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <i class="ph ph-currency-inr text-brand-maroon"></i> Pricing & Stock
+            </h3>
+            <dl class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                    <dt class="text-slate-500 dark:text-slate-400">Base Price</dt>
+                    <dd class="font-semibold text-slate-800 dark:text-white">₹{{ product.base_price|floatformat:0 }}</dd>
+                </div>
+                {% if product.discount_price %}
+                <div class="flex justify-between">
+                    <dt class="text-slate-500 dark:text-slate-400">Discount Price</dt>
+                    <dd class="font-semibold text-emerald-600">₹{{ product.discount_price|floatformat:0 }}</dd>
+                </div>
+                {% endif %}
+                <div class="flex justify-between">
+                    <dt class="text-slate-500 dark:text-slate-400">Base Stock</dt>
+                    <dd class="font-semibold text-slate-800 dark:text-white">{{ product.stock_quantity }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <i class="ph ph-tag text-brand-maroon"></i> Tags
+            </h3>
+            {% if product.tags.all %}
+            <div class="flex flex-wrap gap-2">
+                {% for t in product.tags.all %}
+                <span class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2.5 py-1 rounded-full">{{ t.name }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-sm text-slate-400">No tags assigned.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

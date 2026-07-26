@@ -9,7 +9,46 @@ font-medium transition-colors{% endblock %}
 bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium transition-colors{% endblock %}
 
 {% block content %}
-<div id="view-products" class="view-section">
+<style>
+.message-toast {
+    transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease;
+    max-height: 100px;
+    overflow: hidden;
+}
+.message-toast.message-toast-hide {
+    opacity: 0;
+    transform: translateY(-6px);
+    max-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+}
+.message-toast-bar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    animation: message-toast-countdown 3s linear forwards;
+}
+@keyframes message-toast-countdown {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+</style>
+{% if messages %}
+<div class="mb-4 space-y-2" id="messageContainer">
+    {% for message in messages %}
+    <div class="message-toast relative overflow-hidden px-4 py-3 rounded-lg text-sm max-w-sm w-fit {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200{% else %}bg-emerald-50 text-emerald-700 border border-emerald-200{% endif %}">
+    {{ message }}
+        <span class="message-toast-bar {% if message.tags == 'error' %}bg-red-400{% else %}bg-emerald-400{% endif %}"></span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<div id="view-products" class="view-section{% if product %} hidden{% endif %}">
 
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
@@ -30,26 +69,26 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
     </div>
 
     <!-- Filters -->
-    <div
-        class="bg-white dark:bg-dark-panel rounded-t-2xl p-4 border-x border-t border-slate-100 dark:border-dark-border flex flex-wrap gap-4 items-center justify-between">
+    <div class="bg-white dark:bg-dark-panel rounded-t-2xl p-4 border-x border-t border-slate-100 dark:border-dark-border flex flex-wrap gap-4 items-center justify-between">
         <div class="flex gap-2">
-            <select
+            <select id="filterCategory" name="category"
                 class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-3 py-2">
-                <option>All Categories</option>
-                <option>Paithani</option>
-                <option>Banarasi</option>
+                <option value="">All Categories</option>
+                {% for c in categories %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+                {% endfor %}
             </select>
-            <select
+            <select id="filterStock"
                 class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-3 py-2">
-                <option>Stock Status</option>
-                <option>In Stock</option>
-                <option>Low Stock</option>
-                <option>Out of Stock</option>
+                <option value="">Stock Status</option>
+                <option value="in">In Stock</option>
+                <option value="low">Low Stock</option>
+                <option value="out">Out of Stock</option>
             </select>
         </div>
         <div class="relative">
             <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="text" placeholder="Search by name or code..."
+            <input type="text" id="filterSearch" placeholder="Search by name or code..."
                 class="pl-9 pr-4 py-2 w-64 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon">
         </div>
     </div>
@@ -74,81 +113,79 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-dark-border">
-                <!-- Row 1 -->
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
+                {% for p in products %}
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group"
+                    data-category="{{ p.category_id }}"
+                    data-stock="{% if p.stock_quantity == 0 %}out{% elif p.stock_quantity < 5 %}low{% else %}in{% endif %}"
+                    data-search="{{ p.name|lower }} {{ p.product_code|default:''|lower }}">
                     <td class="p-4">
                         <input type="checkbox"
                             class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon">
                     </td>
                     <td class="p-4">
                         <div class="flex items-center gap-3">
+                            {% with p.images.first as thumb %}
+                            {% if thumb %}
                             <div class="w-12 h-16 rounded bg-slate-100 overflow-hidden">
-                                <img src="../assets/slide11.png" class="w-full h-full object-cover" alt="Saree">
+                                <img src="{{ thumb.image_url }}" class="w-full h-full object-cover" alt="{{ p.name }}">
                             </div>
-                            <div>
-                                <p
-                                    class="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-brand-maroon transition-colors cursor-pointer">
-                                    Royal Maroon Paithani</p>
-                                <p class="text-xs text-slate-500">Pure Silk</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300">SBB-PT-001</td>
-                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300"><span
-                            class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">Paithani</span>
-                    </td>
-                    <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">₹24,500</td>
-                    <td class="p-4">
-                        <span
-                            class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 14 in stock
-                        </span>
-                    </td>
-                    <td class="p-4 text-right">
-                        <button class="text-slate-400 hover:text-brand-maroon p-1"><i
-                                class="ph ph-pencil-simple text-lg"></i></button>
-                        <button class="text-slate-400 hover:text-red-500 p-1"><i
-                                class="ph ph-trash text-lg"></i></button>
-                    </td>
-                </tr>
-                <!-- Row 2 -->
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
-                    <td class="p-4">
-                        <input type="checkbox"
-                            class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon">
-                    </td>
-                    <td class="p-4">
-                        <div class="flex items-center gap-3">
+                            {% else %}
                             <div
                                 class="w-12 h-16 rounded bg-slate-100 overflow-hidden flex items-center justify-center text-slate-300">
                                 <i class="ph ph-image text-2xl"></i>
                             </div>
+                            {% endif %}
+                            {% endwith %}
                             <div>
-                                <p
-                                    class="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-brand-maroon transition-colors cursor-pointer">
-                                    Emerald Banarasi</p>
-                                <p class="text-xs text-slate-500">Zari Work</p>
+                                <a href="{% url 'adm_user:detail' p.slug %}"
+                                    class="text-sm font-semibold text-slate-800 dark:text-white hover:text-brand-maroon transition-colors cursor-pointer">
+                                    {{ p.name }}
+                                </a>
+                                <p class="text-xs text-slate-500">{{ p.fabric.name|default:"" }}</p>
                             </div>
                         </div>
                     </td>
-                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300">SBB-BN-042</td>
+                    <td class="p-4 text-sm text-slate-600 dark:text-slate-300">{{ p.product_code|default:"—" }}</td>
                     <td class="p-4 text-sm text-slate-600 dark:text-slate-300"><span
-                            class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">Banarasi</span>
+                            class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">{{ p.category.name }}</span>
                     </td>
-                    <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">₹18,900</td>
+                    <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">₹{{ p.base_price|floatformat:0 }}</td>
                     <td class="p-4">
+                        {% if p.stock_quantity == 0 %}
+                        <span
+                            class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border border-red-200 dark:border-red-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Out of stock
+                        </span>
+                        {% elif p.stock_quantity < 5 %}
                         <span
                             class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> 2 in stock
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> {{ p.stock_quantity }} in stock
                         </span>
+                        {% else %}
+                        <span
+                            class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {{ p.stock_quantity }} in stock
+                        </span>
+                        {% endif %}
                     </td>
                     <td class="p-4 text-right">
-                        <button class="text-slate-400 hover:text-brand-maroon p-1"><i
-                                class="ph ph-pencil-simple text-lg"></i></button>
-                        <button class="text-slate-400 hover:text-red-500 p-1"><i
-                                class="ph ph-trash text-lg"></i></button>
+                        <a href="{% url 'adm_user:update' p.slug %}" class="text-slate-400 hover:text-brand-maroon p-1 inline-block"><i
+                                class="ph ph-pencil-simple text-lg"></i></a>
+                        <form method="post" action="{% url 'adm_user:delete' p.slug %}" class="inline"
+                            onsubmit="return confirm('Remove {{ p.name }} from the catalog?');">
+                            {% csrf_token %}
+                            <button type="submit" class="text-slate-400 hover:text-red-500 p-1"><i
+                                    class="ph ph-trash text-lg"></i></button>
+                        </form>
                     </td>
                 </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="p-8 text-center text-sm text-slate-500">
+                        No products yet. Click "Add Product" to create your first one.
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
 
@@ -170,9 +207,10 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
 </div>
 
 <!-- DEDICATED ADD PRODUCT PAGE (SPA View) -->
-<div id="view-add-product" class="view-section hidden pb-10">
+<div id="view-add-product" class="view-section{% if not product %} hidden{% endif %} pb-10">
     <div class="flex items-center gap-4 mb-8">
-        <button onclick="hideAddProductPage()" class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-brand-maroon transition-colors">
+        <button onclick="hideAddProductPage()"
+            class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-brand-maroon transition-colors">
             <i class="ph ph-arrow-left text-xl"></i>
         </button>
         <div>
@@ -181,134 +219,285 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         </div>
     </div>
 
-    <form id="addProductForm" class="flex flex-col lg:flex-row gap-6">
+    <form id="addProductForm" method="post" enctype="multipart/form-data"
+        action="{% if product %}{% url 'adm_user:update' product.slug %}{% else %}{% url 'adm_user:create' %}{% endif %}"
+        class="flex flex-col lg:flex-row gap-6">
+        {% csrf_token %}
         <!-- Main Form Column -->
         <div class="flex-1 space-y-6">
             <!-- General Info -->
-            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <div
+                class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                     <i class="ph ph-info text-brand-maroon"></i> General Information
                 </h3>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product Name *</label>
-                        <input type="text" id="prodName" required placeholder="e.g. Royal Maroon Paithani" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon focus:border-brand-maroon dark:text-white">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product Name
+                            *</label>
+                        <input type="text" id="prodName" name="name" required placeholder="e.g. Royal Maroon Paithani"
+                            value="{{ product.name|default:'' }}"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon focus:border-brand-maroon dark:text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
-                        <textarea id="prodDesc" rows="4" placeholder="Write a comprehensive description..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon focus:border-brand-maroon dark:text-white"></textarea>
+                        <label
+                            class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
+                        <textarea id="prodDesc" name="description" rows="4"
+                            placeholder="Write a comprehensive description..."
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon focus:border-brand-maroon dark:text-white">
+                            {{ product.description|default:'' }}
+                        </textarea>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Category *</label>
-                            <select id="prodCategory" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon focus:border-brand-maroon dark:text-white">
-                                <option value="" disabled selected>Select Category</option>
-                                <option value="Paithani">Paithani</option>
-                                <option value="Banarasi">Banarasi</option>
-                                <option value="Kanjivaram">Kanjivaram</option>
-                                <option value="Patola">Patola</option>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Category
+                                *</label>
+                            <select id="prodCategory" name="category" required
+                                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon focus:border-brand-maroon dark:text-white">
+                                <option value="" disabled {% if not product %}selected{% endif %}>Select Category
+                                </option>
+                                {% for c in categories %}
+                                <option value="{{ c.id }}" {% if product.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product Code</label>
-                            <input type="text" id="prodCode" placeholder="e.g. SBB-001" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon focus:border-brand-maroon dark:text-white">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product
+                                Code</label>
+                            <input type="text" id="prodCode" name="product_code" placeholder="e.g. SBB-001"
+                                value="{{ product.product_code|default:'' }}"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon focus:border-brand-maroon dark:text-white">
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Pricing & Inventory -->
-            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <div
+                class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                     <i class="ph ph-currency-inr text-brand-maroon"></i> Pricing & Inventory
                 </h3>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Base Price (₹) *</label>
-                        <input type="number" id="prodPrice" required min="0" placeholder="0.00" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Base Price (₹)
+                            *</label>
+                        <input type="number" id="prodPrice" name="base_price" required min="0" step="0.01"
+                            placeholder="0.00" value="{{ product.base_price|default:'' }}"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Discount Price (₹)</label>
-                        <input type="number" id="prodDiscount" min="0" placeholder="Optional" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Discount Price
+                            (₹)</label>
+                        <input type="number" id="prodDiscount" name="discount_price" min="0" step="0.01"
+                            placeholder="Optional" value="{{ product.discount_price|default:'' }}"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Stock Quantity *</label>
-                        <input type="number" id="prodStock" required min="0" placeholder="0" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Stock Quantity
+                            *</label>
+                        <input type="number" id="prodStock" name="stock_quantity" required min="0" placeholder="0"
+                            value="{{ product.stock_quantity|default:'0' }}"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
                     </div>
                 </div>
             </div>
 
             <!-- Saree Specifications -->
-            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <div
+                class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                     <i class="ph ph-list-dashes text-brand-maroon"></i> Saree Specifications
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fabric</label>
-                        <input type="text" id="prodFabric" placeholder="e.g. Premium Soft Silk, Pure Banarasi" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Saree Length</label>
-                        <input type="text" id="prodLength" placeholder="e.g. 5.5 Meter, 6.30 meter" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Blouse Included</label>
-                        <select id="prodBlouseInc" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
-                            <option value="Yes" selected>Yes</option>
-                            <option value="No">No</option>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fabric
+                            *</label>
+                        <select id="prodFabric" name="fabric" required
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                            <option value="" disabled {% if not product %}selected{% endif %}>Select Fabric</option>
+                            {% for f in fabrics %}
+                            <option value="{{ f.id }}" {% if product.fabric_id == f.id %}selected{% endif %}>{{ f.name }}
+                            </option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Blouse Type</label>
-                        <input type="text" id="prodBlouseType" placeholder="e.g. Unstitched, Running Contrast" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Saree
+                            Length</label>
+                        <input type="text" id="prodLength" name="saree_length" placeholder="e.g. 5.5 Meter, 6.30 meter"
+                            value="{{ product.saree_length|default:'' }}"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Blouse Size</label>
-                        <input type="text" id="prodBlouseSize" placeholder="e.g. 0.8 meter, Same as shown" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Blouse
+                            Included</label>
+                        <select id="prodBlouseInc" name="blouse_included"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                            <option value="Yes" {% if not product or product.blouse_included %}selected{% endif %}>Yes
+                            </option>
+                            <option value="No" {% if product and not product.blouse_included %}selected{% endif %}>No
+                            </option>
+                        </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Weaving Style</label>
-                        <input type="text" id="prodWeave" placeholder="e.g. Dual Zari Weaving, Handwoven" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Blouse
+                            Type</label>
+                        <input type="text" id="prodBlouseType" name="blouse_type"
+                            placeholder="e.g. Unstitched, Running Contrast" value="{{ product.blouse_type|default:'' }}"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Border Style</label>
-                        <input type="text" id="prodBorder" placeholder="e.g. Floral dual zari, Minakari Border" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Blouse
+                            Size</label>
+                        <input type="text" id="prodBlouseSize" name="blouse_size"
+                            placeholder="e.g. 0.8 meter, Same as shown" value="{{ product.blouse_size|default:'' }}"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Weaving
+                            Style</label>
+                        <input type="text" id="prodWeave" name="weaving_style"
+                            placeholder="e.g. Dual Zari Weaving, Handwoven"
+                            value="{{ product.weaving_style|default:'' }}"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Border
+                            Style</label>
+                        <input type="text" id="prodBorder" name="border_style"
+                            placeholder="e.g. Floral dual zari, Minakari Border"
+                            value="{{ product.border_style|default:'' }}"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Prints</label>
-                        <input type="text" id="prodPrints" placeholder="e.g. NO, Block Prints" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <select id="prodPrints" name="print_type"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                            <option value="" {% if not product.print_type_id %}selected{% endif %}>None / Plain</option>
+                            {% for p in prints %}
+                            <option value="{{ p.id }}" {% if product.print_type_id == p.id %}selected{% endif %}>
+                                {{ p.name}}
+                            </option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Care Instructions</label>
-                        <input type="text" id="prodCare" placeholder="e.g. Dry Clean only" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Care
+                            Instructions</label>
+                        <input type="text" id="prodCare" name="care_instructions" placeholder="e.g. Dry Clean only"
+                            value="{{ product.care_instructions|default:'' }}"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
                     </div>
                 </div>
             </div>
 
             <!-- Attributes & Variants (Amazon Style) -->
-            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <div
+                class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                     <i class="ph ph-palette text-brand-maroon"></i> Color Variants & Media
                 </h3>
-                <p class="text-xs text-slate-500 mb-5">Amazon-style variants: Add a color below to upload specific images, manage stock, and set pricing for that specific variant.</p>
-                
+                <p class="text-xs text-slate-500 mb-5">Amazon-style variants: Add a color below to upload specific
+                    images, manage stock, and set pricing for that specific variant.</p>
+
                 <!-- Add Color Input -->
                 <div class="flex gap-2 mb-6">
-                    <input type="text" id="newColorName" placeholder="e.g. Royal Red, Emerald Green..." class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon focus:border-brand-maroon dark:text-white">
-                    <button type="button" onclick="addColorVariant()" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                    <select id="newColorSelect"
+                        class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon focus:border-brand-maroon dark:text-white">
+                        <option value="" disabled selected>Select a color to add...</option>
+                        {% for c in colors %}
+                        <option value="{{ c.id }}" data-hex="{{ c.hex_code }}" 
+                        {% if c.id in existing_variant_color_ids%}
+                        disabled
+                        {% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" onclick="addColorVariant()"
+                        class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
                         <i class="ph ph-plus"></i> Add Color Variant
                     </button>
                 </div>
+                {% if not colors %}
+                <p class="text-xs text-amber-600 mb-4">No colors set up yet — add some on the Filters page first.</p>
+                {% endif %}
 
                 <!-- Variants Container -->
                 <div id="variantsContainer" class="space-y-4">
-                    <!-- Dynamic variants will be injected here via JS -->
+                    {% for v in product.variants.all %}
+                    {% if v.is_active %}
+                    <div id="var_{{ v.id }}" data-color-id="{{ v.color_id }}"
+                        class="border border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-slate-50/50 dark:bg-slate-800/30 relative group">
+                        <input type="hidden" name="variant_color_id" value="{{ v.color_id }}">
+                        <button type="button" onclick="removeColorVariant('var_{{ v.id }}', '{{ v.color_id }}')"
+                            class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-dark-panel border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 shadow-sm transition-colors">
+                            <i class="ph ph-trash text-lg"></i>
+                        </button>
+
+                        <h4 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-3">
+                            <div class="w-5 h-5 rounded-full shadow-inner border border-slate-200 dark:border-slate-600 flex items-center justify-center"
+                                style="background-color: {{ v.color.hex_code }};"></div>
+                            {{ v.color.name }} Variant
+                        </h4>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="lg:col-span-1 space-y-4">
+                                <div>
+                                    <label
+                                        class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Stock
+                                        for {{ v.color.name }}</label>
+                                    <input type="number" name="variant_stock" value="{{ v.stock_quantity }}"
+                                        class="w-full bg-white dark:bg-dark-panel border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Specific
+                                        Price (Optional)</label>
+                                    <input type="number" name="variant_price" value="{{ v.price|default:'' }}"
+                                        placeholder="Leave blank for base"
+                                        class="w-full bg-white dark:bg-dark-panel border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-2">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Images
+                                    for {{ v.color.name }} (max {{ v.images.model.MAX_IMAGES_PER_VARIANT }})</label>
+                                <div class="flex gap-3 overflow-x-auto custom-scrollbar pb-2 items-center">
+                                    <label
+                                        class="w-24 h-24 flex-shrink-0 border-2 border-dashed border-brand-maroon/40 rounded-xl flex flex-col items-center justify-center text-brand-maroon cursor-pointer hover:bg-brand-maroon/5 transition-colors bg-white dark:bg-dark-panel shadow-sm">
+
+                                        <input type="file" name="variant_images_{{ v.color_id }}" multiple
+                                            accept="image/*" class="hidden"
+                                            onchange="handleImageUpload(this, 'preview_var_{{ v.id }}')">
+                                        <i class="ph ph-upload-simple text-xl mb-1"></i>
+                                        <span class="text-[10px] font-semibold tracking-wide uppercase">Add</span>
+                                    </label>
+                                    <div id="preview_var_{{ v.id }}" class="flex gap-3">
+                                        {% for img in v.images.all %}
+                                        <div
+                                            class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+                                            <img src="{{ img.image_url }}" class="w-full h-full object-cover"
+                                                alt="{{ img.alt_text }}">
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
                 </div>
 
                 <div class="mt-6 pt-6 border-t border-slate-100 dark:border-dark-border">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Search Filters / Tags</label>
-                    <input type="text" id="prodFilters" placeholder="e.g. Wedding, Pure Silk, Party Wear (comma separated)" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                    <select id="prodTags" name="tags" multiple size="6"
+                    class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                    {% for t in tags %}
+                        <option value="{{ t.id }}" {% if t.id in product_tag_ids %}selected{% endif %}>{{ t.name }}</option>
+                    {% endfor %}
+                    </select>
+                     <p class="text-xs text-slate-500 mt-1">Hold Ctrl (Cmd on Mac) to select multiple tags. New tags can be added from the Filters page.</p>
                 </div>
             </div>
         </div>
@@ -316,15 +505,21 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         <!-- Sidebar Column -->
         <div class="w-full lg:w-80 space-y-6 flex-shrink-0">
             <!-- Media -->
-            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+            <div
+                class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                     <i class="ph ph-image text-brand-maroon"></i> Default Images
                 </h3>
+
+
                 <p class="text-xs text-slate-500 mb-4">These images will show if no specific color is selected.</p>
-                
-                <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-6 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors">
-                    <input type="file" multiple accept="image/*" class="hidden" onchange="handleImageUpload(this, 'defaultImagesPreview')">
-                    <div class="w-12 h-12 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center mx-auto mb-3">
+
+                <label
+                    class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-6 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors">
+                    <input type="file" name="default_images" multiple accept="image/*" class="hidden"
+                        onchange="handleImageUpload(this, 'defaultImagesPreview')">
+                    <div
+                        class="w-12 h-12 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center mx-auto mb-3">
                         <i class="ph ph-upload-simple text-xl"></i>
                     </div>
                     <p class="text-sm font-medium text-slate-700 dark:text-slate-300">Click to upload images</p>
@@ -332,10 +527,23 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                 </label>
 
                 <!-- Preview Container -->
-                <div id="defaultImagesPreview" class="flex flex-wrap gap-3 mt-4"></div>
+                <div id="defaultImagesPreview" class="flex flex-wrap gap-3 mt-4">
+                    {% for img in product.images.all %}
+                    {% if not img.variant_id %}
+                    <div
+                        class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+                        <img src="{{ img.image_url }}" class="w-full h-full object-cover" alt="{{ img.alt_text }}">
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
 
-                <div class="mt-4 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
-                    <h4 class="text-xs font-semibold text-amber-800 dark:text-amber-400 mb-1 flex items-center gap-1"><i class="ph ph-warning-circle"></i> Guidelines</h4>
+
+
+                <div
+                    class="mt-4 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                    <h4 class="text-xs font-semibold text-amber-800 dark:text-amber-400 mb-1 flex items-center gap-1"><i
+                            class="ph ph-warning-circle"></i> Guidelines</h4>
                     <ul class="text-[11px] text-amber-700 dark:text-amber-500 space-y-1 ml-4 list-disc">
                         <li><strong>Aspect Ratio:</strong> 2:3 or 3:4 (Portrait format recommended)</li>
                         <li><strong>Size limit:</strong> Max 2MB per image</li>
@@ -345,11 +553,16 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             </div>
 
             <!-- Actions -->
-            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
-                <button type="button" onclick="submitNewProduct()" class="w-full mb-3 px-5 py-3 rounded-xl font-medium bg-brand-maroon hover:bg-brand-maroonLight text-white shadow-lg shadow-brand-maroon/30 transition-all flex items-center justify-center gap-2">
+            <div
+                class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+
+                <button type="submit"
+                    class="w-full mb-3 px-5 py-3 rounded-xl font-medium bg-brand-maroon hover:bg-brand-maroonLight text-white shadow-lg shadow-brand-maroon/30 transition-all flex items-center justify-center gap-2">
                     <i class="ph ph-check-circle text-lg"></i> Save Product
                 </button>
-                <button type="button" onclick="hideAddProductPage()" class="w-full px-5 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors text-center">
+
+                <button type="button" onclick="hideAddProductPage()"
+                    class="w-full px-5 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors text-center">
                     Cancel
                 </button>
             </div>
@@ -361,194 +574,153 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
 {% block extra_scripts %}
 <script>
 
-    let productsDB = [];
+    window.applyProductFilters = function () {
+    const category = document.getElementById('filterCategory').value;
+    const stock = document.getElementById('filterStock').value;
+    const search = document.getElementById('filterSearch').value.trim().toLowerCase();
 
-    function loadProducts() {
-        const saved = localStorage.getItem('sbb_products');
-        productsDB = saved ? JSON.parse(saved) : [
-            { id: 1, name: 'Royal Maroon Paithani', code: 'SBB-PT-001', category: 'Paithani', price: 24500, stock: 14, description: 'Pure silk authentic handwoven paithani', image_path: '../assets/slide11.png' },
-            { id: 2, name: 'Emerald Banarasi', code: 'SBB-BN-042', category: 'Banarasi', price: 18900, stock: 2, description: 'Zari work premium banarasi saree', image_path: '' }
-        ];
-    }
+    document.querySelectorAll('#view-products tbody tr[data-category]').forEach(row => {
+        const matchesCategory = !category || row.dataset.category === category;
+        const matchesStock = !stock || row.dataset.stock === stock;
+        const matchesSearch = !search || row.dataset.search.includes(search);
+        row.classList.toggle('hidden', !(matchesCategory && matchesStock && matchesSearch));
+    });
+};
 
-    function saveProducts() {
-        localStorage.setItem('sbb_products', JSON.stringify(productsDB));
-    }
-
-    function initPageModule() {
-        loadProducts();
-        renderProductsTable(productsDB);
-    }
-
-    function renderProductsTable(products) {
-        const tableBody = document.querySelector('#view-products tbody');
-        if (!tableBody) return;
-        tableBody.innerHTML = '';
-
-        if (products.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-500">No products found. Click "Add Product" to create one.</td></tr>';
-            return;
-        }
-
-        products.forEach(product => {
-            const price = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(product.price);
-
-            let stockBadge = '';
-            if (product.stock > 10) {
-                stockBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ${product.stock} in stock</span>`;
-            } else if (product.stock > 0) {
-                stockBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-800"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> ${product.stock} low stock</span>`;
-            } else {
-                stockBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border border-red-200 dark:border-red-800"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Out of stock</span>`;
-            }
-
-            const imgHtml = product.image_path
-                ? `<img src="${product.image_path}" class="w-full h-full object-cover" alt="${product.name}" onerror="this.src='https://placehold.co/100x150?text=No+Image'">`
-                : `<i class="ph ph-image text-2xl text-slate-400"></i>`;
-
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group';
-            tr.innerHTML = `
-            <td class="p-4"><input type="checkbox" class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon"></td>
-            <td class="p-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-16 rounded bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center">${imgHtml}</div>
-                    <div>
-                        <p class="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-brand-maroon transition-colors cursor-pointer">${product.name}</p>
-                        <p class="text-xs text-slate-500 w-48 truncate">${product.description || 'No description'}</p>
-                    </div>
-                </div>
-            </td>
-            <td class="p-4 text-sm text-slate-600 dark:text-slate-300 font-mono text-xs">${product.code}</td>
-            <td class="p-4 text-sm text-slate-600 dark:text-slate-300"><span class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs uppercase tracking-wider">${product.category}</span></td>
-            <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">${price}</td>
-            <td class="p-4">${stockBadge}</td>
-            <td class="p-4 text-right">
-                <button onclick="deleteProduct(${product.id})" class="text-slate-400 hover:text-red-500 p-1"><i class="ph ph-trash text-lg"></i></button>
-            </td>
-        `;
-            tableBody.appendChild(tr);
-        });
-    }
+document.getElementById('filterCategory').addEventListener('change', applyProductFilters);
+document.getElementById('filterStock').addEventListener('change', applyProductFilters);
+document.getElementById('filterSearch').addEventListener('input', applyProductFilters);
 
     window.showAddProductPage = function () {
         document.getElementById('view-products').classList.add('hidden');
         document.getElementById('view-add-product').classList.remove('hidden');
     };
+
+    window.editProductDetailUrl = "{% if product %}{% url 'adm_user:detail' product.slug %}{% endif %}";
+
     window.hideAddProductPage = function () {
+        if (window.editProductDetailUrl) {
+            window.location.href = window.editProductDetailUrl;
+            return;
+        }
         document.getElementById('view-add-product').classList.add('hidden');
         document.getElementById('view-products').classList.remove('hidden');
         document.getElementById('addProductForm').reset();
     };
-    window.submitNewProduct = function () {
-        const form = document.getElementById('addProductForm');
-        if (!form.checkValidity()) { form.reportValidity(); return; }
 
-        const newProduct = {
-            id: Date.now(),
-            name: document.getElementById('prodName').value,
-            code: document.getElementById('prodCode').value,
-            category: document.getElementById('prodCategory').value,
-            price: parseFloat(document.getElementById('prodPrice').value),
-            stock: parseInt(document.getElementById('prodStock').value),
-            description: document.getElementById('prodDesc').value,
-            image_path: document.getElementById('prodImage') ? document.getElementById('prodImage').value : ''
-        };
-
-        productsDB.unshift(newProduct);
-        saveProducts();
-        hideAddProductPage();
-        renderProductsTable(productsDB);
-        alert("Product saved successfully!");
-    };
-    window.deleteProduct = function (id) {
-        if (confirm("Delete this product?")) {
-            productsDB = productsDB.filter(p => p.id !== id);
-            saveProducts();
-            renderProductsTable(productsDB);
+    document.getElementById('addProductForm').addEventListener('submit', function (e) {
+        if (!this.checkValidity()) {
+            e.preventDefault();
+            this.reportValidity();
         }
-    };
-    
+        // otherwise let it submit normally to the Django view
+    });
+
     // Amazon-style Dynamic Variant Manager
-    window.addColorVariant = function() {
-        const input = document.getElementById('newColorName');
-        const color = input.value.trim();
-        if(!color) return;
-        
+    window.addColorVariant = function () {
+        const select = document.getElementById('newColorSelect');
+        const option = select.options[select.selectedIndex];
+        if (!option || !option.value) return;
+
+        const colorId = option.value;
+        const color = option.textContent.trim();
+        const hex = option.dataset.hex || '#cccccc';
+
         const variantId = 'var_' + Date.now();
         const container = document.getElementById('variantsContainer');
-        
+
         const html = `
-        <div id="${variantId}" class="border border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-slate-50/50 dark:bg-slate-800/30 relative group">
-            <button type="button" onclick="document.getElementById('${variantId}').remove()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-dark-panel border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 shadow-sm transition-colors">
+            <div id="${variantId}" data-color-id="${colorId}" class="bg-gray-50 border border-gray-200 rounded-2xl p-6 space-y-5 relative">
+            <input type="hidden" name="variant_color_id" value="${colorId}">
+
+            <button type="button" onclick="removeColorVariant('${variantId}', '${colorId}')"
+                class="absolute top-5 right-5 w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 transition">
                 <i class="ph ph-trash text-lg"></i>
             </button>
-            
-            <h4 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-3">
-                <div class="w-5 h-5 rounded-full shadow-inner border border-slate-200 dark:border-slate-600 flex items-center justify-center bg-white"><i class="ph ph-drop text-xs text-brand-maroon"></i></div> 
+
+            <h4 class="flex items-center gap-2 font-bold text-gray-800 text-base">
+                <i class="ph-fill ph-circle text-lg" style="color: ${hex};"></i>
                 ${color} Variant
             </h4>
-            
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Variant Specific Details -->
                 <div class="lg:col-span-1 space-y-4">
                     <div>
-                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Stock for ${color}</label>
-                        <input type="number" placeholder="0" class="w-full bg-white dark:bg-dark-panel border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white shadow-sm">
+                        <label class="block text-sm font-medium text-gray-600 mb-1.5">
+                        Stock for ${color}
+                        </label>
+                        <input type="number" name="variant_stock" placeholder="0"
+                            class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Specific Price (Optional)</label>
-                        <input type="number" placeholder="Leave blank for base" class="w-full bg-white dark:bg-dark-panel border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white shadow-sm">
+                        <label class="block text-sm font-medium text-gray-600 mb-1.5">Specific Price (Optional)</label>
+                        <input type="number" name="variant_price" placeholder="Leave blank for base"
+                            class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/10">
                     </div>
                 </div>
-                
-                <!-- Variant Specific Images -->
+
                 <div class="lg:col-span-2">
-                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Upload Images exactly for ${color} (Optional)</label>
+                    <label class="block text-sm font-medium text-gray-600 mb-1.5">
+                        Upload Images exactly for ${color} (Optional, max 4)
+                    </label>
                     <div class="flex gap-3 overflow-x-auto custom-scrollbar pb-2 items-center">
-                        <!-- Upload Button -->
-                        <label class="w-24 h-24 flex-shrink-0 border-2 border-dashed border-brand-maroon/40 rounded-xl flex flex-col items-center justify-center text-brand-maroon cursor-pointer hover:bg-brand-maroon/5 transition-colors bg-white dark:bg-dark-panel shadow-sm">
-                            <input type="file" multiple accept="image/*" class="hidden" onchange="handleImageUpload(this, 'preview_${variantId}')">
-                            <i class="ph ph-upload-simple text-xl mb-1"></i>
-                            <span class="text-[10px] font-semibold tracking-wide uppercase">Add</span>
+                        <label class="flex flex-col items-center justify-center w-24 h-24 shrink-0 rounded-xl border-2 border-dashed border-red-300 bg-white text-red-500 cursor-pointer hover:bg-red-50 transition">
+                        <input type="file" name="variant_images_${colorId}" multiple accept="image/*" class="hidden" onchange="handleImageUpload(this, 'preview_${variantId}')">
+                        <i class="ph ph-upload-simple text-xl mb-1"></i>
+                        <span class="text-xs font-semibold">ADD</span>
                         </label>
-                        
-                        <!-- Dynamic Previews -->
                         <div id="preview_${variantId}" class="flex gap-3"></div>
                     </div>
                 </div>
             </div>
-        </div>
-        `;
-        
+            </div>
+            `;
         container.insertAdjacentHTML('beforeend', html);
-        input.value = '';
+
+        // Prevent picking the same color twice (mirrors the
+        // unique_color_per_product constraint on the backend)
+        option.disabled = true;
+        select.value = '';
+    }
+
+    window.removeColorVariant = function (variantId, colorId) {
+        document.getElementById(variantId).remove();
+        const select = document.getElementById('newColorSelect');
+        const option = select.querySelector(`option[value="${colorId}"]`);
+        if (option) option.disabled = false;
     }
 
     // Handle Image Previews
-    window.handleImageUpload = function(input, previewContainerId) {
+    window.handleImageUpload = function (input, previewContainerId) {
         const container = document.getElementById(previewContainerId);
         if (!input.files || input.files.length === 0) return;
-        
+        if (!input._dt) input._dt = new DataTransfer();
         Array.from(input.files).forEach(file => {
+            input._dt.items.add(file);
+
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 const imgId = 'img_' + Date.now() + Math.random().toString(36).substr(2, 5);
                 const html = `
-                    <div id="${imgId}" class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 relative group overflow-hidden shadow-sm">
-                        <img src="${e.target.result}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-slate-900/60 hidden group-hover:flex items-center justify-center backdrop-blur-sm transition-all">
-                            <button type="button" onclick="document.getElementById('${imgId}').remove()" class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="ph ph-trash"></i></button>
-                        </div>
+                <div id="${imgId}" class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 relative group overflow-hidden shadow-sm">
+                    <img src="${e.target.result}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-slate-900/60 hidden group-hover:flex items-center justify-center backdrop-blur-sm transition-all">
+                        <button type="button" onclick="document.getElementById('${imgId}').remove(); handleImageRemove(input, '${file.name}');" class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="ph ph-trash"></i></button>
                     </div>
+                </div>
                 `;
                 container.insertAdjacentHTML('beforeend', html);
             }
             reader.readAsDataURL(file);
         });
-        
-        // Reset input so the same files can be selected again
-        input.value = '';
+        input.files = input._dt.files;
     }
+
+    document.querySelectorAll('.message-toast').forEach(function (el) {
+    setTimeout(function () {
+        el.classList.add('message-toast-hide');
+        setTimeout(function () { el.remove(); }, 300);
+    }, 3000);
+});
 </script>
 {% endblock %}
