@@ -100,10 +100,10 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             <thead>
                 <tr
                     class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 dark:border-dark-border">
-                    <th class="p-4 font-semibold w-10">
+                    {% comment %} <th class="p-4 font-semibold w-10">
                         <input type="checkbox"
                             class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon">
-                    </th>
+                    </th> {% endcomment %}
                     <th class="p-4 font-semibold">Product</th>
                     <th class="p-4 font-semibold">Product Code</th>
                     <th class="p-4 font-semibold">Category</th>
@@ -118,10 +118,10 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                     data-category="{{ p.category_id }}"
                     data-stock="{% if p.stock_quantity == 0 %}out{% elif p.stock_quantity < 5 %}low{% else %}in{% endif %}"
                     data-search="{{ p.name|lower }} {{ p.product_code|default:''|lower }}">
-                    <td class="p-4">
+                    {% comment %} <td class="p-4">
                         <input type="checkbox"
                             class="rounded border-slate-300 text-brand-maroon focus:ring-brand-maroon">
-                    </td>
+                    </td> {% endcomment %}
                     <td class="p-4">
                         <div class="flex items-center gap-3">
                             {% with p.images.first as thumb %}

@@ -640,14 +640,23 @@ def product_update(request, slug):
 @require_http_methods(["POST"])
 def product_delete(request, slug):
     product = get_object_or_404(Product, slug=slug)
-    product.is_active = False
-    product.save(update_fields=["is_active"])
-    product.variants.update(is_active=False)
+    product_id = product.id
+    product_name = product.name
 
-    messages.success(request, f'"{product.name}" was removed from the catalog.')
+    try:
+        with transaction.atomic():
+            product.delete()
+    except ProtectedError:
+        error = "This product can't be deleted because it's linked to existing orders."
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"ok": False, "error": error}, status=409)
+        messages.error(request, error)
+        return redirect("adm_user:products")
+
+    messages.success(request, f'"{product_name}" was permanently deleted.')
 
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return JsonResponse({"ok": True, "id": product.id})
+        return JsonResponse({"ok": True, "id": product_id})
     return redirect("adm_user:products")
 
 def img_manager(request):
@@ -659,8 +668,8 @@ def website_builder(request):
 def coming_soon(request):
     return render(request, 'adm_user/coming-soon.html')
 
-def login(request):
-    return render(request, 'adm_user/login.html')
+# def login(request):
+#     return render(request, 'adm_user/login.html')
 
-def signup(request):
-    return render(request, 'adm_user/signup.html')
+# def signup(request):
+#     return render(request, 'adm_user/signup.html')

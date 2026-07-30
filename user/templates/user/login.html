@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Sanskruti By Bani</title>
+    <title>Login - Sanskruti By Bani</title>
     {% load static %}
     
     <!-- Fonts -->
@@ -50,7 +50,7 @@
             <div class="relative z-10 flex flex-col items-center justify-center w-full max-w-sm">
                 <!-- Elegant Text -->
                 <div class="text-center mb-8">
-                    <h2 class="font-serif text-3xl xl:text-4xl font-bold text-white mb-3 tracking-wide drop-shadow-md">Admin Portal</h2>
+                    <h2 class="font-serif text-3xl xl:text-4xl font-bold text-white mb-3 tracking-wide drop-shadow-md">User Portal</h2>
                     <div class="h-px w-20 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mb-3"></div>
                     <p class="text-[#D4AF37]/90 font-light tracking-wider text-sm uppercase">Sanskruti By Bani</p>
                 </div>
@@ -74,16 +74,25 @@
                     <h2 class="font-serif text-3xl font-bold text-[#520211] mb-2">Welcome Back</h2>
                     <p class="text-slate-500">Sign in to manage the store.</p>
                 </div>
+                
+                <form action="{% url 'user:login' %}" method="POST" class="space-y-5">
+                    {% csrf_token %} 
 
-                <form action="#" method="POST" class="space-y-5">
-                    
+                    {% if messages %}
+                        <div class="mb-4">
+                            {% for message in messages %}
+                                <p class="text-sm text-red-600">{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email or Username</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#520211] transition-colors">
                                 <i class="ph ph-user text-lg"></i>
                             </div>
-                            <input type="text" name="username" required placeholder="admin@sanskruti.com" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200/80 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-[#520211]/20 focus:border-[#520211] transition-all outline-none placeholder:text-slate-400 font-medium text-slate-900">
+                            <input type="text" name="username" required placeholder="user@gmail.com" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200/80 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-[#520211]/20 focus:border-[#520211] transition-all outline-none placeholder:text-slate-400 font-medium text-slate-900">
                         </div>
                     </div>
 
@@ -122,7 +131,7 @@
                 <div class="mt-8 text-center">
                     <p class="text-sm text-slate-500">
                         Don't have access? 
-                        <a href="{% url 'adm_user:signup' %}" class="font-semibold text-[#520211] hover:text-[#7a041a] transition-colors">Create an account</a>
+                        <a href="{% url 'user:signup' %}" class="font-semibold text-[#520211] hover:text-[#7a041a] transition-colors">Create an account</a>
                     </p>
                 </div>
 
