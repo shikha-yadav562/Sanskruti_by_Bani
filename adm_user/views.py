@@ -662,14 +662,335 @@ def product_delete(request, slug):
 def img_manager(request):
     return render(request, 'adm_user/image_manager.html')
 
-def website_builder(request):
-    return render(request, 'adm_user/website_builder.html')
+# def website_builder(request):
+#     return render(request, 'adm_user/website_builder.html')
 
 def coming_soon(request):
     return render(request, 'adm_user/coming-soon.html')
 
-# def login(request):
-#     return render(request, 'adm_user/login.html')
+def login(request):
+    return render(request, 'adm_user/login.html')
 
-# def signup(request):
-#     return render(request, 'adm_user/signup.html')
+def signup(request):
+    return render(request, 'adm_user/signup.html')
+
+#---------------------------- WEBSITE BUILDER--------------------------------------------------------------
+
+from django.core.validators import get_available_image_extensions
+
+from .models import (
+    HeroSlideMain,
+    HeroSlideImageOnly,
+    HeroSlideOffer,
+    SweetMemoriesSection,
+    SweetMemoryImage,
+    OfferBarItem,
+    HeaderSettings,
+    FooterSettings,
+    AboutUsSection,
+)
+ 
+MAX_IMAGE_SIZE_MB = 2  # matches the "Max 2MB per image" guideline in your UI
+MAX_MEMORY_IMAGES = 20  # sane production cap so the slider can't grow unbounded
+ 
+ 
+def _validate_image_file(f):
+    """
+    ImageField validates that the file IS an image, but does nothing
+    about size — enforce that here so a 40MB phone photo doesn't hit
+    your media storage (and R2 bill) unchecked.
+    """
+    if f.size > MAX_IMAGE_SIZE_MB * 1024 * 1024:
+        raise ValidationError(f"Image must be under {MAX_IMAGE_SIZE_MB}MB.")
+    ext = f.name.rsplit(".", 1)[-1].lower()
+    if ext not in get_available_image_extensions():
+        raise ValidationError("Unsupported image file type.")
+ 
+ 
+# ---------------------------------------------------------------------
+# PAGE LOAD
+# ---------------------------------------------------------------------
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+def website_builder(request):
+    context = {
+        "hero_main": HeroSlideMain.load(),
+        "hero_image_only": HeroSlideImageOnly.load(),
+        "hero_offer": HeroSlideOffer.load(),
+        "memories": SweetMemoriesSection.load(),
+        "memory_images": SweetMemoryImage.objects.all(),
+        "offer_items": OfferBarItem.objects.all(),
+        "header": HeaderSettings.load(),
+        "footer": FooterSettings.load(),
+        "about": AboutUsSection.load(),
+    }
+    return render(request, "adm_user/website_builder.html", context)
+ 
+ 
+# ---------------------------------------------------------------------
+# ALL SECTION SAVES
+# ---------------------------------------------------------------------
+ 
+def _save_singleton_text_fields(instance, data, fields):
+    """
+    Only overwrite fields present in `data` — a partial update. Keeps
+    image fields untouched here entirely; images are handled by the
+    dedicated _save_singleton_image() below so a text-only save can
+    never accidentally wipe out an existing photo.
+    """
+    for field in fields:
+        if field in data:
+            setattr(instance, field, data[field])
+    instance.full_clean(exclude=[f.name for f in instance._meta.fields if f.name.endswith("image") or f.name in ("desktop_image", "mobile_image", "logo", "about_image")])
+    instance.save()
+ 
+ 
+def _save_singleton_image(instance, files, field_name):
+    """
+    Only replaces the image if a new file was actually uploaded —
+    re-submitting the form without picking a new file must NOT clear
+    the existing image (ImageField's blank/empty submission behavior
+    would otherwise do exactly that).
+    """
+    f = files.get(field_name)
+    if not f:
+        return
+    _validate_image_file(f)
+    setattr(instance, field_name, f)
+    instance.save()
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["POST"])
+def save_hero_main(request):
+    try:
+        with transaction.atomic():
+            hero = HeroSlideMain.load()
+            _save_singleton_text_fields(
+                hero,
+                request.POST,
+                [
+                    "tagline", "title_line_1", "title_line_2", "title_line_3",
+                    "description", "button_1_text", "button_2_text",
+                ],
+            )
+            _save_singleton_image(hero, request.FILES, "desktop_image")
+            _save_singleton_image(hero, request.FILES, "mobile_image")
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    return JsonResponse({"saved": True})
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["POST"])
+def save_hero_image_only(request):
+    try:
+        with transaction.atomic():
+            hero = HeroSlideImageOnly.load()
+            _save_singleton_image(hero, request.FILES, "desktop_image")
+            _save_singleton_image(hero, request.FILES, "mobile_image")
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    return JsonResponse({"saved": True})
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["POST"])
+def save_hero_offer(request):
+    try:
+        with transaction.atomic():
+            hero = HeroSlideOffer.load()
+            _save_singleton_text_fields(
+                hero,
+                request.POST,
+                ["small_top_text", "big_highlight_text", "subtext", "button_text"],
+            )
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    return JsonResponse({"saved": True})
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["POST"])
+def save_memories_section(request):
+    theme = request.POST.get("background_theme")
+    valid_themes = dict(SweetMemoriesSection.THEME_CHOICES)
+    if theme and theme not in valid_themes:
+        return JsonResponse({"error": "Invalid theme selection."}, status=400)
+ 
+    try:
+        with transaction.atomic():
+            section = SweetMemoriesSection.load()
+            _save_singleton_text_fields(
+                section,
+                request.POST,
+                ["section_label", "main_heading", "background_theme", "paragraph_text"],
+            )
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    return JsonResponse({"saved": True})
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["POST"])
+def save_header_settings(request):
+    try:
+        with transaction.atomic():
+            header = HeaderSettings.load()
+            _save_singleton_image(header, request.FILES, "logo")
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    return JsonResponse({"saved": True})
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["POST"])
+def save_footer_settings(request):
+    try:
+        with transaction.atomic():
+            footer = FooterSettings.load()
+            _save_singleton_text_fields(
+                footer,
+                request.POST,
+                [
+                    "brand_name", "brand_description", "store_address",
+                    "phone_number", "email", "instagram_link", "whatsapp_number",
+                ],
+            )
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    return JsonResponse({"saved": True})
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["POST"])
+def save_about_section(request):
+    try:
+        with transaction.atomic():
+            about = AboutUsSection.load()
+            _save_singleton_text_fields(
+                about,
+                request.POST,
+                [
+                    "small_title", "main_heading", "highlight_quote",
+                    "main_paragraph", "ending_signoff",
+                    "floating_top_text", "floating_bottom_text",
+                ],
+            )
+            _save_singleton_image(about, request.FILES, "about_image")
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    return JsonResponse({"saved": True})
+ 
+ 
+# ---------------------------------------------------------------------
+# OFFER BAR ITEMS (dynamic list — "Add Another Offer")
+# ---------------------------------------------------------------------
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["GET", "POST"])
+def offer_items(request):
+    if request.method == "GET":
+        items = OfferBarItem.objects.all()
+        return JsonResponse(
+            {"items": [{"id": i.id, "text": i.text, "display_order": i.display_order} for i in items]}
+        )
+ 
+    try:
+        payload = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid request."}, status=400)
+ 
+    text = (payload.get("text") or "").strip()
+    if not text:
+        return JsonResponse({"error": "Offer text is required."}, status=400)
+ 
+    last_order = OfferBarItem.objects.order_by("-display_order").values_list(
+        "display_order", flat=True
+    ).first() or 0
+ 
+    item = OfferBarItem(text=text, display_order=last_order + 1)
+    try:
+        item.full_clean()
+        with transaction.atomic():
+            item.save()
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+ 
+    return JsonResponse({"id": item.id, "text": item.text}, status=201)
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["DELETE"])
+def offer_item_delete(request, pk):
+    item = get_object_or_404(OfferBarItem, pk=pk)
+    item.delete()
+    return JsonResponse({"deleted": True})
+ 
+ 
+# ---------------------------------------------------------------------
+# SWEET MEMORIES GALLERY (dynamic list — "Add Photos" / drag to reorder)
+# ---------------------------------------------------------------------
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["GET", "POST"])
+def memory_images(request):
+    if request.method == "GET":
+        images = SweetMemoryImage.objects.all()
+        return JsonResponse(
+            {"images": [{"id": i.id, "url": i.image.url, "display_order": i.display_order} for i in images]}
+        )
+ 
+    current_count = SweetMemoryImage.objects.count()
+    uploaded = request.FILES.getlist("images")
+    if not uploaded:
+        return JsonResponse({"error": "No images provided."}, status=400)
+    if current_count + len(uploaded) > MAX_MEMORY_IMAGES:
+        return JsonResponse(
+            {"error": f"Maximum {MAX_MEMORY_IMAGES} memory images allowed."}, status=400
+        )
+ 
+    created = []
+    try:
+        with transaction.atomic():
+            next_order = current_count
+            for f in uploaded:
+                _validate_image_file(f)
+                img = SweetMemoryImage(image=f, display_order=next_order)
+                img.full_clean()
+                img.save()
+                created.append({"id": img.id, "url": img.image.url})
+                next_order += 1
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+ 
+    return JsonResponse({"created": created}, status=201)
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["DELETE"])
+def memory_image_delete(request, pk):
+    image = get_object_or_404(SweetMemoryImage, pk=pk)
+    image.delete()
+    return JsonResponse({"deleted": True})
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["POST"])
+def memory_images_reorder(request):
+    """
+    Body: {"order": [id1, id2, id3, ...]} — the new left-to-right order
+    from the "Drag to reorder" UI.
+    """
+    try:
+        payload = json.loads(request.body)
+        ordered_ids = payload["order"]
+    except (json.JSONDecodeError, KeyError):
+        return JsonResponse({"error": "Invalid request."}, status=400)
+ 
+    with transaction.atomic():
+        for position, image_id in enumerate(ordered_ids):
+            SweetMemoryImage.objects.filter(pk=image_id).update(display_order=position)
+ 
+    return JsonResponse({"reordered": True})
+ 

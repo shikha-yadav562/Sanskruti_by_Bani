@@ -46,4 +46,29 @@ urlpatterns = [
     path('website-builder/', views.website_builder, name='website_builder'),
     path('coming_soon/', views.coming_soon, name='coming_soon'),
     
+    #------ Website Builder -------
+    
+
+ 
+    # Singleton section saves — one per sidebar tab
+     path("website-builder/", views.website_builder, name="website_builder"),
+ 
+    # Singleton section saves
+    path("website-builder/save/hero-main/", views.save_hero_main, name="save_hero_main"),
+    path("website-builder/save/hero-image-only/", views.save_hero_image_only, name="save_hero_image_only"),
+    path("website-builder/save/hero-offer/", views.save_hero_offer, name="save_hero_offer"),
+    path("website-builder/save/memories/", views.save_memories_section, name="save_memories_section"),
+    path("website-builder/save/header/", views.save_header_settings, name="save_header_settings"),
+    path("website-builder/save/footer/", views.save_footer_settings, name="save_footer_settings"),
+    path("website-builder/save/about/", views.save_about_section, name="save_about_section"),
+ 
+    # Offer bar items (dynamic list)
+    path("website-builder/offer-items/", views.offer_items, name="offer_items"),
+    path("website-builder/offer-items/<int:pk>/", views.offer_item_delete, name="offer_item_delete"),
+ 
+    # Memory gallery (dynamic list)
+    path("website-builder/memory-images/", views.memory_images, name="memory_images"),
+    path("website-builder/memory-images/<int:pk>/", views.memory_image_delete, name="memory_image_delete"),
+    path("website-builder/memory-images/reorder/", views.memory_images_reorder, name="memory_images_reorder"),
+ 
 ]

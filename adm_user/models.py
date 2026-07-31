@@ -391,3 +391,202 @@ class ProductImage(TimeStampedModel):
     def __str__(self):
         label = self.variant.color.name if self.variant_id else "default"
         return f"{self.product.name} image ({label})"
+    
+    """
+site_content/models.py
+
+Schema for the Website Builder page — hero slides, Sweet Memories,
+header/nav, footer, and About Us. Unlike Product/Category, most of
+these are "singleton" sections: there's only ever ONE hero slide 1,
+ONE footer, etc. — an admin edits the same row, never creates new ones.
+
+SingletonModel below forces every save() to pk=1, so no matter how the
+admin form posts, you can never end up with two competing "About Us"
+rows. `Model.load()` is the read-side helper: always returns the one
+row, creating it with blank defaults the first time.
+
+Images use ImageField (Django's local media storage), matching what
+you're already doing — NOT URLField like the Cloudflare R2 catalog
+images, since these are served from MEDIA_ROOT/MEDIA_URL instead.
+"""
+
+
+
+
+class TimeStampedModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class SingletonModel(TimeStampedModel):
+    """
+    Forces exactly one row (pk=1) regardless of how many times an admin
+    submits the "Save Changes" form — save() always overwrites row 1
+    instead of creating new rows.
+    """
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
+# ---------------------------------------------------------------------
+# HERO BANNER — 3 slides, each with a different shape, so each is its
+# own singleton rather than forcing one schema to cover all three.
+# ---------------------------------------------------------------------
+
+class HeroSlideMain(SingletonModel):
+    """Slide 1: Main Calligraphy — text + 2 images."""
+
+    tagline = models.CharField(max_length=100, blank=True)
+    title_line_1 = models.CharField(max_length=200, blank=True)
+    title_line_2 = models.CharField(max_length=200, blank=True)
+    title_line_3 = models.CharField(
+        max_length=200, blank=True, help_text="Rendered in gold on the frontend."
+    )
+    description = models.TextField(blank=True)
+    button_1_text = models.CharField(max_length=50, blank=True)
+    button_2_text = models.CharField(max_length=50, blank=True)
+    desktop_image = models.ImageField(upload_to="website/hero/slide1/desktop/")
+    mobile_image = models.ImageField(upload_to="website/hero/slide1/mobile/")
+
+    def __str__(self):
+        return "Hero Slide 1 (Main)"
+
+
+class HeroSlideImageOnly(SingletonModel):
+    """Slide 2: Full Image Banner — no text overlay."""
+
+    desktop_image = models.ImageField(upload_to="website/hero/slide2/desktop/")
+    mobile_image = models.ImageField(upload_to="website/hero/slide2/mobile/")
+
+    def __str__(self):
+        return "Hero Slide 2 (Image Only)"
+
+
+class HeroSlideOffer(SingletonModel):
+    """Slide 3: Offer Call-To-Action — text only, no images in this template."""
+
+    small_top_text = models.CharField(max_length=100, blank=True)
+    big_highlight_text = models.CharField(max_length=150, blank=True)
+    subtext = models.CharField(max_length=200, blank=True)
+    button_text = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return "Hero Slide 3 (Offer)"
+
+
+# ---------------------------------------------------------------------
+# SWEET MEMORIES
+# ---------------------------------------------------------------------
+
+class SweetMemoriesSection(SingletonModel):
+    THEME_CHOICES = [
+        ("dark_maroon", "Dark Maroon"),
+        ("light_gold", "Light Gold"),
+    ]
+
+    section_label = models.CharField(max_length=100, blank=True)
+    main_heading = models.TextField(
+        blank=True, help_text="Multi-line heading, e.g. 'Woven Into / Your Beautiful Moments'."
+    )
+    background_theme = models.CharField(
+        max_length=20, choices=THEME_CHOICES, default="dark_maroon"
+    )
+    paragraph_text = models.TextField(blank=True)
+
+    def __str__(self):
+        return "Sweet Memories Section"
+
+
+class SweetMemoryImage(TimeStampedModel):
+    """
+    Multiple slider photos — NOT a singleton, since the admin adds/
+    removes/reorders any number of these ('Drag to reorder' in the UI).
+    """
+
+    image = models.ImageField(upload_to="website/memories/")
+    display_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["display_order"]
+
+    def __str__(self):
+        return f"Memory image #{self.pk}"
+
+
+# ---------------------------------------------------------------------
+# HEADER & NAV
+# ---------------------------------------------------------------------
+
+class OfferBarItem(TimeStampedModel):
+    """
+    Scrolling top offer bar — admin can add/remove any number via
+    'Add Another Offer'. Not a singleton.
+    """
+
+    text = models.CharField(max_length=200)
+    display_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["display_order"]
+
+    def __str__(self):
+        return self.text
+
+
+class HeaderSettings(SingletonModel):
+    logo = models.ImageField(upload_to="website/branding/")
+
+    def __str__(self):
+        return "Header Settings"
+
+
+# ---------------------------------------------------------------------
+# FOOTER & LINKS
+# ---------------------------------------------------------------------
+
+class FooterSettings(SingletonModel):
+    brand_name = models.CharField(max_length=150, blank=True)
+    brand_description = models.TextField(blank=True)
+    store_address = models.CharField(max_length=255, blank=True)
+    phone_number = models.CharField(max_length=20, blank=True)
+    email = models.EmailField(blank=True)
+    instagram_link = models.URLField(blank=True)
+    whatsapp_number = models.CharField(max_length=20, blank=True)
+
+    def __str__(self):
+        return "Footer Settings"
+
+
+# ---------------------------------------------------------------------
+# ABOUT US
+# ---------------------------------------------------------------------
+
+class AboutUsSection(SingletonModel):
+    small_title = models.CharField(max_length=100, blank=True)
+    main_heading = models.CharField(max_length=200, blank=True)
+    highlight_quote = models.TextField(
+        blank=True, help_text="Gold-highlighted quote; may contain non-English script."
+    )
+    main_paragraph = models.TextField(
+        blank=True, help_text="Main body text; may contain non-English script."
+    )
+    ending_signoff = models.CharField(max_length=200, blank=True)
+    about_image = models.ImageField(upload_to="website/about/")
+    floating_top_text = models.CharField(max_length=100, blank=True)
+    floating_bottom_text = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return "About Us Section"
