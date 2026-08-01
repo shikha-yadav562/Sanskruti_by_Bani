@@ -14,19 +14,19 @@
   <!-- =====================================
   GOOGLE FONTS
   ===================================== -->
-  {% comment %} <link
+  <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap"
-    rel="stylesheet"> {% endcomment %}
+    rel="stylesheet">
 
   <!-- MATERIAL ICONS -->
-  {% comment %} <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-    rel="stylesheet"> {% endcomment %}
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet"> 
 
   <!-- FONT AWESOME FOR SOCIAL ICONS -->
-  {% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> {% endcomment %}
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
 
   <!-- TAILWIND -->
-  {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
+   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- MAIN CSS -->
   <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
@@ -49,7 +49,13 @@
 
     <div class="splash-inner">
 
+      {% comment %} <img src="{% static 'user/assets/logo.png' %}" class="splash-logo" alt="Sanskruti Logo"> {% endcomment %}
+
+      {% if header_settings.logo %}
+      <img src="{{ header_settings.logo.url }}" class="splash-logo" alt="Sanskruti Logo">
+      {% else %}
       <img src="{% static 'user/assets/logo.png' %}" class="splash-logo" alt="Sanskruti Logo">
+      {% endif %}
 
       <h1 class="movie-title">
         <span>S</span>
@@ -84,9 +90,13 @@
     <button class="tb-btn prev">‹</button>
 
     <div class="tb-window">
+      {% for item in offer_items %}
+      <div class="tb-item{% if forloop.first %} active{% endif %}">{{ item.text }}</div>
+      {% empty %}
       <div class="tb-item active">Free Discount</div>
       <div class="tb-item">COD across India</div>
       <div class="tb-item">Easy Return & Exchange*</div>
+      {% endfor %}
     </div>
 
     <button class="tb-btn next">›</button>
@@ -318,44 +328,39 @@ HERO SLIDER (LUXURY EDITION)
           <div class="hero-content">
 
             <p class="hero-tag">
-              Sanskruti By Bani
+              {{ hero_main.tagline|default:"Sanskruti By Bani" }}
             </p>
 
             <h1 class="hero-title">
 
               <span class="line line1">
-                A Legacy of Cherished Memories…
+                {{ hero_main.title_line_1|default:"A Legacy of Cherished Memories…" }}
               </span>
 
               <span class="line line2">
-                The Warmth of Traditions…
+                {{ hero_main.title_line_2|default:"The Warmth of Traditions…" }}
               </span>
 
               <span class="line line3">
-                And Every Bond Beautifully Woven With Emotions.
+                {{ hero_main.title_line_3|default:"And Every Bond Beautifully Woven With Emotions." }}
               </span>
 
             </h1>
 
             <p class="hero-desc">
 
-              Preserving the timeless elegance of Indian heritage, every saree reflects
-              love, grace, celebration and the soulful essence of our culture.
-              <br><br>
-
-              <strong>Sanskruti By Bani</strong> — where every color tells a story,
-              and every drape becomes a treasured memory.
+              {{ hero_main.description|default:"Preserving the timeless elegance of Indian heritage, every saree reflects love, grace, celebration and the soulful essence of our culture. Sanskruti By Bani — where every color tells a story, and every drape becomes a treasured memory."|linebreaksbr }}
 
             </p>
 
             <div class="hero-buttons">
 
               <a href="#" class="btn-primary">
-                Explore Collection
+                {{ hero_main.button_1_text|default:"Explore Collection" }}
               </a>
 
               <a href="#" class="btn-outline">
-                Shop Now
+                {{ hero_main.button_2_text|default:"Shop Now" }}
               </a>
 
             </div>
@@ -368,11 +373,24 @@ HERO SLIDER (LUXURY EDITION)
             <div class="glow"></div>
 
             <!-- DESKTOP IMAGE -->
+            {% comment %} <img src="{% static 'user/assets/slide1.png' %}" class="hero-img desktop-hero-img" alt="Founder Image"> {% endcomment %}
+            {% if hero_main.desktop_image %}
+            <img src="{{ hero_main.desktop_image.url }}" class="hero-img desktop-hero-img" alt="Founder Image">
+            {% else %}
             <img src="{% static 'user/assets/slide1.png' %}" class="hero-img desktop-hero-img" alt="Founder Image">
+            {% endif %}
 
             <!-- MOBILE IMAGE -->
+            {% comment %} <img src="{% static 'user/assets/344941.png' %}" class="hero-img mobile-hero-img"
+              alt="Sanskruti By Bani Family"> {% endcomment %}
+
+            {% if hero_main.mobile_image %}
+            <img src="{{ hero_main.mobile_image.url }}" class="hero-img mobile-hero-img"
+              alt="Sanskruti By Bani Family">
+            {% else %}
             <img src="{% static 'user/assets/344941.png' %}" class="hero-img mobile-hero-img"
               alt="Sanskruti By Bani Family">
+            {% endif %}
 
           </div>
 
@@ -381,19 +399,32 @@ HERO SLIDER (LUXURY EDITION)
       </div>
 
       <!-- =========================
-SLIDE 2 (DESKTOP + MOBILE)
-========================= -->
+      SLIDE 2 (DESKTOP + MOBILE)
+      ========================= -->
 
       <div class="hero-slide image-slide">
 
         <!-- DESKTOP IMAGE -->
+        {% comment %} <img src="{% static 'user/assets/slide21.png' %}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner"> {% endcomment %}
+        {% if hero_image_only.desktop_image %}
+        <img src="{{ hero_image_only.desktop_image.url }}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner">
+        {% else %}
         <img src="{% static 'user/assets/slide21.png' %}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner">
+        {% endif %}
 
         <!-- MOBILE LAYOUT (Full Image Only) -->
         <div class="slide2-mobile-layout premium-cover-layout"
           style="position: absolute; inset: 0; width: 100%; height: 100% !important;">
+          {% comment %} <img src="{% static 'user/assets/slide21-mobile.png' %}" class="premium-cover-img"
+            alt="Sanskruti By Bani Mobile Banner"> {% endcomment %}
+
+          {% if hero_image_only.mobile_image %}
+          <img src="{{ hero_image_only.mobile_image.url }}" class="premium-cover-img"
+            alt="Sanskruti By Bani Mobile Banner">
+          {% else %}
           <img src="{% static 'user/assets/slide21-mobile.png' %}" class="premium-cover-img"
             alt="Sanskruti By Bani Mobile Banner">
+          {% endif %}
         </div>
 
       </div>
@@ -595,7 +626,7 @@ LUXURY EDITORIAL COLLECTIONS
     </div>
 
   </section>
-  <section class="sweet-memory-section">
+  <section class="sweet-memory-section theme-{{ memories_section.background_theme|default:'dark_maroon' }}">
 
     <div class="memory-container">
 
@@ -607,23 +638,19 @@ LUXURY EDITORIAL COLLECTIONS
 
           <div class="slider-track">
 
+            {% for img in memory_images %}
+            <img src="{{ img.image.url }}">
+            {% empty %}
             <img src="{% static 'user/assets/SPECIAL MEMORIES/CARE FOR HER DAUGHTER.JPG' %}">
-
             <img src="{% static 'user/assets/SPECIAL MEMORIES/HEART TOUCHING FEELING WITH WEDDING SAREE.JPG' %}">
-
             <img src="{% static 'user/assets/SPECIAL MEMORIES/WEDDING MOMENTS WITH YELLOW PAITHANI.JPG' %}">
-
             <img src="{% static 'user/assets/SPECIAL MEMORIES/MOTHER UNBITABLE LOVE TO HER DAUGHTER.JPG' %}">
-
             <img src="{% static 'user/assets/SPECIAL MEMORIES/FOREVER SPECIAL WITH SPECIAL 9 YARD SAREE.JPG' %}">
-
             <img src="{% static 'user/assets/SPECIAL MEMORIES/HAPPY CUSTOMER.JPG' %}">
-
             <img src="{% static 'user/assets/SPECIAL MEMORIES/HAPPY CUSTOMER WITH DESIGNER SAREE.JPG' %}">
-
             <img src="{% static 'user/assets/SPECIAL MEMORIES/SILK PAITHANI FOR SONS WEDDING.jpeg' %}">
-
             <img src="{% static 'user/assets/SPECIAL MEMORIES/SPECIAL MEMORIES WITH BUAUTIFUL SAREE.JPG' %}">
+            {% endfor %}
 
           </div>
 
@@ -638,39 +665,20 @@ LUXURY EDITORIAL COLLECTIONS
 
         <span class="memory-label">
 
-          SWEET MEMORIES
+          {{ memories_section.section_label|default:"SWEET MEMORIES" }}
 
         </span>
 
         <h2>
 
-          Woven Into<br>
-          Your <strong>Beautiful</strong> Moments
+          {{ memories_section.main_heading|default:"Woven Into<br>Your Beautiful Moments"|safe|linebreaksbr }}
 
         </h2>
 
         <div class="gold-line"></div>
 
         <p>
-
-          Some moments stay forever.
-
-          A wedding morning.
-          A family celebration.
-          A tradition passed through generations.
-
-          Our Paithani sarees become part of
-          those unforgettable memories.
-
-          At <strong>Sanskruti By Bani</strong>,
-          every weave carries heritage,
-          every drape carries emotion,
-          and every celebration shines
-          a little more beautifully.
-
-          Because special moments deserve
-          something timeless.
-
+          {{ memories_section.paragraph_text|default:"Some moments stay forever. A wedding morning. A family celebration. A tradition passed through generations. Our Paithani sarees become part of those unforgettable memories. At Sanskruti By Bani, every weave carries heritage, every drape carries emotion, and every celebration shines a little more beautifully. Because special moments deserve something timeless."|linebreaksbr }}
         </p>
 
       </div>
@@ -971,13 +979,18 @@ WITH IMAGE + ANIMATION
         <!-- MAIN IMAGE -->
         <div class="about-image-wrap">
 
+          {% comment %} <img src="{% static 'user/assets/about-1.jpeg' %}" alt="Sanskruti By Bani" class="about-main-img"> {% endcomment %}
+          {% if about_section.about_image %}
+          <img src="{{ about_section.about_image.url }}" alt="Sanskruti By Bani" class="about-main-img">
+          {% else %}
           <img src="{% static 'user/assets/about-1.jpeg' %}" alt="Sanskruti By Bani" class="about-main-img">
+          {% endif %}
 
           <!-- FLOAT CARD -->
           <div class="about-floating-card">
 
-            <span>Legacy of</span>
-            <h4>Paithani</h4>
+            <span>{{ about_section.floating_top_text|default:"Legacy of" }}</span>
+            <h4>{{ about_section.floating_bottom_text|default:"Paithani" }}</h4>
 
           </div>
 
@@ -989,46 +1002,25 @@ WITH IMAGE + ANIMATION
       <div class="about-content-side">
 
         <p class="about-mini">
-          About Us
+          {{ about_section.small_title|default:"About Us" }}
         </p>
 
         <h2 class="about-title">
-          Sanskruti By – Bani
+          {{ about_section.main_heading|default:"Sanskruti By – Bani" }}
         </h2>
 
         <div class="about-divider"></div>
 
         <p class="about-highlight">
-          “Paithani म्हणजे फक्त साडी नाही...
-          ती प्रत्येक स्त्रीची जपलेली आठवण आहे.”
+          {{ about_section.highlight_quote|default:"“Paithani म्हणजे फक्त साडी नाही... ती प्रत्येक स्त्रीची जपलेली आठवण आहे.”"|linebreaksbr }}
         </p>
 
         <div class="about-text">
-
-          <p>
-            <span>संस्कृती...</span>
-            म्हणजे फक्त परंपरा नाही,
-            तर पिढ्यानपिढ्या चालत आलेला
-            भावनांचा आणि आठवणींचा वारसा आहे...
-          </p>
-
-          <p>
-            Sanskruti By - Bani ही त्या संस्कृतीची सुरुवात आहे…
-            प्रत्येक साडी ही एक भावना,
-            एक आठवण आणि एक ओळख आहे.
-          </p>
-
-          <p>
-            आमच्या brand ची खरी ओळख असेल —
-            <strong>Paithani.</strong>
-            कारण प्रत्येक Paithani मागे
-            एक खास कथा दडलली आहे.
-          </p>
-
+          <p>{{ about_section.main_paragraph|default:"संस्कृती... म्हणजे फक्त परंपरा नाही, तर पिढ्यानपिढ्या चालत आलेला भावनांचा आणि आठवणींचा वारसा आहे... Sanskruti By - Bani ही त्या संस्कृतीची सुरुवात आहे… प्रत्येक साडी ही एक भावना, एक आठवण आणि एक ओळख आहे. आमच्या brand ची खरी ओळख असेल — Paithani. कारण प्रत्येक Paithani मागे एक खास कथा दडलली आहे."|linebreaksbr }}</p>
         </div>
 
         <div class="about-ending">
-          – संस्कृतीतून उमटलेलं सौंदर्य
+          {{ about_section.ending_signoff|default:"– संस्कृतीतून उमटलेलं सौंदर्य" }}
         </div>
 
       </div>
@@ -1051,18 +1043,19 @@ LUXURY FOOTER SECTION
       <!-- BRAND -->
       <div class="footer-col footer-brand">
 
-        <h2>Sanskruti By Bani</h2>
+        <h2>{{ footer_settings.brand_name|default:"Sanskruti By Bani" }}</h2>
 
         <p>
-          Celebrating timeless Indian heritage through handcrafted Paithani,
+          {% comment %} Celebrating timeless Indian heritage through handcrafted Paithani,
           Banarasi, Kanjivaram and luxury saree collections woven with elegance,
-          culture and emotion.
+          culture and emotion. {% endcomment %}
+          {{ footer_settings.brand_description|default:"Celebrating timeless Indian heritage through handcrafted Paithani, Banarasi, Kanjivaram and luxury saree collections woven with elegance, culture and emotion."|linebreaksbr }}
         </p>
 
         <!-- SOCIAL -->
         <div class="footer-socials">
 
-          <a href="#">
+          <a href="{{ footer_settings.instagram_link|default:'#' }}">
             <i class="fa-brands fa-instagram"></i>
           </a>
 
@@ -1074,7 +1067,7 @@ LUXURY FOOTER SECTION
             <i class="fa-brands fa-youtube"></i>
           </a>
 
-          <a href="#">
+          <a href="https://wa.me/{{ footer_settings.whatsapp_number }}">
             <i class="fa-brands fa-whatsapp"></i>
           </a>
 
@@ -1128,17 +1121,17 @@ LUXURY FOOTER SECTION
 
         <p>
           <i class="fa-solid fa-location-dot"></i>
-          Pune, Maharashtra, India
+          {{ footer_settings.store_address|default:"Pune, Maharashtra, India" }}
         </p>
 
         <p>
           <i class="fa-solid fa-phone"></i>
-          +91 98765 43210
+          {{ footer_settings.phone_number|default:"+91 98765 43210" }}
         </p>
 
         <p>
           <i class="fa-solid fa-envelope"></i>
-          info@sanskrutibybani.com
+          {{ footer_settings.email|default:"info@sanskrutibybani.com" }}
         </p>
 
         <p>

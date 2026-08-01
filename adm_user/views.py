@@ -10,8 +10,9 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.text import get_valid_filename
 from django.views.decorators.http import require_http_methods
+from django.core.validators import get_available_image_extensions
 
-from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage
+from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage, HeroSlideMain, HeroSlideImageOnly, HeroSlideOffer, SweetMemoriesSection, SweetMemoryImage, OfferBarItem, HeaderSettings, FooterSettings, AboutUsSection
 
 # Create your views here.
 def index(request):
@@ -674,23 +675,12 @@ def login(request):
 def signup(request):
     return render(request, 'adm_user/signup.html')
 
-#---------------------------- WEBSITE BUILDER--------------------------------------------------------------
 
-from django.core.validators import get_available_image_extensions
-
-from .models import (
-    HeroSlideMain,
-    HeroSlideImageOnly,
-    HeroSlideOffer,
-    SweetMemoriesSection,
-    SweetMemoryImage,
-    OfferBarItem,
-    HeaderSettings,
-    FooterSettings,
-    AboutUsSection,
-)
+# ==========================================
+# WEBSITE BUILDER
+# ==========================================
  
-MAX_IMAGE_SIZE_MB = 2  # matches the "Max 2MB per image" guideline in your UI
+MAX_IMAGE_SIZE_MB = 9  # matches the "Max 2MB per image" guideline in your UI
 MAX_MEMORY_IMAGES = 20  # sane production cap so the slider can't grow unbounded
  
  
@@ -891,35 +881,64 @@ def save_about_section(request):
 @require_http_methods(["GET", "POST"])
 def offer_items(request):
     if request.method == "GET":
-        items = OfferBarItem.objects.all()
-        return JsonResponse(
-            {"items": [{"id": i.id, "text": i.text, "display_order": i.display_order} for i in items]}
-        )
- 
+        items = OfferBarItem.objects.all().order_by("display_order")
+        return JsonResponse({
+            "items": [
+                {
+                    "id": i.id,
+                    "text": i.text,
+                    "display_order": i.display_order
+                }
+                for i in items
+            ]
+        })
+
     try:
         payload = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid request."}, status=400)
- 
+
     text = (payload.get("text") or "").strip()
+    item_id = payload.get("id")
+
     if not text:
         return JsonResponse({"error": "Offer text is required."}, status=400)
- 
-    last_order = OfferBarItem.objects.order_by("-display_order").values_list(
-        "display_order", flat=True
-    ).first() or 0
- 
-    item = OfferBarItem(text=text, display_order=last_order + 1)
+
+    # UPDATE
+    if item_id:
+        try:
+            item = OfferBarItem.objects.get(id=item_id)
+        except OfferBarItem.DoesNotExist:
+            return JsonResponse({"error": "Item not found."}, status=404)
+
+        item.text = text
+
+    # CREATE
+    else:
+        last_order = (
+            OfferBarItem.objects.order_by("-display_order")
+            .values_list("display_order", flat=True)
+            .first()
+            or 0
+        )
+
+        item = OfferBarItem(
+            text=text,
+            display_order=last_order + 1
+        )
+
     try:
         item.full_clean()
         with transaction.atomic():
             item.save()
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
- 
-    return JsonResponse({"id": item.id, "text": item.text}, status=201)
- 
- 
+
+    return JsonResponse({
+        "id": item.id,
+        "text": item.text
+    })
+
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["DELETE"])
 def offer_item_delete(request, pk):

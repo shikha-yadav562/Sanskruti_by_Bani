@@ -4,10 +4,21 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import SignupForm, LoginForm
+from adm_user.models import AboutUsSection, HeroSlideOffer, HeroSlideMain, HeroSlideImageOnly, HeaderSettings, OfferBarItem, FooterSettings, SweetMemoriesSection, SweetMemoryImage
 
 # Create your views here.
 def index(request):
-    return render(request, 'user/index.html')
+    context = {
+        "hero_main": HeroSlideMain.load(),
+        "hero_image_only": HeroSlideImageOnly.load(),
+        "header_settings": HeaderSettings.load(),
+        "offer_items": OfferBarItem.objects.all(), 
+        "footer_settings": FooterSettings.load(), 
+        "about_section": AboutUsSection.load(),
+        "memories_section": SweetMemoriesSection.load(),
+        "memory_images": SweetMemoryImage.objects.all(), 
+    }
+    return render(request, 'user/index.html', context)
 
 def product(request):
     return render(request, 'user/product.html')
