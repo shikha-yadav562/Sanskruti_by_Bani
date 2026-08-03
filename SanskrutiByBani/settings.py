@@ -127,3 +127,5 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 # settings.py
 AUTH_USER_MODEL = 'user.User'
+LOGIN_URL = 'user:login'
+LOGIN_REDIRECT_URL = 'user:profile'

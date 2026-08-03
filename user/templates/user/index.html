@@ -227,11 +227,11 @@
         </div>
 
         <!-- ICONS -->
-        <button class="icon-btn">
+        <button class="icon-btn" title="Wishlist">
           <span class="material-symbols-outlined">favorite</span>
         </button>
 
-        <button class="icon-btn">
+        <button class="icon-btn" title="Cart">
           <span class="material-symbols-outlined">shopping_bag</span>
         </button>
 
@@ -318,7 +318,33 @@ HERO SLIDER (LUXURY EDITION)
     <div class="hero-track" id="heroTrack">
 
       <!-- =========================
-    SLIDE 1 (CALLIGRAPHY HERO)
+      SLIDE 1 (FULL IMAGE BANNER / OFFER)
+      ========================= -->
+      <div class="hero-slide hero-offer">
+        {% if hero_offer.desktop_image %}
+        <img src="{{ hero_offer.desktop_image.url }}" class="hero-offer-banner hero-offer-desktop" alt="Hero Offer Slide 1 Desktop">
+        {% else %}
+        <img src="{% static 'user/assets/rakhi-desktop.jpg' %}" class="hero-offer-banner hero-offer-desktop" alt="Hero Offer Slide 1 Desktop">
+        {% endif %}
+
+        {% if hero_offer.mobile_image %}
+        <img src="{{ hero_offer.mobile_image.url }}" class="hero-offer-banner hero-offer-mobile" alt="Hero Offer Slide 1 Mobile">
+        {% else %}
+        <img src="{% static 'user/assets/rakhi-mobile.jpg' %}" class="hero-offer-banner hero-offer-mobile" alt="Hero Offer Slide 1 Mobile">
+        {% endif %}
+
+        {% if hero_offer.big_highlight_text or hero_offer.small_top_text or hero_offer.button_text %}
+        <div class="offer-box">
+          {% if hero_offer.small_top_text %}<p>{{ hero_offer.small_top_text }}</p>{% endif %}
+          {% if hero_offer.big_highlight_text %}<h2>{{ hero_offer.big_highlight_text }}</h2>{% endif %}
+          {% if hero_offer.subtext %}<span>{{ hero_offer.subtext }}</span><br><br>{% endif %}
+          {% if hero_offer.button_text %}<a href="#" class="btn-primary">{{ hero_offer.button_text }}</a>{% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- =========================
+    SLIDE 2 (CALLIGRAPHY HERO) — was Slide 1
     ========================= -->
       <div class="hero-slide hero-slide-1">
 
@@ -399,7 +425,7 @@ HERO SLIDER (LUXURY EDITION)
       </div>
 
       <!-- =========================
-      SLIDE 2 (DESKTOP + MOBILE)
+      SLIDE 3 (DESKTOP + MOBILE) — was Slide 2
       ========================= -->
 
       <div class="hero-slide image-slide">
@@ -425,27 +451,6 @@ HERO SLIDER (LUXURY EDITION)
           <img src="{% static 'user/assets/slide21-mobile.png' %}" class="premium-cover-img"
             alt="Sanskruti By Bani Mobile Banner">
           {% endif %}
-        </div>
-
-      </div>
-
-      <!-- =========================
-    SLIDE 3 (OFFER)
-    ========================= -->
-      <div class="hero-slide hero-offer">
-
-        <div class="offer-box">
-
-          <p>Limited Time Offer</p>
-
-          <h2>Flat 25% OFF</h2>
-
-          <span>On Festive Saree Collection</span>
-
-          <br><br>
-
-          <a href="#" class="btn-primary">Grab Offer</a>
-
         </div>
 
       </div>
@@ -626,66 +631,125 @@ LUXURY EDITORIAL COLLECTIONS
     </div>
 
   </section>
-  <section class="sweet-memory-section theme-{{ memories_section.background_theme|default:'dark_maroon' }}">
+  <!-- =====================================
+  SWEET MEMORIES OUTER SLIDER (2 slides)
+  ===================================== -->
+  <section class="memories-outer-slider" id="memoriesOuterSlider">
 
-    <div class="memory-container">
+    <!-- OUTER TRACK -->
+    <div class="memories-outer-track" id="memoriesOuterTrack">
 
-      <!-- LEFT -->
+      <!-- =========================
+      SLIDE 1: SWEET MEMORIES CONTENT
+      ========================= -->
+      <div class="memories-outer-slide">
+        <section class="sweet-memory-section theme-{{ memories_section.background_theme|default:'dark_maroon' }}">
 
-      <div class="memory-image">
+          <div class="memory-container">
 
-        <div class="slider-window">
+            <!-- LEFT -->
+            <div class="memory-image">
+              <div class="slider-window">
+                <div class="slider-track">
+                  {% for img in memory_images %}
+                  <img src="{{ img.image.url }}">
+                  {% empty %}
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/CARE FOR HER DAUGHTER.JPG' %}">
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/HEART TOUCHING FEELING WITH WEDDING SAREE.JPG' %}">
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/WEDDING MOMENTS WITH YELLOW PAITHANI.JPG' %}">
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/MOTHER UNBITABLE LOVE TO HER DAUGHTER.JPG' %}">
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/FOREVER SPECIAL WITH SPECIAL 9 YARD SAREE.JPG' %}">
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/HAPPY CUSTOMER.JPG' %}">
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/HAPPY CUSTOMER WITH DESIGNER SAREE.JPG' %}">
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/SILK PAITHANI FOR SONS WEDDING.jpeg' %}">
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/SPECIAL MEMORIES WITH BUAUTIFUL SAREE.JPG' %}">
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
 
-          <div class="slider-track">
+            <!-- RIGHT -->
+            <div class="memory-content">
+              <span class="memory-label">
+                {{ memories_section.section_label|default:"SWEET MEMORIES" }}
+              </span>
+              <h2>
+                {{ memories_section.main_heading|default:"Woven Into<br>Your Beautiful Moments"|safe|linebreaksbr }}
+              </h2>
+              <div class="gold-line"></div>
+              <p>
+                {{ memories_section.paragraph_text|default:"Some moments stay forever. A wedding morning. A family celebration. A tradition passed through generations. Our Paithani sarees become part of those unforgettable memories. At Sanskruti By Bani, every weave carries heritage, every drape carries emotion, and every celebration shines a little more beautifully. Because special moments deserve something timeless."|linebreaksbr }}
+              </p>
+            </div>
 
-            {% for img in memory_images %}
-            <img src="{{ img.image.url }}">
-            {% empty %}
-            <img src="{% static 'user/assets/SPECIAL MEMORIES/CARE FOR HER DAUGHTER.JPG' %}">
-            <img src="{% static 'user/assets/SPECIAL MEMORIES/HEART TOUCHING FEELING WITH WEDDING SAREE.JPG' %}">
-            <img src="{% static 'user/assets/SPECIAL MEMORIES/WEDDING MOMENTS WITH YELLOW PAITHANI.JPG' %}">
-            <img src="{% static 'user/assets/SPECIAL MEMORIES/MOTHER UNBITABLE LOVE TO HER DAUGHTER.JPG' %}">
-            <img src="{% static 'user/assets/SPECIAL MEMORIES/FOREVER SPECIAL WITH SPECIAL 9 YARD SAREE.JPG' %}">
-            <img src="{% static 'user/assets/SPECIAL MEMORIES/HAPPY CUSTOMER.JPG' %}">
-            <img src="{% static 'user/assets/SPECIAL MEMORIES/HAPPY CUSTOMER WITH DESIGNER SAREE.JPG' %}">
-            <img src="{% static 'user/assets/SPECIAL MEMORIES/SILK PAITHANI FOR SONS WEDDING.jpeg' %}">
-            <img src="{% static 'user/assets/SPECIAL MEMORIES/SPECIAL MEMORIES WITH BUAUTIFUL SAREE.JPG' %}">
-            {% endfor %}
-
-          </div>
-
-        </div>
-
+        </section>
       </div>
 
+      <!-- =========================
+      SLIDE 2: SWEET MEMORIES FULL IMAGE BANNER
+      ========================= -->
+      <div class="memories-outer-slide">
+        <div class="memories-image-slide theme-{{ memories_section.background_theme|default:'dark_maroon' }}">
+          
+          {% if memories_offer_slide.desktop_image %}
+          <img src="{{ memories_offer_slide.desktop_image.url }}" class="memories-banner-img memories-banner-desktop" alt="Sweet Memories Slide 2 Desktop Banner">
+          {% else %}
+          <img src="{% static 'user/assets/rakhi-desktop.jpg' %}" class="memories-banner-img memories-banner-desktop" alt="Sweet Memories Slide 2 Desktop Banner">
+          {% endif %}
 
-      <!-- RIGHT -->
+          {% if memories_offer_slide.mobile_image %}
+          <img src="{{ memories_offer_slide.mobile_image.url }}" class="memories-banner-img memories-banner-mobile" alt="Sweet Memories Slide 2 Mobile Banner">
+          {% else %}
+          <img src="{% static 'user/assets/rakhi-mobile.jpg' %}" class="memories-banner-img memories-banner-mobile" alt="Sweet Memories Slide 2 Mobile Banner">
+          {% endif %}
 
-      <div class="memory-content">
-
-        <span class="memory-label">
-
-          {{ memories_section.section_label|default:"SWEET MEMORIES" }}
-
-        </span>
-
-        <h2>
-
-          {{ memories_section.main_heading|default:"Woven Into<br>Your Beautiful Moments"|safe|linebreaksbr }}
-
-        </h2>
-
-        <div class="gold-line"></div>
-
-        <p>
-          {{ memories_section.paragraph_text|default:"Some moments stay forever. A wedding morning. A family celebration. A tradition passed through generations. Our Paithani sarees become part of those unforgettable memories. At Sanskruti By Bani, every weave carries heritage, every drape carries emotion, and every celebration shines a little more beautifully. Because special moments deserve something timeless."|linebreaksbr }}
-        </p>
-
+        </div>
       </div>
 
     </div>
 
+    <!-- OUTER SLIDER DOTS (2 SLIDES) -->
+    <div class="memories-outer-dots">
+      <button class="active" id="memDot0" onclick="goToMemorySlide(0)"></button>
+      <button id="memDot1" onclick="goToMemorySlide(1)"></button>
+    </div>
+
+    <!-- OUTER SLIDER ARROWS -->
+    <button class="memories-outer-arrow memories-outer-prev" onclick="goToMemorySlide(currentMemorySlide - 1)">&#8249;</button>
+    <button class="memories-outer-arrow memories-outer-next" onclick="goToMemorySlide(currentMemorySlide + 1)">&#8250;</button>
+
   </section>
+
+  <script>
+    // Outer memories slider JS
+    (function() {
+      var track = document.getElementById('memoriesOuterTrack');
+      var dots = document.querySelectorAll('.memories-outer-dots button');
+      window.currentMemorySlide = 0;
+      var total = 2;
+      var autoplayTimer;
+
+      window.goToMemorySlide = function(index) {
+        if (index < 0) index = total - 1;
+        if (index >= total) index = 0;
+        window.currentMemorySlide = index;
+        track.style.transform = 'translateX(-' + (index * 100) + '%)';
+        dots.forEach(function(d, i) { d.classList.toggle('active', i === index); });
+        resetAutoplay();
+      };
+
+      function resetAutoplay() {
+        clearInterval(autoplayTimer);
+        autoplayTimer = setInterval(function() {
+          goToMemorySlide(window.currentMemorySlide + 1);
+        }, 6000);
+      }
+
+      resetAutoplay();
+    })();
+  </script>
+
+  
   <!-- =========================================
 BESTSELLER SECTION
 SPECIALITY = PAITHANI

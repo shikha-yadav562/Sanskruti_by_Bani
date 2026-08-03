@@ -12,7 +12,7 @@ from django.utils.text import get_valid_filename
 from django.views.decorators.http import require_http_methods
 from django.core.validators import get_available_image_extensions
 
-from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage, HeroSlideMain, HeroSlideImageOnly, HeroSlideOffer, SweetMemoriesSection, SweetMemoryImage, OfferBarItem, HeaderSettings, FooterSettings, AboutUsSection
+from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage, HeroSlideMain, HeroSlideImageOnly, HeroSlideOffer, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, OfferBarItem, HeaderSettings, FooterSettings, AboutUsSection
 
 # Create your views here.
 def index(request):
@@ -709,6 +709,8 @@ def website_builder(request):
         "hero_offer": HeroSlideOffer.load(),
         "memories": SweetMemoriesSection.load(),
         "memory_images": SweetMemoryImage.objects.all(),
+        "memories_offer_slide": MemoriesOfferSlide.load(),
+        "memories_slide3": MemoriesSlide3.load(),
         "offer_items": OfferBarItem.objects.all(),
         "header": HeaderSettings.load(),
         "footer": FooterSettings.load(),
@@ -795,6 +797,8 @@ def save_hero_offer(request):
                 request.POST,
                 ["small_top_text", "big_highlight_text", "subtext", "button_text"],
             )
+            _save_singleton_image(hero, request.FILES, "desktop_image")
+            _save_singleton_image(hero, request.FILES, "mobile_image")
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
     return JsonResponse({"saved": True})
@@ -816,6 +820,31 @@ def save_memories_section(request):
                 request.POST,
                 ["section_label", "main_heading", "background_theme", "paragraph_text"],
             )
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    return JsonResponse({"saved": True})
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["POST"])
+def save_memories_offer_slide(request):
+    try:
+        with transaction.atomic():
+            slide = MemoriesOfferSlide.load()
+            _save_singleton_image(slide, request.FILES, "desktop_image")
+            _save_singleton_image(slide, request.FILES, "mobile_image")
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    return JsonResponse({"saved": True})
+
+
+@require_http_methods(["POST"])
+def save_memories_slide3(request):
+    try:
+        with transaction.atomic():
+            slide = MemoriesSlide3.load()
+            _save_singleton_image(slide, request.FILES, "desktop_image")
+            _save_singleton_image(slide, request.FILES, "mobile_image")
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
     return JsonResponse({"saved": True})
@@ -1010,6 +1039,46 @@ def memory_images_reorder(request):
     with transaction.atomic():
         for position, image_id in enumerate(ordered_ids):
             SweetMemoryImage.objects.filter(pk=image_id).update(display_order=position)
+
+    return JsonResponse({"reordered": True})
+
+
+# ---------------------------------------------------------------------
+# ADMIN CUSTOMER REVIEWS & CUSTOMERS MANAGEMENT
+# ---------------------------------------------------------------------
+
+def reviews_management(request):
+    from user.models import ProductReview
+    status_filter = request.GET.get('status', 'all')
+    reviews = ProductReview.objects.all()
+
+    if status_filter == 'pending':
+        reviews = reviews.filter(is_approved=False)
+    elif status_filter == 'approved':
+        reviews = reviews.filter(is_approved=True)
+
+    context = {
+        "reviews": reviews,
+        "status_filter": status_filter,
+    }
+    return render(request, "adm_user/reviews_management.html", context)
+
+
+@require_http_methods(["POST"])
+def approve_review(request, pk):
+    from user.models import ProductReview
+    review = get_object_or_404(ProductReview, pk=pk)
+    review.is_approved = not review.is_approved
+    review.save()
+    return JsonResponse({"is_approved": review.is_approved})
+
+
+@require_http_methods(["POST", "DELETE"])
+def delete_review(request, pk):
+    from user.models import ProductReview
+    review = get_object_or_404(ProductReview, pk=pk)
+    review.delete()
+    return JsonResponse({"deleted": True})
  
     return JsonResponse({"reordered": True})
  

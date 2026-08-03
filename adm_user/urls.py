@@ -58,6 +58,8 @@ urlpatterns = [
     path("website-builder/save/hero-image-only/", views.save_hero_image_only, name="save_hero_image_only"),
     path("website-builder/save/hero-offer/", views.save_hero_offer, name="save_hero_offer"),
     path("website-builder/save/memories/", views.save_memories_section, name="save_memories_section"),
+    path("website-builder/save/memories-offer-slide/", views.save_memories_offer_slide, name="save_memories_offer_slide"),
+    path("website-builder/save/memories-slide3/", views.save_memories_slide3, name="save_memories_slide3"),
     path("website-builder/save/header/", views.save_header_settings, name="save_header_settings"),
     path("website-builder/save/footer/", views.save_footer_settings, name="save_footer_settings"),
     path("website-builder/save/about/", views.save_about_section, name="save_about_section"),
@@ -70,5 +72,10 @@ urlpatterns = [
     path("website-builder/memory-images/", views.memory_images, name="memory_images"),
     path("website-builder/memory-images/<int:pk>/", views.memory_image_delete, name="memory_image_delete"),
     path("website-builder/memory-images/reorder/", views.memory_images_reorder, name="memory_images_reorder"),
- 
+
+    # Customer Reviews Management
+    path("reviews/", views.reviews_management, name="reviews_management"),
+    path("reviews/approve/<int:pk>/", views.approve_review, name="approve_review"),
+    path("reviews/delete/<int:pk>/", views.delete_review, name="delete_review"),
+
 ]

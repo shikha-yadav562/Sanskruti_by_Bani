@@ -372,53 +372,341 @@
             </div>
           </div>
 
-          <!-- Accordion Item 4 -->
-          <div class="border-b border-[#e7c27a]/40">
+          <!-- Accordion Item 4: Amazon-Style Customer Reviews Hub -->
+          <div class="border-b border-[#e7c27a]/40" id="writeReviewSection">
             <button
               class="w-full py-4 flex justify-between items-center text-left text-sm font-bold uppercase tracking-widest text-[#810820] focus:outline-none accordion-btn"
               style="font-family: 'Inter', sans-serif;">
-              Customer Reviews (42)
+              Customer Ratings & Reviews ({{ total_reviews|default:"42" }})
               <span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
             </button>
-            <div class="accordion-content hidden pb-6 pt-2">
 
-              <!-- Review 1 -->
-              <div class="border-b border-[#e7c27a]/20 pb-4 mb-4">
-                <div class="flex items-center gap-2 mb-1 text-[#e7c27a] text-xs">
-                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <div class="accordion-content block pb-8 pt-4 space-y-8">
+
+              <!-- AMAZON-STYLE RATING BREAKDOWN DASHBOARD -->
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-6 bg-white p-6 rounded-2xl border border-[#e7c27a]/40 shadow-sm">
+                
+                <!-- Left: Overall Rating Score -->
+                <div class="md:col-span-4 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-[#e7c27a]/30 pb-6 md:pb-0 md:pr-6">
+                  <span class="text-5xl font-bold text-[#810820] font-serif" style="font-family: 'Cinzel', serif;">{{ avg_rating|default:"4.8" }}</span>
+                  <div class="flex text-[#e7c27a] text-lg my-2">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                  </div>
+                  <p class="text-xs text-[#810820] font-semibold uppercase tracking-wider">Based on {{ total_reviews|default:"42" }} verified reviews</p>
+                  <p class="text-[11px] text-gray-500 mt-1">96% of customers recommend this Paithani Saree</p>
+
+                  <button onclick="toggleReviewForm()" class="mt-4 px-6 py-2.5 bg-[#810820] text-[#e7c27a] font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#71041a] transition shadow-md">
+                    <i class="fa-solid fa-pen mr-1"></i> Write A Review
+                  </button>
                 </div>
-                <h5 class="text-xs font-bold text-[#810820] uppercase tracking-wider mb-1"
-                  style="font-family: 'Inter', sans-serif;">Absolutely Stunning!</h5>
-                <p class="text-xs leading-relaxed text-[#4a0c16] opacity-90 mb-2"
-                  style="font-family: 'Poppins', sans-serif;">The quality of the silk is unmatched. The zari work is
-                  intricate and shines beautifully in the light. Wore this to my sister's wedding and received so many
-                  compliments.</p>
-                <p class="text-[10px] text-gray-500 uppercase tracking-widest"
-                  style="font-family: 'Inter', sans-serif;">- Priya K. (Verified Buyer)</p>
+
+                <!-- Center: Rating Bars (5 Star to 1 Star) -->
+                <div class="md:col-span-8 flex flex-col justify-center space-y-2.5">
+                  <!-- 5 Star Bar -->
+                  <div class="flex items-center gap-3 text-xs">
+                    <span class="w-12 font-bold text-[#810820]">5 Star</span>
+                    <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
+                      <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.5|default:85 }}%;"></div>
+                    </div>
+                    <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.5|default:85 }}%</span>
+                  </div>
+
+                  <!-- 4 Star Bar -->
+                  <div class="flex items-center gap-3 text-xs">
+                    <span class="w-12 font-bold text-[#810820]">4 Star</span>
+                    <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
+                      <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.4|default:10 }}%;"></div>
+                    </div>
+                    <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.4|default:10 }}%</span>
+                  </div>
+
+                  <!-- 3 Star Bar -->
+                  <div class="flex items-center gap-3 text-xs">
+                    <span class="w-12 font-bold text-[#810820]">3 Star</span>
+                    <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
+                      <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.3|default:3 }}%;"></div>
+                    </div>
+                    <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.3|default:3 }}%</span>
+                  </div>
+
+                  <!-- 2 Star Bar -->
+                  <div class="flex items-center gap-3 text-xs">
+                    <span class="w-12 font-bold text-[#810820]">2 Star</span>
+                    <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
+                      <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.2|default:2 }}%;"></div>
+                    </div>
+                    <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.2|default:2 }}%</span>
+                  </div>
+
+                  <!-- 1 Star Bar -->
+                  <div class="flex items-center gap-3 text-xs">
+                    <span class="w-12 font-bold text-[#810820]">1 Star</span>
+                    <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
+                      <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.1|default:0 }}%;"></div>
+                    </div>
+                    <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.1|default:0 }}%</span>
+                  </div>
+                </div>
+
               </div>
 
-              <!-- Review 2 -->
-              <div class="border-b border-[#e7c27a]/20 pb-4 mb-4">
-                <div class="flex items-center gap-2 mb-1 text-[#e7c27a] text-xs">
-                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                    class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
-                </div>
-                <h5 class="text-xs font-bold text-[#810820] uppercase tracking-wider mb-1"
-                  style="font-family: 'Inter', sans-serif;">Authentic Paithani</h5>
-                <p class="text-xs leading-relaxed text-[#4a0c16] opacity-90 mb-2"
-                  style="font-family: 'Poppins', sans-serif;">You can tell this is authentic handloom. The pallu is very
-                  heavy and rich. Delivery was fast and the packaging felt very premium.</p>
-                <p class="text-[10px] text-gray-500 uppercase tracking-widest"
-                  style="font-family: 'Inter', sans-serif;">- Sneha M. (Verified Buyer)</p>
+              <!-- WRITE A REVIEW FORM (AMAZON STYLE WITH PHOTO UPLOADS) -->
+              <div id="reviewFormContainer" class="hidden bg-white p-6 rounded-2xl border-2 border-[#810820]/30 shadow-md">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-[#810820] mb-4 flex items-center gap-2">
+                  <i class="fa-solid fa-star text-[#e7c27a]"></i> Write A Customer Review
+                </h3>
+
+                <form id="customerReviewForm" onsubmit="handleReviewSubmit(event)" enctype="multipart/form-data" class="space-y-4">
+                  {% csrf_token %}
+                  <input type="hidden" name="product_slug" value="anuradha-paithani-saree">
+                  <input type="hidden" name="product_name" value="Anuradha Paithani Soft Peacock Design Saree">
+                  <input type="hidden" name="rating" id="ratingInput" value="5">
+
+                  <!-- Interactive Star Picker -->
+                  <div>
+                    <label class="block text-xs font-bold uppercase text-[#810820] mb-1">Overall Rating *</label>
+                    <div class="flex items-center gap-1 text-2xl text-[#e7c27a] cursor-pointer" id="starPicker">
+                      <i class="fa-solid fa-star star-btn" data-star="1" onclick="setRating(1)"></i>
+                      <i class="fa-solid fa-star star-btn" data-star="2" onclick="setRating(2)"></i>
+                      <i class="fa-solid fa-star star-btn" data-star="3" onclick="setRating(3)"></i>
+                      <i class="fa-solid fa-star star-btn" data-star="4" onclick="setRating(4)"></i>
+                      <i class="fa-solid fa-star star-btn" data-star="5" onclick="setRating(5)"></i>
+                      <span class="text-xs font-bold text-[#810820] ml-2" id="ratingText">5.0 / 5 Stars (Excellent)</span>
+                    </div>
+                  </div>
+
+                  <!-- Review Title -->
+                  <div>
+                    <label class="block text-xs font-bold uppercase text-[#810820] mb-1">Review Headline / Title *</label>
+                    <input type="text" name="title" required placeholder="e.g., Unmatched silk quality and stunning golden zari work!" class="w-full bg-[#fcf8f5] border border-[#e7c27a]/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#810820]">
+                  </div>
+
+                  <!-- Review Comment -->
+                  <div>
+                    <label class="block text-xs font-bold uppercase text-[#810820] mb-1">Detailed Review *</label>
+                    <textarea name="comment" required rows="4" placeholder="What did you like or dislike? How was the fabric quality, saree drape, and festive look?" class="w-full bg-[#fcf8f5] border border-[#e7c27a]/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#810820]"></textarea>
+                  </div>
+
+                  <!-- Photo Upload Section (Amazon style photo review) -->
+                  <div>
+                    <label class="block text-xs font-bold uppercase text-[#810820] mb-2">Upload Customer Photos (Optional)</label>
+                    <div class="grid grid-cols-3 gap-3">
+                      <label class="border-2 border-dashed border-[#e7c27a] bg-[#fcf8f5] rounded-xl p-3 text-center cursor-pointer hover:bg-[#e7c27a]/10 transition flex flex-col items-center justify-center h-24">
+                        <input type="file" name="image_1" accept="image/*" class="hidden" onchange="previewReviewImg(this, 'revImgPrev1')">
+                        <img id="revImgPrev1" class="hidden w-full h-full object-cover rounded-lg">
+                        <div class="text-[#810820] text-center" id="revImgLabel1">
+                          <i class="fa-solid fa-camera text-lg"></i>
+                          <p class="text-[10px] font-bold mt-1">+ Photo 1</p>
+                        </div>
+                      </label>
+
+                      <label class="border-2 border-dashed border-[#e7c27a] bg-[#fcf8f5] rounded-xl p-3 text-center cursor-pointer hover:bg-[#e7c27a]/10 transition flex flex-col items-center justify-center h-24">
+                        <input type="file" name="image_2" accept="image/*" class="hidden" onchange="previewReviewImg(this, 'revImgPrev2')">
+                        <img id="revImgPrev2" class="hidden w-full h-full object-cover rounded-lg">
+                        <div class="text-[#810820] text-center" id="revImgLabel2">
+                          <i class="fa-solid fa-camera text-lg"></i>
+                          <p class="text-[10px] font-bold mt-1">+ Photo 2</p>
+                        </div>
+                      </label>
+
+                      <label class="border-2 border-dashed border-[#e7c27a] bg-[#fcf8f5] rounded-xl p-3 text-center cursor-pointer hover:bg-[#e7c27a]/10 transition flex flex-col items-center justify-center h-24">
+                        <input type="file" name="image_3" accept="image/*" class="hidden" onchange="previewReviewImg(this, 'revImgPrev3')">
+                        <img id="revImgPrev3" class="hidden w-full h-full object-cover rounded-lg">
+                        <div class="text-[#810820] text-center" id="revImgLabel3">
+                          <i class="fa-solid fa-camera text-lg"></i>
+                          <p class="text-[10px] font-bold mt-1">+ Photo 3</p>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-3 pt-2">
+                    <button type="submit" class="px-8 py-3 bg-[#810820] text-[#e7c27a] font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#71041a] transition shadow-md">
+                      Submit Review
+                    </button>
+                    <button type="button" onclick="toggleReviewForm()" class="px-6 py-3 border border-gray-300 text-gray-600 font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-gray-100 transition">
+                      Cancel
+                    </button>
+                  </div>
+                </form>
               </div>
 
-              <button
-                class="text-xs text-[#810820] font-bold uppercase tracking-widest border-b border-[#810820] hover:text-[#e7c27a] hover:border-[#e7c27a] transition-colors pb-0.5"
-                style="font-family: 'Inter', sans-serif;">Read All Reviews</button>
+              <!-- REVIEWS LIST & CARDS -->
+              <div class="space-y-6">
+                {% for rev in reviews %}
+                <div class="bg-white p-5 rounded-2xl border border-[#e7c27a]/30 shadow-sm space-y-3">
+                  
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-[#810820] text-[#e7c27a] font-bold flex items-center justify-center text-sm border border-[#e7c27a]">
+                        {{ rev.user.full_name|default:"Customer"|first|upper }}
+                      </div>
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <h4 class="font-bold text-sm text-[#810820]">{{ rev.user.full_name|default:"Verified Customer" }}</h4>
+                          {% if rev.is_verified_buyer %}
+                          <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full uppercase tracking-wider flex items-center gap-1">
+                            <i class="fa-solid fa-circle-check"></i> Verified Purchase
+                          </span>
+                          {% endif %}
+                        </div>
+                        <span class="text-[10px] text-gray-500">{{ rev.created_at|date:"F d, Y" }}</span>
+                      </div>
+                    </div>
+
+                    <!-- Rating Stars -->
+                    <div class="flex text-[#e7c27a] text-xs">
+                      {% for i in "12345" %}
+                      {% if forloop.counter <= rev.rating %}
+                      <i class="fa-solid fa-star"></i>
+                      {% else %}
+                      <i class="fa-regular fa-star"></i>
+                      {% endif %}
+                      {% endfor %}
+                    </div>
+                  </div>
+
+                  <!-- Title & Comment -->
+                  <div>
+                    <h5 class="text-sm font-bold text-[#810820] font-serif mb-1" style="font-family: 'Cinzel', serif;">{{ rev.title }}</h5>
+                    <p class="text-xs leading-relaxed text-[#4a0c16] opacity-90" style="font-family: 'Poppins', sans-serif;">{{ rev.comment }}</p>
+                  </div>
+
+                  <!-- Uploaded Review Images -->
+                  {% if rev.image_1 or rev.image_2 or rev.image_3 %}
+                  <div class="flex gap-2 pt-2">
+                    {% if rev.image_1 %}
+                    <img src="{{ rev.image_1.url }}" class="w-20 h-20 object-cover rounded-xl border border-[#e7c27a]/50 cursor-pointer hover:scale-105 transition" onclick="openPhotoModal(this.src)">
+                    {% endif %}
+                    {% if rev.image_2 %}
+                    <img src="{{ rev.image_2.url }}" class="w-20 h-20 object-cover rounded-xl border border-[#e7c27a]/50 cursor-pointer hover:scale-105 transition" onclick="openPhotoModal(this.src)">
+                    {% endif %}
+                    {% if rev.image_3 %}
+                    <img src="{{ rev.image_3.url }}" class="w-20 h-20 object-cover rounded-xl border border-[#e7c27a]/50 cursor-pointer hover:scale-105 transition" onclick="openPhotoModal(this.src)">
+                    {% endif %}
+                  </div>
+                  {% endif %}
+
+                  <!-- Helpful Counter Button -->
+                  <div class="pt-2 flex items-center justify-between border-t border-gray-100 text-xs">
+                    <button onclick="voteHelpful({{ rev.id }}, this)" class="text-gray-600 hover:text-[#810820] font-medium flex items-center gap-1.5 px-3 py-1 bg-gray-50 hover:bg-[#810820]/10 rounded-lg transition">
+                      <i class="fa-regular fa-thumbs-up"></i> Helpful (<span class="helpful-count">{{ rev.helpful_count }}</span>)
+                    </button>
+                    <span class="text-[10px] text-gray-400">Report Abuse</span>
+                  </div>
+
+                </div>
+                {% empty %}
+                <div class="text-center py-8 text-sm text-gray-500">
+                  No reviews submitted yet. Be the first to review this product!
+                </div>
+                {% endfor %}
+              </div>
 
             </div>
           </div>
+
+          <!-- PHOTO MODAL LIGHTBOX -->
+          <div id="photoModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onclick="closePhotoModal()">
+            <div class="relative max-w-3xl w-full max-h-[85vh] flex justify-center">
+              <img id="photoModalImg" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl object-contain">
+              <button onclick="closePhotoModal()" class="absolute -top-10 right-0 text-white text-2xl font-bold">&times;</button>
+            </div>
+          </div>
+
+          <script>
+            function toggleReviewForm() {
+              const el = document.getElementById('reviewFormContainer');
+              el.classList.toggle('hidden');
+              if (!el.classList.contains('hidden')) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              }
+            }
+
+            function setRating(val) {
+              document.getElementById('ratingInput').value = val;
+              const labels = {
+                1: '1.0 / 5 Stars (Poor)',
+                2: '2.0 / 5 Stars (Fair)',
+                3: '3.0 / 5 Stars (Good)',
+                4: '4.0 / 5 Stars (Very Good)',
+                5: '5.0 / 5 Stars (Excellent)'
+              };
+              document.getElementById('ratingText').innerText = labels[val];
+              const stars = document.querySelectorAll('.star-btn');
+              stars.forEach((s, idx) => {
+                if (idx < val) {
+                  s.classList.remove('fa-regular');
+                  s.classList.add('fa-solid');
+                } else {
+                  s.classList.remove('fa-solid');
+                  s.classList.add('fa-regular');
+                }
+              });
+            }
+
+            function previewReviewImg(input, imgId) {
+              if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                  const img = document.getElementById(imgId);
+                  img.src = e.target.result;
+                  img.classList.remove('hidden');
+                  const label = input.parentElement.querySelector('div');
+                  if (label) label.classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+              }
+            }
+
+            function handleReviewSubmit(e) {
+              e.preventDefault();
+              const form = document.getElementById('customerReviewForm');
+              const fd = new FormData(form);
+
+              fetch('{% url "user:submit_review" %}', {
+                method: 'POST',
+                body: fd
+              })
+              .then(r => r.json())
+              .then(data => {
+                if (data.success) {
+                  alert('Thank you! Your product review has been submitted successfully.');
+                  window.location.reload();
+                } else {
+                  alert('Error: ' + (data.error || 'Could not submit review'));
+                }
+              })
+              .catch(() => alert('Network error. Please try again.'));
+            }
+
+            function voteHelpful(reviewId, btn) {
+              fetch('/review/helpful/' + reviewId + '/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+              })
+              .then(r => r.json())
+              .then(data => {
+                if (data.success) {
+                  btn.querySelector('.helpful-count').innerText = data.helpful_count;
+                  btn.classList.add('text-[#810820]', 'font-bold');
+                }
+              });
+            }
+
+            function openPhotoModal(src) {
+              document.getElementById('photoModalImg').src = src;
+              document.getElementById('photoModal').classList.remove('hidden');
+            }
+
+            function closePhotoModal() {
+              document.getElementById('photoModal').classList.add('hidden');
+            }
+          </script>
 
         </div>
 

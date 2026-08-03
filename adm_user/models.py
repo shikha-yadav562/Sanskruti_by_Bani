@@ -476,15 +476,17 @@ class HeroSlideImageOnly(SingletonModel):
 
 
 class HeroSlideOffer(SingletonModel):
-    """Slide 3: Offer Call-To-Action — text only, no images in this template."""
+    """Slide 1: Offer Banner — Full Image Banner (Desktop & Mobile responsive) with optional text overlay."""
 
+    desktop_image = models.ImageField(upload_to="website/hero/offer/desktop/", blank=True)
+    mobile_image = models.ImageField(upload_to="website/hero/offer/mobile/", blank=True)
     small_top_text = models.CharField(max_length=100, blank=True)
     big_highlight_text = models.CharField(max_length=150, blank=True)
     subtext = models.CharField(max_length=200, blank=True)
     button_text = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return "Hero Slide 3 (Offer)"
+        return "Hero Slide 1 (Offer Image Banner)"
 
 
 # ---------------------------------------------------------------------
@@ -524,6 +526,38 @@ class SweetMemoryImage(TimeStampedModel):
 
     def __str__(self):
         return f"Memory image #{self.pk}"
+
+
+class MemoriesOfferSlide(SingletonModel):
+    """
+    Slide 2 of Sweet Memories — Full Image Banner (Desktop & Mobile).
+    """
+
+    desktop_image = models.ImageField(
+        upload_to="website/memories_slide2/desktop/", blank=True
+    )
+    mobile_image = models.ImageField(
+        upload_to="website/memories_slide2/mobile/", blank=True
+    )
+
+    def __str__(self):
+        return "Sweet Memories Slide 2 (Image Banner)"
+
+
+class MemoriesSlide3(SingletonModel):
+    """
+    Slide 3 of Sweet Memories — Full Image Banner (Desktop & Mobile).
+    """
+
+    desktop_image = models.ImageField(
+        upload_to="website/memories_slide3/desktop/", blank=True
+    )
+    mobile_image = models.ImageField(
+        upload_to="website/memories_slide3/mobile/", blank=True
+    )
+
+    def __str__(self):
+        return "Sweet Memories Slide 3 (Image Banner)"
 
 
 # ---------------------------------------------------------------------
