@@ -7,10 +7,11 @@
     {% load static %}
     
     <!-- GOOGLE FONTS -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     
-    <!-- MATERIAL ICONS & PHOSPHOR ICONS -->
+    <!-- MATERIAL ICONS & FONT AWESOME -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <!-- TAILWIND -->
@@ -57,7 +58,7 @@
         <button class="tb-btn next">›</button>
     </div>
 
-    <!-- NAVBAR -->
+    <!-- NAVBAR (EXACT MATCH WITH SITE) -->
     <header id="navbar">
         <div class="nav-wrap">
             <button class="mobile-toggle" id="mobileToggle">
@@ -101,6 +102,19 @@
             </div>
         </div>
     </header>
+
+    <!-- MOBILE DRAWER -->
+    <div class="mobile-drawer" id="mobileDrawer">
+        <button class="close-menu" id="closeMenu">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <div class="mobile-links">
+            <a href="{% url 'user:index' %}">Home</a>
+            <a href="{% url 'user:catalogue' %}">Collections</a>
+            <a href="{% url 'user:product' %}">Sarees</a>
+            <a href="{% url 'user:profile' %}">My Account</a>
+        </div>
+    </div>
 
     <!-- BREADCRUMB -->
     <div class="bg-white border-b border-slate-200/80 py-3.5 shadow-sm">
@@ -249,19 +263,74 @@
 
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-brand-maroon text-[#fff8f4] border-t border-brand-gold/30 py-8 mt-12">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-            <div class="text-brand-gold/80 text-center sm:text-left">
-                © 2026 Sanskruti By Bani (BLUENOTES). All Rights Reserved.
+    <!-- LUXURY FOOTER (EXACT MATCH WITH HOMEPAGE) -->
+    <footer class="luxury-footer">
+        <div class="footer-top">
+            <div class="footer-col footer-brand">
+                <h2>{{ footer_settings.brand_name|default:"Sanskruti By Bani" }}</h2>
+                <p>{{ footer_settings.brand_description|default:"Celebrating timeless Indian heritage through handcrafted Paithani, Banarasi, Kanjivaram and luxury saree collections woven with elegance, culture and emotion."|linebreaksbr }}</p>
+                <div class="footer-socials">
+                    <a href="{{ footer_settings.instagram_link|default:'#' }}"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="https://wa.me/{{ footer_settings.whatsapp_number }}"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
             </div>
-            <div class="flex items-center gap-6 text-brand-gold font-medium">
-                <a href="{% url 'user:terms_conditions' %}" class="hover:underline">Terms & Conditions</a>
-                <a href="{% url 'user:return_refund_policy' %}" class="hover:underline">Return & Refund Policy</a>
-                <a href="{% url 'user:privacy_policy' %}" class="hover:underline">Privacy Policy</a>
+
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <a href="{% url 'user:index' %}">Home</a>
+                <a href="{% url 'user:catalogue' %}">New Arrivals</a>
+                <a href="{% url 'user:catalogue' %}">Collections</a>
+                <a href="{% url 'user:product' %}">Best Sellers</a>
+            </div>
+
+            <div class="footer-col">
+                <h3>Collections</h3>
+                <a href="{% url 'user:catalogue' %}">Paithani Sarees</a>
+                <a href="{% url 'user:catalogue' %}">Banarasi Sarees</a>
+                <a href="{% url 'user:catalogue' %}">Kanjivaram Sarees</a>
+                <a href="{% url 'user:catalogue' %}">Bandhani Sarees</a>
+                <a href="{% url 'user:catalogue' %}">Patola Sarees</a>
+            </div>
+
+            <div class="footer-col">
+                <h3>Policy & Inquiry</h3>
+                <a href="{% url 'user:return_refund_policy' %}">Return & Refund Policy</a>
+                <a href="{% url 'user:terms_conditions' %}">Terms and Conditions</a>
+                <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
+            </div>
+
+            <div class="footer-col">
+                <h3>Contact</h3>
+                <p><i class="fa-solid fa-location-dot"></i> {{ footer_settings.store_address|default:"Pune, Maharashtra, India" }}</p>
+                <p><i class="fa-solid fa-phone"></i> {{ footer_settings.phone_number|default:"+91 98765 43210" }}</p>
+                <p><i class="fa-solid fa-envelope"></i> {{ footer_settings.email|default:"info@sanskrutibybani.com" }}</p>
+                <p><i class="fa-solid fa-clock"></i> Mon - Sat : 10 AM - 8 PM</p>
+            </div>
+        </div>
+
+        <div class="footer-newsletter">
+            <div>
+                <h3>Join Our Heritage Circle</h3>
+                <p>Get updates on new arrivals, festive collections & exclusive offers.</p>
+            </div>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email">
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Sanskruti By Bani. All Rights Reserved.</p>
+            <div class="footer-bottom-links">
+                <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
+                <a href="{% url 'user:terms_conditions' %}">Terms & Conditions</a>
+                <a href="{% url 'user:return_refund_policy' %}">Return & Exchange Policy</a>
             </div>
         </div>
     </footer>
 
+    <script src="{% static 'user/js/script.js' %}"></script>
 </body>
 </html>

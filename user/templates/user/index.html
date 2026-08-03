@@ -674,11 +674,19 @@ LUXURY EDITORIAL COLLECTIONS
                 {{ memories_section.section_label|default:"SWEET MEMORIES" }}
               </span>
               <h2>
-                {{ memories_section.main_heading|default:"Woven Into<br>Your Beautiful Moments"|safe|linebreaksbr }}
+                {% if memories_section.main_heading %}
+                  {{ memories_section.main_heading|safe }}
+                {% else %}
+                  WOVEN INTO<br>YOUR <span class="gold-highlight" style="color: #e7c27a;">BEAUTIFUL</span><br>MOMENTS
+                {% endif %}
               </h2>
               <div class="gold-line"></div>
               <p>
-                {{ memories_section.paragraph_text|default:"Some moments stay forever. A wedding morning. A family celebration. A tradition passed through generations. Our Paithani sarees become part of those unforgettable memories. At Sanskruti By Bani, every weave carries heritage, every drape carries emotion, and every celebration shines a little more beautifully. Because special moments deserve something timeless."|linebreaksbr }}
+                {% if memories_section.paragraph_text %}
+                  {{ memories_section.paragraph_text }}
+                {% else %}
+                  Some moments stay forever. A wedding morning. A family celebration. A tradition passed through generations. Our Paithani sarees become part of those unforgettable memories. At <span style="color: #e7c27a; font-weight: 600;">Sanskruti By Bani</span>, every weave carries heritage, every drape carries emotion, and every celebration shines a little more beautifully. Because special moments deserve something timeless.
+                {% endif %}
               </p>
             </div>
 
