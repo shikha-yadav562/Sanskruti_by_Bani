@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Sanskruti by Bani</title>
+    {% load static %}
+    
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- MATERIAL ICONS -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"> 
+    
+    <!-- PHOSPHOR ICONS & FONT AWESOME -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- TAILWIND -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { 
+                        brand: { 
+                            maroon: '#71041a', 
+                            maroonLight: '#8a0a25', 
+                            gold: '#e7c27a' 
+                        } 
+                    },
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'], 
+                        serif: ['Cinzel', 'serif'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- MAIN HOMEPAGE CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+</head>
+<body class="bg-[#FAF7F2] font-sans antialiased text-slate-900 flex flex-col min-h-screen">
+
+    <!-- =====================================
+    TOP OFFER BAR (HOMEPAGE DESIGN)
+    ===================================== -->
+    <div class="top-bar">
+        <button class="tb-btn prev">‹</button>
+        <div class="tb-window">
+            {% for item in offer_items %}
+            <div class="tb-item{% if forloop.first %} active{% endif %}">{{ item.text }}</div>
+            {% empty %}
+            <div class="tb-item active">Free Discount</div>
+            <div class="tb-item">COD across India</div>
+            <div class="tb-item">Easy Return & Exchange*</div>
+            {% endfor %}
+        </div>
+        <button class="tb-btn next">›</button>
+    </div>
+
+    <!-- =====================================
+    NAVBAR (EXACT HOMEPAGE NAVBAR DESIGN)
+    ===================================== -->
+    <header id="navbar">
+        <div class="nav-wrap">
+            <!-- MOBILE TOGGLE -->
+            <button class="mobile-toggle" id="mobileToggle">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+
+            <!-- LEFT MENU -->
+            <nav class="menu left-menu">
+                <a href="{% url 'user:index' %}">Home</a>
+                <a href="{% url 'user:catalogue' %}">New Arrivals</a>
+            </nav>
+
+            <!-- CENTER BRAND LOGO -->
+            <a href="{% url 'user:index' %}" class="reveal-section">
+                <div class="luxury-logo">
+                    <div class="logo-main">
+                        <span>S</span><span>A</span><span>N</span><span>S</span><span>K</span><span>R</span><span>U</span><span>T</span><span>I</span>
+                    </div>
+                    <div class="logo-divider"></div>
+                    <div class="logo-sub">
+                        <span>B</span><span>Y</span><span class="space"></span><span>B</span><span>A</span><span>N</span><span>I</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- RIGHT MENU -->
+            <nav class="menu right-menu">
+                <a href="{% url 'user:catalogue' %}">Collections</a>
+                <a href="{% url 'user:product' %}">Sarees</a>
+                <a href="{% url 'user:profile' %}" class="font-bold text-brand-maroon">My Account</a>
+            </nav>
+
+            <!-- ACTION ICONS -->
+            <div class="nav-actions">
+                <button class="action-btn" id="searchTrigger" title="Search">
+                    <span class="material-symbols-outlined">search</span>
+                </button>
+                <a href="{% url 'user:profile' %}" class="action-btn text-brand-maroon" title="Account">
+                    <span class="material-symbols-outlined">person</span>
+                </a>
+                <button class="action-btn cart-btn" id="cartOpenBtn" title="Cart">
+                    <span class="material-symbols-outlined">shopping_bag</span>
+                    <span class="cart-badge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- BREADCRUMB NAVIGATION -->
+    <div class="bg-white border-b border-slate-200/80 py-3.5 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                <a href="{% url 'user:index' %}" class="hover:text-brand-maroon">Home</a>
+                <i class="ph ph-caret-right text-xs"></i>
+                <span class="text-brand-maroon font-bold">My Account</span>
+            </div>
+            
+            <!-- TOP RIGHT QUICK LOGOUT BUTTON -->
+            <a href="{% url 'user:logout' %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-600 hover:text-white transition-all text-xs font-bold border border-red-200">
+                <i class="ph ph-sign-out text-sm"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER (AMAZON & FLIPKART STYLE PROFILE GRID) -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- SIDEBAR NAVIGATION -->
+            <div class="lg:col-span-1 space-y-4">
+                
+                <!-- USER INFO HEAD CARD (NO SHARMILA NAME / IMAGE) -->
+                <div class="bg-white rounded-2xl p-5 border border-brand-maroon/20 shadow-sm flex items-center gap-4">
+                    <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-brand-maroon/10 border-2 border-brand-gold flex items-center justify-center text-brand-maroon shadow-md shrink-0">
+                        <i class="ph ph-user text-2xl"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-brand-gold">Hello, Welcome</span>
+                        <h3 class="font-bold text-slate-900 text-base leading-tight truncate">
+                            {% if request.user.is_authenticated %}
+                                {{ request.user.get_full_name|default:request.user.username }}
+                            {% else %}
+                                Customer Profile
+                            {% endif %}
+                        </h3>
+                        <p class="text-xs text-slate-500 font-medium truncate">
+                            {% if request.user.is_authenticated and request.user.email %}
+                                {{ request.user.email }}
+                            {% else %}
+                                Manage your orders & profile
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- NAVIGATION TABS -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden divide-y divide-slate-100">
+                    
+                    <button onclick="switchTab('orders')" id="tab-orders" class="w-full text-left px-5 py-4 flex items-center justify-between font-semibold text-sm transition-colors text-brand-maroon bg-brand-maroon/5 border-l-4 border-brand-maroon">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-package text-xl text-brand-maroon"></i>
+                            <span>My Orders</span>
+                        </div>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-brand-maroon text-brand-gold font-bold">2</span>
+                    </button>
+
+                    <button onclick="switchTab('personal')" id="tab-personal" class="w-full text-left px-5 py-4 flex items-center justify-between font-semibold text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-user text-xl text-slate-500"></i>
+                            <span>Personal Information</span>
+                        </div>
+                        <i class="ph ph-caret-right text-slate-400"></i>
+                    </button>
+
+                    <button onclick="switchTab('address')" id="tab-address" class="w-full text-left px-5 py-4 flex items-center justify-between font-semibold text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-map-pin text-xl text-slate-500"></i>
+                            <span>Manage Addresses</span>
+                        </div>
+                        <i class="ph ph-caret-right text-slate-400"></i>
+                    </button>
+
+                    <button onclick="switchTab('reviews')" id="tab-reviews" class="w-full text-left px-5 py-4 flex items-center justify-between font-semibold text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-star text-xl text-slate-500"></i>
+                            <span>My Reviews & Ratings</span>
+                        </div>
+                        <i class="ph ph-caret-right text-slate-400"></i>
+                    </button>
+
+                    <button onclick="switchTab('wishlist')" id="tab-wishlist" class="w-full text-left px-5 py-4 flex items-center justify-between font-semibold text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-heart text-xl text-slate-500"></i>
+                            <span>Wishlist & Saved Items</span>
+                        </div>
+                        <i class="ph ph-caret-right text-slate-400"></i>
+                    </button>
+
+                    <!-- LOGOUT BUTTON IN SIDEBAR -->
+                    <a href="{% url 'user:logout' %}" class="w-full text-left px-5 py-4 flex items-center gap-3 font-bold text-sm text-red-600 hover:bg-red-50 transition-colors">
+                        <i class="ph ph-sign-out text-xl"></i>
+                        <span>Logout Account</span>
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- MAIN TAB CONTENT AREA -->
+            <div class="lg:col-span-3">
+
+                <!-- 1. MY ORDERS TAB -->
+                <div id="content-orders" class="space-y-6">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-brand-maroon font-serif" style="font-family: 'Cinzel', serif;">My Orders</h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Track, return, or buy again your favorite Paithani sarees.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" placeholder="Search orders..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-brand-maroon">
+                        </div>
+                    </div>
+
+                    <!-- ORDER ITEM 1 (Delivered) -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
+                            <div class="flex items-center gap-6">
+                                <div>
+                                    <span class="text-slate-400 block uppercase font-bold text-[10px]">Order Placed</span>
+                                    <span class="font-semibold text-slate-800">28 July 2026</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 block uppercase font-bold text-[10px]">Total Amount</span>
+                                    <span class="font-bold text-brand-maroon">₹14,999.00</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 block uppercase font-bold text-[10px]">Ship To</span>
+                                    <span class="font-semibold text-slate-800">
+                                        {% if request.user.is_authenticated %}{{ request.user.get_full_name|default:request.user.username }}{% else %}Customer{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block uppercase font-bold text-[10px] text-right">Order #SBB-88921</span>
+                                <a href="#" class="text-brand-maroon font-bold hover:underline">Download Invoice</a>
+                            </div>
+                        </div>
+
+                        <div class="p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                            <div class="flex items-center gap-4">
+                                <img src="/media/products/72cc5422f6d64b5a8d79d9360b8a68d0_PATOLA_4.jpeg" class="w-20 h-24 object-cover rounded-xl border border-slate-200" alt="Royal Blue Yeola Paithani">
+                                <div>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase mb-2">
+                                        <i class="ph ph-check-circle text-xs"></i> Delivered on 01 Aug
+                                    </span>
+                                    <h4 class="font-bold text-slate-900 text-sm">Royal Blue Pure Silk Yeola Paithani Saree</h4>
+                                    <p class="text-xs text-slate-500 mt-1">Zari Peacock Pallu • Handloom Authentic</p>
+                                    <p class="text-xs font-bold text-slate-700 mt-1">Qty: 1</p>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
+                                <a href="{% url 'user:product' %}" class="w-full sm:w-auto text-center px-4 py-2.5 bg-brand-maroon text-brand-gold rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-brand-maroonLight transition-colors shadow-sm">
+                                    Write Product Review
+                                </a>
+                                <button class="w-full sm:w-auto text-center px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-200 transition-colors">
+                                    Buy It Again
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ORDER ITEM 2 (In Transit) -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
+                            <div class="flex items-center gap-6">
+                                <div>
+                                    <span class="text-slate-400 block uppercase font-bold text-[10px]">Order Placed</span>
+                                    <span class="font-semibold text-slate-800">01 August 2026</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 block uppercase font-bold text-[10px]">Total Amount</span>
+                                    <span class="font-bold text-brand-maroon">₹22,500.00</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 block uppercase font-bold text-[10px]">Ship To</span>
+                                    <span class="font-semibold text-slate-800">
+                                        {% if request.user.is_authenticated %}{{ request.user.get_full_name|default:request.user.username }}{% else %}Customer{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block uppercase font-bold text-[10px] text-right">Order #SBB-90142</span>
+                                <a href="#" class="text-brand-maroon font-bold hover:underline">Track Package</a>
+                            </div>
+                        </div>
+
+                        <div class="p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                            <div class="flex items-center gap-4">
+                                <img src="/media/products/ae62f418c7b746e9ba80c233260dd50b_PATOLA_2.jpeg" class="w-20 h-24 object-cover rounded-xl border border-slate-200" alt="Magenta Kanjivaram Silk Saree">
+                                <div>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] uppercase mb-2">
+                                        <i class="ph ph-[#520211] text-xs"></i> Shipped — Arriving Tomorrow
+                                    </span>
+                                    <h4 class="font-bold text-slate-900 text-sm">Magenta Gold Bordered Heritage Kanjivaram</h4>
+                                    <p class="text-xs text-slate-500 mt-1">Pure Silk • Gold Brocade Work</p>
+                                    <p class="text-xs font-bold text-slate-700 mt-1">Qty: 1</p>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
+                                <button class="w-full sm:w-auto text-center px-4 py-2.5 bg-gradient-to-r from-brand-maroon to-brand-maroonLight text-brand-gold rounded-xl text-xs font-bold uppercase tracking-wider shadow-sm">
+                                    Track Shipment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 2. PERSONAL INFORMATION TAB -->
+                <div id="content-personal" class="hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+                        <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+                            <div>
+                                <h2 class="text-xl font-bold text-brand-maroon font-serif" style="font-family: 'Cinzel', serif;">Personal Details</h2>
+                                <p class="text-xs text-slate-500 mt-0.5">Manage your name, contact info, and profile security.</p>
+                            </div>
+                            <button class="px-4 py-2 text-xs font-bold text-brand-maroon bg-brand-maroon/5 rounded-xl border border-brand-maroon/30 hover:bg-brand-maroon hover:text-brand-gold transition-all">
+                                Edit Profile
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Full Name</label>
+                                <p class="text-sm font-bold text-slate-900 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+                                    {% if request.user.is_authenticated %}{{ request.user.get_full_name|default:"Not Provided" }}{% else %}User Name{% endif %}
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Username</label>
+                                <p class="text-sm font-bold text-slate-900 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+                                    {% if request.user.is_authenticated %}{{ request.user.username }}{% else %}username{% endif %}
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Email Address</label>
+                                <p class="text-sm font-bold text-slate-900 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+                                    {% if request.user.is_authenticated %}{{ request.user.email }}{% else %}user@gmail.com{% endif %}
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Phone Number</label>
+                                <p class="text-sm font-bold text-slate-900 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">+91 98765 43210</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. MANAGE ADDRESSES TAB -->
+                <div id="content-address" class="hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-brand-maroon font-serif" style="font-family: 'Cinzel', serif;">Saved Addresses</h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Manage your delivery and billing addresses.</p>
+                        </div>
+                        <button class="px-4 py-2.5 bg-brand-maroon text-brand-gold font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-brand-maroonLight transition-colors shadow-sm flex items-center gap-2">
+                            <i class="ph ph-plus-circle text-base"></i> Add New Address
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- ADDRESS CARD 1 -->
+                        <div class="bg-white rounded-2xl p-6 border-2 border-brand-maroon shadow-sm relative">
+                            <span class="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-wider bg-brand-maroon text-brand-gold px-2.5 py-1 rounded-full">DEFAULT</span>
+                            <span class="inline-block text-xs font-bold uppercase text-slate-400 mb-2">HOME ADDRESS</span>
+                            <h4 class="font-bold text-slate-900 text-base mb-1">
+                                {% if request.user.is_authenticated %}{{ request.user.get_full_name|default:request.user.username }}{% else %}Customer{% endif %}
+                            </h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                                Flat No. 402, Royal Residency, FC Road, Shivajinagar,<br>
+                                Pune, Maharashtra - 411005
+                            </p>
+                            <p class="text-xs font-bold text-slate-800 mb-4">Phone: +91 98765 43210</p>
+                            <div class="flex items-center gap-3 pt-3 border-t border-slate-100">
+                                <button class="text-xs font-bold text-brand-maroon hover:underline">Edit</button>
+                                <span class="text-slate-300">•</span>
+                                <button class="text-xs font-bold text-red-600 hover:underline">Remove</button>
+                            </div>
+                        </div>
+
+                        <!-- ADDRESS CARD 2 -->
+                        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm relative">
+                            <span class="inline-block text-xs font-bold uppercase text-slate-400 mb-2">OFFICE ADDRESS</span>
+                            <h4 class="font-bold text-slate-900 text-base mb-1">
+                                {% if request.user.is_authenticated %}{{ request.user.get_full_name|default:request.user.username }}{% else %}Customer{% endif %}
+                            </h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                                Tower B, 7th Floor, Cybercity IT Park, Viman Nagar,<br>
+                                Pune, Maharashtra - 411014
+                            </p>
+                            <p class="text-xs font-bold text-slate-800 mb-4">Phone: +91 98765 43210</p>
+                            <div class="flex items-center gap-3 pt-3 border-t border-slate-100">
+                                <button class="text-xs font-bold text-brand-maroon hover:underline">Edit</button>
+                                <span class="text-slate-300">•</span>
+                                <button class="text-xs font-bold text-red-600 hover:underline">Remove</button>
+                                <span class="text-slate-300">•</span>
+                                <button class="text-xs font-bold text-slate-500 hover:text-brand-maroon">Set Default</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. REVIEWS TAB -->
+                <div id="content-reviews" class="hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+                        <h2 class="text-xl font-bold text-brand-maroon font-serif" style="font-family: 'Cinzel', serif;">My Product Reviews</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Your submitted feedback and photo reviews.</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+                        <div class="flex items-start gap-4">
+                            <img src="/media/products/72cc5422f6d64b5a8d79d9360b8a68d0_PATOLA_4.jpeg" class="w-16 h-20 object-cover rounded-xl border border-slate-200" alt="Paithani Saree">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-1 text-amber-400 mb-1">
+                                    <i class="ph-fill ph-star text-sm"></i>
+                                    <i class="ph-fill ph-star text-sm"></i>
+                                    <i class="ph-fill ph-star text-sm"></i>
+                                    <i class="ph-fill ph-star text-sm"></i>
+                                    <i class="ph-fill ph-star text-sm"></i>
+                                    <span class="text-xs font-bold text-slate-800 ml-2">5.0 Star Rating</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-sm">Exquisite quality Paithani saree!</h4>
+                                <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                    The silk shine and peacock pallu work is breathtaking. Wore it for a family ceremony and received so many compliments!
+                                </p>
+                                <span class="text-[10px] text-slate-400 mt-2 block">Reviewed on 02 Aug 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. WISHLIST TAB -->
+                <div id="content-wishlist" class="hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+                        <h2 class="text-xl font-bold text-brand-maroon font-serif" style="font-family: 'Cinzel', serif;">Saved Wishlist</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Sarees saved for future purchase.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center gap-4">
+                            <img src="/media/products/ae62f418c7b746e9ba80c233260dd50b_PATOLA_2.jpeg" class="w-20 h-24 object-cover rounded-xl" alt="Saree">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">Magenta Silk Saree</h4>
+                                <p class="text-xs font-bold text-brand-maroon mt-1">₹22,500.00</p>
+                                <a href="{% url 'user:product' %}" class="mt-3 inline-block px-3 py-1.5 bg-brand-maroon text-brand-gold font-bold text-[10px] uppercase rounded-lg">View Product</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-brand-maroon text-[#fff8f4] border-t border-brand-gold/30 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-brand-gold/80">
+            © 2026 Sanskruti By Bani. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script>
+        function switchTab(tabName) {
+            const tabs = ['orders', 'personal', 'address', 'reviews', 'wishlist'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('tab-' + t);
+                const content = document.getElementById('content-' + t);
+                if (t === tabName) {
+                    content.classList.remove('hidden');
+                    btn.className = 'w-full text-left px-5 py-4 flex items-center justify-between font-semibold text-sm transition-colors text-brand-maroon bg-brand-maroon/5 border-l-4 border-brand-maroon';
+                } else {
+                    content.classList.add('hidden');
+                    btn.className = 'w-full text-left px-5 py-4 flex items-center justify-between font-semibold text-sm text-slate-700 hover:bg-slate-50 transition-colors';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

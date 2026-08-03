@@ -1,0 +1,899 @@
+[
+{
+  "model": "user.user",
+  "pk": 1,
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-02T11:05:01.223Z",
+    "email": "sharmila@example.com",
+    "full_name": "Sharmila Halde",
+    "phone_number": "+91 98234 56789",
+    "profile_picture": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "adm_user.category",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-28T07:03:08.801Z",
+    "updated_at": "2026-07-28T07:03:08.801Z",
+    "name": "Bandhani",
+    "slug": "bandhani",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.category",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-07-28T07:03:15.441Z",
+    "updated_at": "2026-07-28T07:03:15.441Z",
+    "name": "Kanjivaram",
+    "slug": "kanjivaram",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.category",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-07-28T07:03:29.155Z",
+    "updated_at": "2026-07-28T07:03:29.155Z",
+    "name": "Banarasi",
+    "slug": "banarasi",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.category",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-07-28T07:04:19.483Z",
+    "updated_at": "2026-07-28T07:04:19.483Z",
+    "name": "Patola",
+    "slug": "patola",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.category",
+  "pk": 5,
+  "fields": {
+    "created_at": "2026-07-28T07:04:28.009Z",
+    "updated_at": "2026-07-28T07:04:28.009Z",
+    "name": "Designer",
+    "slug": "designer",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.category",
+  "pk": 6,
+  "fields": {
+    "created_at": "2026-07-28T07:14:58.179Z",
+    "updated_at": "2026-07-28T07:14:58.179Z",
+    "name": "Paithani",
+    "slug": "paithani",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.color",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-28T07:05:13.501Z",
+    "updated_at": "2026-07-28T07:05:13.501Z",
+    "name": "Red",
+    "slug": "red",
+    "hex_code": "#c0392b",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.color",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-07-28T07:05:26.178Z",
+    "updated_at": "2026-07-28T07:05:26.178Z",
+    "name": "Yellow",
+    "slug": "yellow",
+    "hex_code": "#e0d806",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.color",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-07-28T07:06:09.921Z",
+    "updated_at": "2026-07-28T07:06:09.921Z",
+    "name": "Dark Green",
+    "slug": "dark-green",
+    "hex_code": "#065c00",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.color",
+  "pk": 5,
+  "fields": {
+    "created_at": "2026-07-28T07:06:19.833Z",
+    "updated_at": "2026-07-28T07:06:19.833Z",
+    "name": "Blue",
+    "slug": "blue",
+    "hex_code": "#006af5",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.color",
+  "pk": 6,
+  "fields": {
+    "created_at": "2026-07-28T07:06:32.969Z",
+    "updated_at": "2026-07-28T07:06:32.969Z",
+    "name": "Light Blue",
+    "slug": "light-blue",
+    "hex_code": "#24daff",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.color",
+  "pk": 7,
+  "fields": {
+    "created_at": "2026-07-28T07:06:42.657Z",
+    "updated_at": "2026-07-28T07:06:42.657Z",
+    "name": "Pink",
+    "slug": "pink",
+    "hex_code": "#ff5cf1",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.color",
+  "pk": 8,
+  "fields": {
+    "created_at": "2026-07-28T07:06:55.324Z",
+    "updated_at": "2026-07-28T07:06:55.324Z",
+    "name": "White",
+    "slug": "white",
+    "hex_code": "#ffffff",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.fabric",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-28T07:07:13.490Z",
+    "updated_at": "2026-07-28T07:07:13.490Z",
+    "name": "Silk",
+    "slug": "silk",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.fabric",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-07-28T07:07:17.553Z",
+    "updated_at": "2026-07-28T07:07:17.553Z",
+    "name": "Cotton",
+    "slug": "cotton",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.fabric",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-07-28T07:07:21.195Z",
+    "updated_at": "2026-07-28T07:07:21.195Z",
+    "name": "Organza Silk",
+    "slug": "organza-silk",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.print",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-28T07:07:29.026Z",
+    "updated_at": "2026-07-28T07:07:29.026Z",
+    "name": "Floral",
+    "slug": "floral",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.print",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-07-28T07:07:32.049Z",
+    "updated_at": "2026-07-28T07:07:32.049Z",
+    "name": "Plain",
+    "slug": "plain",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.print",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-07-28T07:07:38.248Z",
+    "updated_at": "2026-07-28T07:07:38.248Z",
+    "name": "Geometric",
+    "slug": "geometric",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.print",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-07-28T07:07:42.649Z",
+    "updated_at": "2026-07-28T07:07:42.649Z",
+    "name": "Bandhani",
+    "slug": "bandhani",
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.tag",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-28T07:07:46.284Z",
+    "updated_at": "2026-07-28T07:07:46.284Z",
+    "name": "New Arrival",
+    "slug": "new-arrival"
+  }
+},
+{
+  "model": "adm_user.tag",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-07-28T07:07:50.080Z",
+    "updated_at": "2026-07-28T07:07:50.080Z",
+    "name": "Bestseller",
+    "slug": "bestseller"
+  }
+},
+{
+  "model": "adm_user.tag",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-07-28T07:07:53.888Z",
+    "updated_at": "2026-07-28T07:07:53.888Z",
+    "name": "Limited Edition",
+    "slug": "limited-edition"
+  }
+},
+{
+  "model": "adm_user.tag",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-07-28T07:08:04.097Z",
+    "updated_at": "2026-07-28T07:08:04.097Z",
+    "name": "Speciality",
+    "slug": "speciality"
+  }
+},
+{
+  "model": "adm_user.product",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-28T07:22:38.378Z",
+    "updated_at": "2026-07-28T07:22:38.378Z",
+    "name": "Pure Soft Kanjivaram Paithani Saree",
+    "slug": "pure-soft-kanjivaram-paithani-saree",
+    "description": "A Pure Soft Kanjivaram Paithani Saree blends Kanchipuram silk weaving with traditional Paithani motifs.",
+    "category": 6,
+    "product_code": "SBB-001",
+    "base_price": "3500.00",
+    "discount_price": "200.00",
+    "stock_quantity": 12,
+    "fabric": 1,
+    "print_type": 2,
+    "saree_length": "5.5 Mtr",
+    "blouse_included": true,
+    "blouse_type": "Unstitched",
+    "blouse_size": "0.8 mtr",
+    "weaving_style": "Handwoven",
+    "border_style": "Muniya design",
+    "care_instructions": "Dry Care Only",
+    "is_active": true,
+    "tags": [
+      4
+    ]
+  }
+},
+{
+  "model": "adm_user.product",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-07-28T07:27:16.749Z",
+    "updated_at": "2026-07-28T07:27:16.749Z",
+    "name": "Banarasi Silk Saree",
+    "slug": "banarasi-silk-saree",
+    "description": "These sarees are handwoven in the city of Varanasi using fine silk threads.",
+    "category": 3,
+    "product_code": "SBB-002",
+    "base_price": "3500.00",
+    "discount_price": "200.00",
+    "stock_quantity": 7,
+    "fabric": 1,
+    "print_type": null,
+    "saree_length": "6 Mtr",
+    "blouse_included": true,
+    "blouse_type": "",
+    "blouse_size": "",
+    "weaving_style": "Zari Weaving",
+    "border_style": "Zari",
+    "care_instructions": "",
+    "is_active": true,
+    "tags": [
+      1
+    ]
+  }
+},
+{
+  "model": "adm_user.product",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-07-28T07:30:45.684Z",
+    "updated_at": "2026-07-28T07:31:41.650Z",
+    "name": "Organza Silk Paithani Saree",
+    "slug": "organza-silk-paithani-saree",
+    "description": "This Paithani saree is woven with lustrous silk and traditional zari, finished with the signature Maharashtrian motifs and a richly detailed border.",
+    "category": 6,
+    "product_code": "SBB-003",
+    "base_price": "2800.00",
+    "discount_price": "150.00",
+    "stock_quantity": 10,
+    "fabric": 3,
+    "print_type": 2,
+    "saree_length": "5.5 Mtr",
+    "blouse_included": false,
+    "blouse_type": "",
+    "blouse_size": "",
+    "weaving_style": "",
+    "border_style": "",
+    "care_instructions": "Cold-Water Gentle Hand Washing",
+    "is_active": true,
+    "tags": []
+  }
+},
+{
+  "model": "adm_user.product",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-07-28T08:00:28.432Z",
+    "updated_at": "2026-07-28T08:00:28.432Z",
+    "name": "Pure Kanjivaram Saree",
+    "slug": "pure-kanjivaram-saree",
+    "description": "......",
+    "category": 2,
+    "product_code": "SBB-004",
+    "base_price": "2450.00",
+    "discount_price": null,
+    "stock_quantity": 3,
+    "fabric": 1,
+    "print_type": null,
+    "saree_length": "6 Mtr",
+    "blouse_included": false,
+    "blouse_type": "",
+    "blouse_size": "",
+    "weaving_style": "",
+    "border_style": "",
+    "care_instructions": "",
+    "is_active": true,
+    "tags": []
+  }
+},
+{
+  "model": "adm_user.productvariant",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-28T07:22:38.400Z",
+    "updated_at": "2026-07-28T07:22:38.401Z",
+    "product": 1,
+    "color": 5,
+    "stock_quantity": 6,
+    "price": null,
+    "display_order": 0,
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.productvariant",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-07-28T07:22:38.465Z",
+    "updated_at": "2026-07-28T07:22:38.465Z",
+    "product": 1,
+    "color": 2,
+    "stock_quantity": 6,
+    "price": null,
+    "display_order": 0,
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.productvariant",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-07-28T07:27:16.753Z",
+    "updated_at": "2026-07-28T07:27:16.753Z",
+    "product": 2,
+    "color": 4,
+    "stock_quantity": 5,
+    "price": null,
+    "display_order": 0,
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.productvariant",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-07-28T07:27:16.764Z",
+    "updated_at": "2026-07-28T07:27:16.764Z",
+    "product": 2,
+    "color": 7,
+    "stock_quantity": 3,
+    "price": null,
+    "display_order": 0,
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.productvariant",
+  "pk": 5,
+  "fields": {
+    "created_at": "2026-07-28T07:30:45.689Z",
+    "updated_at": "2026-07-28T07:31:41.656Z",
+    "product": 3,
+    "color": 7,
+    "stock_quantity": 10,
+    "price": null,
+    "display_order": 0,
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.productvariant",
+  "pk": 6,
+  "fields": {
+    "created_at": "2026-07-28T08:00:28.440Z",
+    "updated_at": "2026-07-28T08:00:28.440Z",
+    "product": 4,
+    "color": 2,
+    "stock_quantity": 3,
+    "price": null,
+    "display_order": 0,
+    "is_active": true
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-28T07:22:38.447Z",
+    "updated_at": "2026-07-28T07:22:38.447Z",
+    "product": 1,
+    "variant": 1,
+    "image_url": "http://127.0.0.1:8000/media/products/53b39089f1cc4b19b83595426d1420d2_PURE_SOFT_KANCHIVRAM__PETHANI_SILK_10.jpeg",
+    "alt_text": "",
+    "display_order": 0
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-07-28T07:22:38.464Z",
+    "updated_at": "2026-07-28T07:22:38.464Z",
+    "product": 1,
+    "variant": 1,
+    "image_url": "http://127.0.0.1:8000/media/products/fd2ffbe3b941482c9dc3f7b2d0766225_PURE_SOFT_KANCHIVRAM__PETHANI_SILK_12.jpeg",
+    "alt_text": "",
+    "display_order": 1
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-07-28T07:22:38.468Z",
+    "updated_at": "2026-07-28T07:22:38.468Z",
+    "product": 1,
+    "variant": 2,
+    "image_url": "http://127.0.0.1:8000/media/products/b2908822c98a4d0f8faa2f7249314ab2_PURE_SOFT_KANCHIVRAM__PETHANI_SILK_20.jpeg",
+    "alt_text": "",
+    "display_order": 0
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-07-28T07:22:38.471Z",
+    "updated_at": "2026-07-28T07:22:38.471Z",
+    "product": 1,
+    "variant": 2,
+    "image_url": "http://127.0.0.1:8000/media/products/5b55bb3925864ea3af90345fe14a9a78_PURE_SOFT_KANCHIVRAM__PETHANI_SILK_21.jpeg",
+    "alt_text": "",
+    "display_order": 1
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 5,
+  "fields": {
+    "created_at": "2026-07-28T07:22:38.476Z",
+    "updated_at": "2026-07-28T07:22:38.476Z",
+    "product": 1,
+    "variant": null,
+    "image_url": "http://127.0.0.1:8000/media/products/27ada9c460fc4fd0b00ec640eaeb0722_PURE_SOFT_KANCHIVRAM__PETHANI_SILK_20.jpeg",
+    "alt_text": "",
+    "display_order": 0
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 6,
+  "fields": {
+    "created_at": "2026-07-28T07:27:16.759Z",
+    "updated_at": "2026-07-28T07:27:16.759Z",
+    "product": 2,
+    "variant": 3,
+    "image_url": "http://127.0.0.1:8000/media/products/b01c484594ee4a779a5d62e755a12274_BANARASI_SILK_SAREE_7.jpeg",
+    "alt_text": "",
+    "display_order": 0
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 7,
+  "fields": {
+    "created_at": "2026-07-28T07:27:16.763Z",
+    "updated_at": "2026-07-28T07:27:16.763Z",
+    "product": 2,
+    "variant": 3,
+    "image_url": "http://127.0.0.1:8000/media/products/31734392e479449284096d94780961fc_BANARASI_SILK_SAREE_MODEL_PHOTO_8.jpeg",
+    "alt_text": "",
+    "display_order": 1
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 8,
+  "fields": {
+    "created_at": "2026-07-28T07:27:16.769Z",
+    "updated_at": "2026-07-28T07:27:16.769Z",
+    "product": 2,
+    "variant": 4,
+    "image_url": "http://127.0.0.1:8000/media/products/3adee709b86a473badc4f89dfe45cb22_BANARASI_SILK_SAREE_8.jpeg",
+    "alt_text": "",
+    "display_order": 0
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 9,
+  "fields": {
+    "created_at": "2026-07-28T07:27:16.778Z",
+    "updated_at": "2026-07-28T07:27:16.778Z",
+    "product": 2,
+    "variant": 4,
+    "image_url": "http://127.0.0.1:8000/media/products/629002b1cd1d4f5091cd931cdd7a353e_BANARASI_SILK_SAREE_MODEL_PHOTO_4.jpeg",
+    "alt_text": "",
+    "display_order": 1
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 10,
+  "fields": {
+    "created_at": "2026-07-28T07:27:16.784Z",
+    "updated_at": "2026-07-28T07:27:16.784Z",
+    "product": 2,
+    "variant": 4,
+    "image_url": "http://127.0.0.1:8000/media/products/0054a5c6ab4e4cd899b1c66dc393bd8b_BANARASI_SILK_SAREE_6.jpeg",
+    "alt_text": "",
+    "display_order": 2
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 11,
+  "fields": {
+    "created_at": "2026-07-28T07:27:16.788Z",
+    "updated_at": "2026-07-28T07:27:16.788Z",
+    "product": 2,
+    "variant": 4,
+    "image_url": "http://127.0.0.1:8000/media/products/6a068a3dd3604875b715847297c4a314_BANARASI_SILK_SAREE_MODEL_PHOTO_2.jpeg",
+    "alt_text": "",
+    "display_order": 3
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 12,
+  "fields": {
+    "created_at": "2026-07-28T07:30:45.696Z",
+    "updated_at": "2026-07-28T07:30:45.696Z",
+    "product": 3,
+    "variant": 5,
+    "image_url": "http://127.0.0.1:8000/media/products/eb6dbeb1c2b142b1a7d35ff9a549ef2c_Organza_silk_fabric_With_Paithani_3.jpeg",
+    "alt_text": "",
+    "display_order": 0
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 13,
+  "fields": {
+    "created_at": "2026-07-28T07:30:45.702Z",
+    "updated_at": "2026-07-28T07:30:45.702Z",
+    "product": 3,
+    "variant": 5,
+    "image_url": "http://127.0.0.1:8000/media/products/04630456c3064c9688d6858e848c753d_Organza_silk_fabric_With_Paithani_4.jpeg",
+    "alt_text": "",
+    "display_order": 1
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 14,
+  "fields": {
+    "created_at": "2026-07-28T07:30:45.710Z",
+    "updated_at": "2026-07-28T07:30:45.710Z",
+    "product": 3,
+    "variant": 5,
+    "image_url": "http://127.0.0.1:8000/media/products/a3d85783b72a4af4b598e44ab840e074_Organza_silk_fabric_With_Paithani_7.jpeg",
+    "alt_text": "",
+    "display_order": 2
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 15,
+  "fields": {
+    "created_at": "2026-07-28T07:30:45.716Z",
+    "updated_at": "2026-07-28T07:30:45.716Z",
+    "product": 3,
+    "variant": 5,
+    "image_url": "http://127.0.0.1:8000/media/products/48357504163f4a819cfc16cd0717343d_Organza_silk_fabric_With_Paithani_4.jpeg",
+    "alt_text": "",
+    "display_order": 3
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 16,
+  "fields": {
+    "created_at": "2026-07-28T07:30:45.722Z",
+    "updated_at": "2026-07-28T07:30:45.722Z",
+    "product": 3,
+    "variant": null,
+    "image_url": "http://127.0.0.1:8000/media/products/fd69202db9e347738d5ee40dd0914cf4_Organza_silk_fabric_With_Paithani_7.jpeg",
+    "alt_text": "",
+    "display_order": 0
+  }
+},
+{
+  "model": "adm_user.productimage",
+  "pk": 17,
+  "fields": {
+    "created_at": "2026-07-28T08:00:28.486Z",
+    "updated_at": "2026-07-28T08:00:28.486Z",
+    "product": 4,
+    "variant": 6,
+    "image_url": "http://127.0.0.1:8000/media/products/11be2424c2d04b3e8e2ef1621b01bf41_Premium_Soft_Linen_Cotton_Paithani_saree_9.jpeg",
+    "alt_text": "",
+    "display_order": 0
+  }
+},
+{
+  "model": "adm_user.heroslidemain",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-31T09:03:21.481Z",
+    "updated_at": "2026-08-01T17:11:07.484Z",
+    "tagline": "Sanskruti By Bani",
+    "title_line_1": "A Legacy of cherished memories...",
+    "title_line_2": "The Warmth Of Traditions...",
+    "title_line_3": "And Every Bond Beautifully Woven With Emotions.",
+    "description": "Preserving the timeless elegance of Indian heritage, every saree reflects love, grace, celebration and the soulful essence of our culture.\r\n\r\nSanskruti By Bani — where every color tells a story, and every drape becomes a treasured memory.",
+    "button_1_text": "Explore Collection",
+    "button_2_text": "Shop Now",
+    "desktop_image": "website/hero/slide1/desktop/slide1_utP9ljs.png",
+    "mobile_image": "website/hero/slide1/mobile/344941_Gqaq2M5.png"
+  }
+},
+{
+  "model": "adm_user.heroslideimageonly",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-31T09:03:21.485Z",
+    "updated_at": "2026-08-01T17:11:07.511Z",
+    "desktop_image": "website/hero/slide2/desktop/slide21-desktop-new.png",
+    "mobile_image": "website/hero/slide2/mobile/ChatGPT_Image_Aug_1_2026_08_56_10_PM_EBpvXpx.png"
+  }
+},
+{
+  "model": "adm_user.heroslideoffer",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-31T09:03:21.489Z",
+    "updated_at": "2026-08-01T17:11:07.527Z",
+    "desktop_image": "",
+    "mobile_image": "",
+    "small_top_text": "Limited Time Offer",
+    "big_highlight_text": "Flat 30% OFF",
+    "subtext": "On Festive Saree Collection",
+    "button_text": "Grab Offer"
+  }
+},
+{
+  "model": "adm_user.sweetmemoriessection",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-31T09:03:21.493Z",
+    "updated_at": "2026-08-01T17:11:07.536Z",
+    "section_label": "SWEET MEMORIES ",
+    "main_heading": "Woven Into Your Beautiful Moments...",
+    "background_theme": "light_gold",
+    "paragraph_text": "Some moments stay forever. A wedding morning. A family celebration. A tradition passed through generations. Our Paithani sarees become part of those unforgettable memories. \r\nAt Sanskruti By Bani, every weave carries heritage, every drape carries emotion, and every celebration shines a little more beautifully. Because special moments deserve something timeless."
+  }
+},
+{
+  "model": "adm_user.sweetmemoryimage",
+  "pk": 5,
+  "fields": {
+    "created_at": "2026-08-01T16:40:54.144Z",
+    "updated_at": "2026-08-01T16:40:54.144Z",
+    "image": "website/memories/SILK_PAITHANI_FOR_SONS_WEDDING_q3LOqLt.jpeg",
+    "display_order": 0
+  }
+},
+{
+  "model": "adm_user.sweetmemoryimage",
+  "pk": 6,
+  "fields": {
+    "created_at": "2026-08-01T16:41:01.529Z",
+    "updated_at": "2026-08-01T16:41:01.529Z",
+    "image": "website/memories/WEDDING_MOMENTS_WITH_YELLOW_PAITHANI.JPG",
+    "display_order": 1
+  }
+},
+{
+  "model": "adm_user.sweetmemoryimage",
+  "pk": 7,
+  "fields": {
+    "created_at": "2026-08-01T16:41:14.125Z",
+    "updated_at": "2026-08-01T16:41:14.125Z",
+    "image": "website/memories/CARE_FOR_HER_DAUGHTER.JPG",
+    "display_order": 2
+  }
+},
+{
+  "model": "adm_user.sweetmemoryimage",
+  "pk": 8,
+  "fields": {
+    "created_at": "2026-08-01T16:41:22.252Z",
+    "updated_at": "2026-08-01T16:41:22.252Z",
+    "image": "website/memories/HEART_TOUCHING_FEELING_WITH_WEDDING_SAREE.JPG",
+    "display_order": 3
+  }
+},
+{
+  "model": "adm_user.memoriesofferslide",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-08-02T09:58:44.492Z",
+    "updated_at": "2026-08-02T09:58:44.492Z",
+    "desktop_image": "",
+    "mobile_image": ""
+  }
+},
+{
+  "model": "adm_user.memoriesslide3",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-08-02T10:44:22.936Z",
+    "updated_at": "2026-08-02T10:44:22.936Z",
+    "desktop_image": "",
+    "mobile_image": ""
+  }
+},
+{
+  "model": "adm_user.offerbaritem",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-08-01T15:50:01.485Z",
+    "updated_at": "2026-08-01T15:50:01.485Z",
+    "text": "20% Discount",
+    "display_order": 1
+  }
+},
+{
+  "model": "adm_user.offerbaritem",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-08-01T15:50:24.677Z",
+    "updated_at": "2026-08-01T15:50:24.677Z",
+    "text": "COD across Maharashtra",
+    "display_order": 2
+  }
+},
+{
+  "model": "adm_user.offerbaritem",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-08-01T15:50:56.894Z",
+    "updated_at": "2026-08-01T15:50:56.894Z",
+    "text": "Raksha Bandhan Special Offer",
+    "display_order": 3
+  }
+},
+{
+  "model": "adm_user.offerbaritem",
+  "pk": 7,
+  "fields": {
+    "created_at": "2026-08-02T12:51:56.946Z",
+    "updated_at": "2026-08-02T12:51:56.946Z",
+    "text": "30",
+    "display_order": 4
+  }
+},
+{
+  "model": "adm_user.headersettings",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-31T09:03:21.497Z",
+    "updated_at": "2026-07-31T09:03:21.497Z",
+    "logo": ""
+  }
+},
+{
+  "model": "adm_user.footersettings",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-31T09:03:21.500Z",
+    "updated_at": "2026-08-01T17:11:07.551Z",
+    "brand_name": "Sanskruti By Bani",
+    "brand_description": "Celebrating timeless Indian heritage through handcrafted Paithani, Banarasi, Kanjivaram and luxury saree collections woven with elegance, culture and emotion.",
+    "store_address": "Mira Road, Maharashtra, India",
+    "phone_number": "+91 98765 43210",
+    "email": "sanskrutibybani@gmail.com",
+    "instagram_link": "",
+    "whatsapp_number": ""
+  }
+},
+{
+  "model": "adm_user.aboutussection",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-07-31T09:03:21.504Z",
+    "updated_at": "2026-08-01T17:11:07.566Z",
+    "small_title": "About Us",
+    "main_heading": "Sanskruti By Bani",
+    "highlight_quote": "“Paithani म्हणजे फक्त साडी नाही... ती प्रत्येक स्त्रीची जपलेली आठवण आहे.”",
+    "main_paragraph": "संस्कृती... म्हणजे फक्त परंपरा नाही, तर पिढ्यानपिढ्या चालत आलेला भावनांचा आणि आठवणींचा वारसा आहे...\r\n\r\nSanskruti By - Bani ही त्या संस्कृतीची सुरुवात आहे… प्रत्येक साडी ही एक भावना, एक आठवण आणि एक ओळख आहे.\r\n\r\nआमच्या brand ची खरी ओळख असेल — Paithani. कारण प्रत्येक Paithani मागे एक खास कथा दडलली आहे.\" ",
+    "ending_signoff": "– संस्कृतीतून उमटलेलं सौंदर्य",
+    "about_image": "website/about/about-1.jpeg",
+    "floating_top_text": "Co Founder",
+    "floating_bottom_text": "Sharmila Halde"
+  }
+}
+]

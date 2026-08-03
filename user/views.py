@@ -70,6 +70,14 @@ def product(request):
 def catalogue(request):
     return render(request, 'user/catalogue.html')
 
+def profile_view(request):
+    context = {
+        "header_settings": HeaderSettings.load(),
+        "offer_items": OfferBarItem.objects.all(),
+        "footer_settings": FooterSettings.load(),
+    }
+    return render(request, 'user/profile.html', context)
+
 
 def signup_view(request):
     if request.method == 'POST':
