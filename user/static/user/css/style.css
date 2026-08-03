@@ -5620,6 +5620,14 @@ RIGHT TEXT
 
  }
 
+ .memory-content h2 span {
+
+   color: #e7c27a !important;
+
+   font-weight: 700;
+
+ }
+
  .gold-line {
 
    width: 90px;

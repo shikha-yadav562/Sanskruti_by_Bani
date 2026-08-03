@@ -708,7 +708,7 @@
   "pk": 1,
   "fields": {
     "created_at": "2026-07-31T09:03:21.481Z",
-    "updated_at": "2026-08-03T10:22:01.465Z",
+    "updated_at": "2026-08-03T10:48:37.945Z",
     "tagline": "Sanskruti By Bani",
     "title_line_1": "A Legacy of cherished memories...",
     "title_line_2": "The Warmth Of Traditions...",
@@ -735,8 +735,8 @@
   "pk": 1,
   "fields": {
     "created_at": "2026-07-31T09:03:21.489Z",
-    "updated_at": "2026-08-03T10:22:01.913Z",
-    "desktop_image": "website/hero/offer/desktop/Screenshot_1.png",
+    "updated_at": "2026-08-03T10:48:38.022Z",
+    "desktop_image": "website/hero/offer/desktop/Screenshot_1_3k7BMbz.png",
     "mobile_image": "",
     "small_top_text": "Limited Time Offer",
     "big_highlight_text": "Flat 30% OFF",
@@ -749,11 +749,11 @@
   "pk": 1,
   "fields": {
     "created_at": "2026-07-31T09:03:21.493Z",
-    "updated_at": "2026-08-03T10:22:01.937Z",
+    "updated_at": "2026-08-03T10:48:38.048Z",
     "section_label": "SWEET MEMORIES ",
     "main_heading": "Woven Into Your Beautiful Moments...",
     "background_theme": "light_gold",
-    "paragraph_text": "{{ memories.paragraph_text|default:\"Some moments stay forever.\r\n\r\nA wedding morning.\r\nA family celebration.\r\nA tradition passed through generations.\r\n\r\nOur Paithani sarees become part of those unforgettable memories.\r\n\r\nAt Sanskruti By Bani, every weave carries heritage, every drape carries emotion, and every celebration shines a little more beautifully.\r\n\r\nBecause special moments deserve something timeless.\" }}"
+    "paragraph_text": "Some moments stay forever.\r\n\r\nA wedding morning.\r\nA family celebration.\r\nA tradition passed through generations.\r\n\r\nOur Paithani sarees become part of those unforgettable memories.\r\n\r\nAt Sanskruti By Bani, every weave carries heritage, every drape carries emotion, and every celebration shines a little more beautifully.\r\n\r\nBecause special moments deserve something timeless."
   }
 },
 {
@@ -794,6 +794,16 @@
     "updated_at": "2026-08-01T16:41:22.252Z",
     "image": "website/memories/HEART_TOUCHING_FEELING_WITH_WEDDING_SAREE.JPG",
     "display_order": 3
+  }
+},
+{
+  "model": "adm_user.sweetmemoryimage",
+  "pk": 10,
+  "fields": {
+    "created_at": "2026-08-03T10:55:06.286Z",
+    "updated_at": "2026-08-03T10:55:06.286Z",
+    "image": "website/memories/FOREVER_SPECIAL_WITH_SPECIAL_9_YARD_SAREE.JPG",
+    "display_order": 4
   }
 },
 {
@@ -870,7 +880,7 @@
   "pk": 1,
   "fields": {
     "created_at": "2026-07-31T09:03:21.500Z",
-    "updated_at": "2026-08-03T10:22:02.057Z",
+    "updated_at": "2026-08-03T10:48:38.079Z",
     "brand_name": "Sanskruti By Bani",
     "brand_description": "Celebrating timeless Indian heritage through handcrafted Paithani, Banarasi, Kanjivaram and luxury saree collections woven with elegance, culture and emotion.",
     "store_address": "Mira Road, Maharashtra, India",
@@ -885,7 +895,7 @@
   "pk": 1,
   "fields": {
     "created_at": "2026-07-31T09:03:21.504Z",
-    "updated_at": "2026-08-03T10:22:02.074Z",
+    "updated_at": "2026-08-03T10:48:38.104Z",
     "small_title": "About Us",
     "main_heading": "Sanskruti By Bani",
     "highlight_quote": "“Paithani म्हणजे फक्त साडी नाही... ती प्रत्येक स्त्रीची जपलेली आठवण आहे.”",

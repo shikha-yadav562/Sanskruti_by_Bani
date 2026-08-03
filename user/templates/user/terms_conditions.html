@@ -1,336 +1,371 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms & Conditions - Sanskruti by Bani</title>
-    {% load static %}
-    
-    <!-- GOOGLE FONTS -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    
-    <!-- MATERIAL ICONS & FONT AWESOME -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"> 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms & Conditions - Sanskruti by Bani</title>
+  {% load static %}
+  
+  <!-- GOOGLE FONTS -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- MATERIAL ICONS & FONT AWESOME -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- TAILWIND -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { 
-                        brand: { 
-                            maroon: '#71041a', 
-                            maroonDeep: '#38000b',
-                            maroonLight: '#8a0a25', 
-                            gold: '#e7c27a' 
-                        } 
-                    },
-                    fontFamily: { 
-                        sans: ['Inter', 'sans-serif'], 
-                        serif: ['Cinzel', 'serif'],
-                        poppins: ['Poppins', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+  <!-- TAILWIND -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- MAIN HOMEPAGE CSS -->
-    <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+  <!-- MAIN CSS -->
+  <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
 </head>
-<body class="bg-[#FAF7F2] font-sans antialiased text-slate-900 flex flex-col min-h-screen">
 
-    <!-- TOP OFFER BAR -->
-    <div class="top-bar">
-        <button class="tb-btn prev">‹</button>
-        <div class="tb-window">
-            {% for item in offer_items %}
-            <div class="tb-item{% if forloop.first %} active{% endif %}">{{ item.text }}</div>
-            {% empty %}
-            <div class="tb-item active">Free Discount</div>
-            <div class="tb-item">COD across India</div>
-            <div class="tb-item">Easy Return & Exchange*</div>
-            {% endfor %}
-        </div>
-        <button class="tb-btn next">›</button>
+<body>
+
+  <!-- =====================================
+  TOP OFFER BAR (EXACT HOMEPAGE REPLICA)
+  ===================================== -->
+  <div class="top-bar">
+    <button class="tb-btn prev">‹</button>
+    <div class="tb-window">
+      {% for item in offer_items %}
+      <div class="tb-item{% if forloop.first %} active{% endif %}">{{ item.text }}</div>
+      {% empty %}
+      <div class="tb-item active">Free Discount</div>
+      <div class="tb-item">COD across India</div>
+      <div class="tb-item">Easy Return & Exchange*</div>
+      {% endfor %}
     </div>
+    <button class="tb-btn next">›</button>
+  </div>
 
-    <!-- NAVBAR (EXACT MATCH WITH SITE) -->
-    <header id="navbar">
-        <div class="nav-wrap">
-            <button class="mobile-toggle" id="mobileToggle">
-                <span class="material-symbols-outlined">menu</span>
-            </button>
+  <!-- =====================================
+  NAVBAR (EXACT HOMEPAGE REPLICA)
+  ===================================== -->
+  <header id="navbar">
+    <div class="nav-wrap">
+      <button class="mobile-toggle" id="mobileToggle">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
 
-            <nav class="menu left-menu">
-                <a href="{% url 'user:index' %}">Home</a>
-                <a href="{% url 'user:catalogue' %}">New Arrivals</a>
-            </nav>
+      <nav class="menu left-menu">
+        <a href="{% url 'user:index' %}">Home</a>
+        <a href="{% url 'user:catalogue' %}">New Arrivals</a>
+      </nav>
 
-            <a href="{% url 'user:index' %}" class="reveal-section">
-                <div class="luxury-logo">
-                    <div class="logo-main">
-                        <span>S</span><span>A</span><span>N</span><span>S</span><span>K</span><span>R</span><span>U</span><span>T</span><span>I</span>
-                    </div>
-                    <div class="logo-divider"></div>
-                    <div class="logo-sub">
-                        <span>B</span><span>Y</span><span class="space"></span><span>B</span><span>A</span><span>N</span><span>I</span>
-                    </div>
-                </div>
-            </a>
+      <a href="{% url 'user:index' %}" class="reveal-section">
+        <div class="luxury-logo">
+          <div class="logo-main">
+            <span>S</span><span>A</span><span>N</span><span>S</span><span>K</span><span>R</span><span>U</span><span>T</span><span>I</span>
+          </div>
+          <div class="logo-divider"></div>
+          <div class="logo-sub">
+            <span>B</span><span>Y</span><span class="space"></span><span>B</span><span>A</span><span>N</span><span>I</span>
+          </div>
+        </div>
+      </a>
 
-            <nav class="menu right-menu">
-                <a href="{% url 'user:catalogue' %}">Collections</a>
-                <a href="{% url 'user:product' %}">Sarees</a>
-                <a href="{% url 'user:profile' %}">My Account</a>
-            </nav>
-
-            <div class="nav-actions">
-                <button class="action-btn" id="searchTrigger" title="Search">
-                    <span class="material-symbols-outlined">search</span>
-                </button>
-                <a href="{% url 'user:profile' %}" class="action-btn" title="Account">
-                    <span class="material-symbols-outlined">person</span>
-                </a>
-                <button class="action-btn cart-btn" id="cartOpenBtn" title="Cart">
-                    <span class="material-symbols-outlined">shopping_bag</span>
-                    <span class="cart-badge">0</span>
-                </button>
+      <nav class="menu right-menu">
+        <div class="dropdown">
+          <a href="{% url 'user:catalogue' %}" class="mega-link">
+            Collections
+            <span class="material-symbols-outlined arrow">expand_more</span>
+          </a>
+          <div class="mega-menu">
+            <div class="mega-col">
+              <h4>Banarasi</h4>
+              <a href="{% url 'user:catalogue' %}">Katan Silk</a>
+              <a href="{% url 'user:catalogue' %}">Organza</a>
+              <a href="{% url 'user:catalogue' %}">Tissue</a>
             </div>
+            <div class="mega-col">
+              <h4>Paithani</h4>
+              <a href="{% url 'user:catalogue' %}">Traditional</a>
+              <a href="{% url 'user:catalogue' %}">Lotus</a>
+            </div>
+            <div class="mega-col">
+              <h4>Patola</h4>
+              <a href="{% url 'user:catalogue' %}">Rajkot</a>
+              <a href="{% url 'user:catalogue' %}">Double Ikat</a>
+            </div>
+          </div>
         </div>
-    </header>
 
-    <!-- MOBILE DRAWER -->
-    <div class="mobile-drawer" id="mobileDrawer">
-        <button class="close-menu" id="closeMenu">
-            <span class="material-symbols-outlined">arrow_back</span>
-        </button>
-        <div class="mobile-links">
-            <a href="{% url 'user:index' %}">Home</a>
-            <a href="{% url 'user:catalogue' %}">Collections</a>
-            <a href="{% url 'user:product' %}">Sarees</a>
-            <a href="{% url 'user:profile' %}">My Account</a>
+        <a href="{% url 'user:catalogue' %}">Bestsellers</a>
+
+        <div class="search-box">
+          <input type="text" placeholder="Search..." class="search-input">
         </div>
+
+        <a href="{% url 'user:profile' %}" class="icon-btn" title="Wishlist">
+          <span class="material-symbols-outlined">favorite</span>
+        </a>
+
+        <a href="{% url 'user:product' %}" class="icon-btn" title="Cart">
+          <span class="material-symbols-outlined">shopping_bag</span>
+        </a>
+      </nav>
+
+      <div class="nav-spacer"></div>
     </div>
+  </header>
 
-    <!-- BREADCRUMB -->
-    <div class="bg-white border-b border-slate-200/80 py-3.5 shadow-sm">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 flex items-center gap-2 text-xs text-slate-500 font-medium">
-            <a href="{% url 'user:index' %}" class="hover:text-brand-maroon">Home</a>
-            <i class="ph ph-caret-right text-xs"></i>
-            <span class="text-brand-maroon font-bold">Terms & Conditions</span>
-        </div>
+  <!-- MOBILE DRAWER -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <button class="close-menu" id="closeMenu">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="mobile-links">
+      <a href="{% url 'user:index' %}">Home</a>
+      <a href="{% url 'user:catalogue' %}">New Arrivals</a>
+      <a href="{% url 'user:catalogue' %}">Collections</a>
+      <a href="{% url 'user:profile' %}">My Account</a>
     </div>
+  </div>
 
-    <!-- MAIN CONTENT CARD -->
-    <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-10">
+  <!-- BREADCRUMB -->
+  <div class="bg-white border-b border-slate-200/80 py-3.5 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 text-xs text-slate-500 font-medium">
+      <a href="{% url 'user:index' %}" class="hover:text-[#71041a]">Home</a>
+      <span class="material-symbols-outlined text-xs">chevron_right</span>
+      <span class="text-[#71041a] font-bold">Terms & Conditions</span>
+    </div>
+  </div>
+
+  <!-- HERO POLICY HEADER -->
+  <section class="bg-[#520211] text-[#fff8f4] py-14 border-b border-[#e7c27a]/30 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <span class="text-xs font-bold uppercase tracking-[0.3em] text-[#e7c27a] block mb-2 font-poppins">Legal & Compliance</span>
+      <h1 class="text-3xl sm:text-5xl font-bold font-serif text-white tracking-wide" style="font-family: 'Cinzel', serif;">Terms & Conditions</h1>
+      <p class="text-xs sm:text-sm text-[#e7c27a]/90 mt-3 max-w-3xl leading-relaxed font-poppins">
+        Welcome to <strong>SANSKRUTI BY - BANI</strong>. By accessing or using our website, you agree to the following terms and conditions governing your shopping experience.
+      </p>
+    </div>
+  </section>
+
+  <!-- MAIN STANDALONE CONTENT -->
+  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+      <!-- SIDEBAR -->
+      <div class="lg:col-span-1 space-y-4">
+        <div class="bg-white rounded-2xl p-5 border border-[#e7c27a]/40 shadow-sm sticky top-28">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-[#71041a] mb-4 pb-2 border-b border-slate-100 flex items-center gap-2 font-poppins">
+            Policy Navigation
+          </h3>
+          <div class="space-y-2 text-xs font-medium font-poppins">
+            <a href="{% url 'user:terms_conditions' %}" class="block px-4 py-3 rounded-xl bg-[#71041a] text-[#e7c27a] font-bold shadow-sm">Terms & Conditions</a>
+            <a href="{% url 'user:return_refund_policy' %}" class="block px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors">Return & Refund Policy</a>
+            <a href="{% url 'user:privacy_policy' %}" class="block px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors">Privacy Policy</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN CONTENT -->
+      <div class="lg:col-span-3 space-y-8">
         
-        <div class="bg-white rounded-3xl p-6 sm:p-10 border border-brand-gold/30 shadow-lg space-y-8">
+        <div class="bg-white rounded-3xl p-6 sm:p-10 border border-[#e7c27a]/30 shadow-md space-y-8">
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-700 leading-relaxed font-poppins">
             
-            <!-- HEADER -->
-            <div class="border-b border-slate-100 pb-6">
-                <span class="text-xs font-bold uppercase tracking-widest text-brand-gold block mb-1">Legal & Compliance</span>
-                <h1 class="text-2xl sm:text-3xl font-bold font-serif text-brand-maroon" style="font-family: 'Cinzel', serif;">Terms & Conditions</h1>
-                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-                    Welcome to <strong>SANSKRUTI BY - BANI</strong>. By accessing or using our website, you agree to the following terms and conditions.
-                </p>
+            <div class="p-6 rounded-2xl bg-[#FAF7F2] border border-slate-200/80 space-y-2">
+              <h3 class="font-bold text-base text-[#71041a] flex items-center gap-2 font-serif" style="font-family: 'Cinzel', serif;">
+                <span class="w-7 h-7 rounded-full bg-[#71041a] text-[#e7c27a] flex items-center justify-center text-xs font-sans">1</span>
+                General
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                These terms apply to all users of the website. We reserve the right to update or change these terms at any time without prior notice.
+              </p>
             </div>
 
-            <!-- SECTIONS -->
-            <div class="space-y-6 text-sm text-slate-700 leading-relaxed">
-                
-                <section class="space-y-2">
-                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">1</span>
-                        General
-                    </h3>
-                    <p class="pl-8 text-xs text-slate-600">
-                        These terms apply to all users of the website. We reserve the right to update or change these terms at any time without prior notice.
-                    </p>
-                </section>
-
-                <section class="space-y-2">
-                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">2</span>
-                        Products & Pricing
-                    </h3>
-                    <p class="pl-8 text-xs text-slate-600">
-                        All products listed are subject to availability. We strive to display accurate product details and colours, but slight variations may occur due to lighting and display settings. Prices are subject to change without notice.
-                    </p>
-                </section>
-
-                <section class="space-y-2">
-                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">3</span>
-                        Orders
-                    </h3>
-                    <p class="pl-8 text-xs text-slate-600">
-                        Once an order is placed, you will receive a confirmation. We reserve the right to cancel or refuse any order due to unforeseen inventory or processing issues.
-                    </p>
-                </section>
-
-                <section class="space-y-2">
-                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">4</span>
-                        Payments
-                    </h3>
-                    <p class="pl-8 text-xs text-slate-600">
-                        We accept payments via UPI, Debit/Credit Cards, Net Banking, and Cash on Delivery (COD). All transactions are processed securely through trusted payment gateways.
-                    </p>
-                </section>
-
-                <section class="space-y-2">
-                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">5</span>
-                        Shipping & Delivery
-                    </h3>
-                    <p class="pl-8 text-xs text-slate-600">
-                        Delivery timelines may vary based on location. We are not responsible for delays caused by courier partners or unforeseen logistics circumstances.
-                    </p>
-                </section>
-
-                <section class="space-y-2">
-                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">6</span>
-                        Returns & Refunds
-                    </h3>
-                    <p class="pl-8 text-xs text-slate-600">
-                        Returns and refunds are strictly governed by our dedicated <a href="{% url 'user:return_refund_policy' %}" class="text-brand-maroon font-bold underline">Return & Refund Policy</a>.
-                    </p>
-                </section>
-
-                <section class="space-y-2">
-                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">7</span>
-                        Intellectual Property
-                    </h3>
-                    <p class="pl-8 text-xs text-slate-600">
-                        All content on this website (images, text, logos, graphics) is the property of SANSKRUTI BY - BANI and cannot be used, reproduced, or copied without prior written permission.
-                    </p>
-                </section>
-
-                <section class="space-y-2">
-                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">8</span>
-                        User Responsibilities
-                    </h3>
-                    <p class="pl-8 text-xs text-slate-600">
-                        Users must provide accurate, complete information while placing orders. Misuse of the website or fraudulent activities may result in account restriction or cancellation.
-                    </p>
-                </section>
-
-                <section class="space-y-2">
-                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">9</span>
-                        Limitation of Liability
-                    </h3>
-                    <p class="pl-8 text-xs text-slate-600">
-                        We are not liable for any indirect, special, or incidental damages arising from the use of our website or purchased products.
-                    </p>
-                </section>
-
-                <section class="space-y-2">
-                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">10</span>
-                        Governing Law
-                    </h3>
-                    <p class="pl-8 text-xs text-slate-600">
-                        These terms and conditions are governed by and construed in accordance with the laws of India.
-                    </p>
-                </section>
-
-                <section class="mt-8 p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-                    <h3 class="font-bold text-base text-brand-maroon flex items-center gap-2">
-                        <i class="ph ph-envelope-simple text-lg"></i>
-                        11. Contact Us
-                    </h3>
-                    <p class="text-xs text-slate-600">For any queries regarding our Terms & Conditions, please reach out to us:</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-2 font-medium">
-                        <div><strong class="text-slate-900">Company Name:</strong> BLUENOTES</div>
-                        <div><strong class="text-slate-900">Brand Name:</strong> SANSKRUTI BY - BANI</div>
-                        <div class="sm:col-span-2"><strong class="text-slate-900">Address:</strong> Vrindavan Building, Shop No. 1, Ground Floor, Mira Gaon, Mira Road East - 401107</div>
-                        <div><strong class="text-slate-900">Email:</strong> <a href="mailto:care@bani.boutique" class="text-brand-maroon underline">care@bani.boutique</a> / <a href="mailto:care.bani.boutique@gmail.com" class="text-brand-maroon underline">care.bani.boutique@gmail.com</a></div>
-                        <div><strong class="text-slate-900">Phone:</strong> +91 9372471363</div>
-                    </div>
-                </section>
-
+            <div class="p-6 rounded-2xl bg-[#FAF7F2] border border-slate-200/80 space-y-2">
+              <h3 class="font-bold text-base text-[#71041a] flex items-center gap-2 font-serif" style="font-family: 'Cinzel', serif;">
+                <span class="w-7 h-7 rounded-full bg-[#71041a] text-[#e7c27a] flex items-center justify-center text-xs font-sans">2</span>
+                Products & Pricing
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                All products listed are subject to availability. We strive to display accurate product details and colours, but slight variations may occur. Prices are subject to change without notice.
+              </p>
             </div>
+
+            <div class="p-6 rounded-2xl bg-[#FAF7F2] border border-slate-200/80 space-y-2">
+              <h3 class="font-bold text-base text-[#71041a] flex items-center gap-2 font-serif" style="font-family: 'Cinzel', serif;">
+                <span class="w-7 h-7 rounded-full bg-[#71041a] text-[#e7c27a] flex items-center justify-center text-xs font-sans">3</span>
+                Orders
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Once an order is placed, you will receive a confirmation. We reserve the right to cancel or refuse any order due to unforeseen issues.
+              </p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-[#FAF7F2] border border-slate-200/80 space-y-2">
+              <h3 class="font-bold text-base text-[#71041a] flex items-center gap-2 font-serif" style="font-family: 'Cinzel', serif;">
+                <span class="w-7 h-7 rounded-full bg-[#71041a] text-[#e7c27a] flex items-center justify-center text-xs font-sans">4</span>
+                Payments
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                We accept payments via UPI, Debit/Credit Cards, Net Banking, and COD. All transactions are processed securely through trusted payment gateways.
+              </p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-[#FAF7F2] border border-slate-200/80 space-y-2">
+              <h3 class="font-bold text-base text-[#71041a] flex items-center gap-2 font-serif" style="font-family: 'Cinzel', serif;">
+                <span class="w-7 h-7 rounded-full bg-[#71041a] text-[#e7c27a] flex items-center justify-center text-xs font-sans">5</span>
+                Shipping & Delivery
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Delivery timelines may vary based on location. We are not responsible for delays caused by courier partners.
+              </p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-[#FAF7F2] border border-slate-200/80 space-y-2">
+              <h3 class="font-bold text-base text-[#71041a] flex items-center gap-2 font-serif" style="font-family: 'Cinzel', serif;">
+                <span class="w-7 h-7 rounded-full bg-[#71041a] text-[#e7c27a] flex items-center justify-center text-xs font-sans">6</span>
+                Returns & Refunds
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Returns and refunds are governed by our <a href="{% url 'user:return_refund_policy' %}" class="text-[#71041a] font-bold underline">Return & Refund Policy</a>.
+              </p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-[#FAF7F2] border border-slate-200/80 space-y-2">
+              <h3 class="font-bold text-base text-[#71041a] flex items-center gap-2 font-serif" style="font-family: 'Cinzel', serif;">
+                <span class="w-7 h-7 rounded-full bg-[#71041a] text-[#e7c27a] flex items-center justify-center text-xs font-sans">7</span>
+                Intellectual Property
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                All content on this website (images, text, logo) is the property of SANSKRUTI BY - BANI and cannot be used without permission.
+              </p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-[#FAF7F2] border border-slate-200/80 space-y-2">
+              <h3 class="font-bold text-base text-[#71041a] flex items-center gap-2 font-serif" style="font-family: 'Cinzel', serif;">
+                <span class="w-7 h-7 rounded-full bg-[#71041a] text-[#e7c27a] flex items-center justify-center text-xs font-sans">8</span>
+                User Responsibilities
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Users must provide accurate information while placing orders. Misuse of the website may result in account restriction.
+              </p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-[#FAF7F2] border border-slate-200/80 space-y-2">
+              <h3 class="font-bold text-base text-[#71041a] flex items-center gap-2 font-serif" style="font-family: 'Cinzel', serif;">
+                <span class="w-7 h-7 rounded-full bg-[#71041a] text-[#e7c27a] flex items-center justify-center text-xs font-sans">9</span>
+                Limitation of Liability
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                We are not liable for any indirect or incidental damages arising from the use of our website or products.
+              </p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-[#FAF7F2] border border-slate-200/80 space-y-2">
+              <h3 class="font-bold text-base text-[#71041a] flex items-center gap-2 font-serif" style="font-family: 'Cinzel', serif;">
+                <span class="w-7 h-7 rounded-full bg-[#71041a] text-[#e7c27a] flex items-center justify-center text-xs font-sans">10</span>
+                Governing Law
+              </h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                These terms are governed by the laws of India.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- CONTACT INFO -->
+          <div class="p-8 bg-[#71041a]/5 rounded-3xl border border-[#71041a]/20 space-y-4 font-poppins">
+            <h3 class="font-bold text-lg text-[#71041a] font-serif flex items-center gap-2" style="font-family: 'Cinzel', serif;">
+              11. Contact Us
+            </h3>
+            <p class="text-xs text-slate-600">For any queries, please contact us:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs font-medium pt-2">
+              <div><span class="text-slate-400 block uppercase font-bold text-[10px]">Company Name</span> <span class="text-slate-900 font-bold">BLUENOTES</span></div>
+              <div><span class="text-slate-400 block uppercase font-bold text-[10px]">Brand Name</span> <span class="text-slate-900 font-bold">SANSKRUTI BY - BANI</span></div>
+              <div><span class="text-slate-400 block uppercase font-bold text-[10px]">Phone</span> <span class="text-slate-900 font-bold">+91 9372471363</span></div>
+              <div class="sm:col-span-2"><span class="text-slate-400 block uppercase font-bold text-[10px]">Email Support</span> <a href="mailto:care@bani.boutique" class="text-[#71041a] font-bold underline">care@bani.boutique</a> / <a href="mailto:care.bani.boutique@gmail.com" class="text-[#71041a] font-bold underline">care.bani.boutique@gmail.com</a></div>
+              <div class="sm:col-span-2 md:col-span-3"><span class="text-slate-400 block uppercase font-bold text-[10px]">Address</span> <span class="text-slate-900 font-bold">Vrindavan Building, Shop No. 1, Ground Floor, Mira Gaon, Mira Road East - 401107</span></div>
+            </div>
+          </div>
 
         </div>
 
-    </main>
+      </div>
 
-    <!-- LUXURY FOOTER (EXACT MATCH WITH HOMEPAGE) -->
-    <footer class="luxury-footer">
-        <div class="footer-top">
-            <div class="footer-col footer-brand">
-                <h2>{{ footer_settings.brand_name|default:"Sanskruti By Bani" }}</h2>
-                <p>{{ footer_settings.brand_description|default:"Celebrating timeless Indian heritage through handcrafted Paithani, Banarasi, Kanjivaram and luxury saree collections woven with elegance, culture and emotion."|linebreaksbr }}</p>
-                <div class="footer-socials">
-                    <a href="{{ footer_settings.instagram_link|default:'#' }}"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="https://wa.me/{{ footer_settings.whatsapp_number }}"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
-            </div>
+    </div>
 
-            <div class="footer-col">
-                <h3>Quick Links</h3>
-                <a href="{% url 'user:index' %}">Home</a>
-                <a href="{% url 'user:catalogue' %}">New Arrivals</a>
-                <a href="{% url 'user:catalogue' %}">Collections</a>
-                <a href="{% url 'user:product' %}">Best Sellers</a>
-            </div>
+  </main>
 
-            <div class="footer-col">
-                <h3>Collections</h3>
-                <a href="{% url 'user:catalogue' %}">Paithani Sarees</a>
-                <a href="{% url 'user:catalogue' %}">Banarasi Sarees</a>
-                <a href="{% url 'user:catalogue' %}">Kanjivaram Sarees</a>
-                <a href="{% url 'user:catalogue' %}">Bandhani Sarees</a>
-                <a href="{% url 'user:catalogue' %}">Patola Sarees</a>
-            </div>
-
-            <div class="footer-col">
-                <h3>Policy & Inquiry</h3>
-                <a href="{% url 'user:return_refund_policy' %}">Return & Refund Policy</a>
-                <a href="{% url 'user:terms_conditions' %}">Terms and Conditions</a>
-                <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
-            </div>
-
-            <div class="footer-col">
-                <h3>Contact</h3>
-                <p><i class="fa-solid fa-location-dot"></i> {{ footer_settings.store_address|default:"Pune, Maharashtra, India" }}</p>
-                <p><i class="fa-solid fa-phone"></i> {{ footer_settings.phone_number|default:"+91 98765 43210" }}</p>
-                <p><i class="fa-solid fa-envelope"></i> {{ footer_settings.email|default:"info@sanskrutibybani.com" }}</p>
-                <p><i class="fa-solid fa-clock"></i> Mon - Sat : 10 AM - 8 PM</p>
-            </div>
+  <!-- =====================================
+  LUXURY FOOTER (EXACT HOMEPAGE REPLICA)
+  ===================================== -->
+  <footer class="luxury-footer">
+    <div class="footer-top">
+      <div class="footer-col footer-brand">
+        <h2>{{ footer_settings.brand_name|default:"Sanskruti By Bani" }}</h2>
+        <p>
+          {{ footer_settings.brand_description|default:"Celebrating timeless Indian heritage through handcrafted Paithani, Banarasi, Kanjivaram and luxury saree collections woven with elegance, culture and emotion."|linebreaksbr }}
+        </p>
+        <div class="footer-socials">
+          <a href="{{ footer_settings.instagram_link|default:'#' }}"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-youtube"></i></a>
+          <a href="https://wa.me/{{ footer_settings.whatsapp_number }}"><i class="fa-brands fa-whatsapp"></i></a>
         </div>
+      </div>
 
-        <div class="footer-newsletter">
-            <div>
-                <h3>Join Our Heritage Circle</h3>
-                <p>Get updates on new arrivals, festive collections & exclusive offers.</p>
-            </div>
-            <form class="newsletter-form">
-                <input type="email" placeholder="Enter your email">
-                <button type="submit">Subscribe</button>
-            </form>
-        </div>
+      <div class="footer-col">
+        <h3>Quick Links</h3>
+        <a href="{% url 'user:index' %}">Home</a>
+        <a href="{% url 'user:catalogue' %}">New Arrivals</a>
+        <a href="{% url 'user:catalogue' %}">Collections</a>
+        <a href="{% url 'user:product' %}">Best Sellers</a>
+      </div>
 
-        <div class="footer-bottom">
-            <p>© 2026 Sanskruti By Bani. All Rights Reserved.</p>
-            <div class="footer-bottom-links">
-                <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
-                <a href="{% url 'user:terms_conditions' %}">Terms & Conditions</a>
-                <a href="{% url 'user:return_refund_policy' %}">Return & Exchange Policy</a>
-            </div>
-        </div>
-    </footer>
+      <div class="footer-col">
+        <h3>Collections</h3>
+        <a href="{% url 'user:catalogue' %}">Paithani Sarees</a>
+        <a href="{% url 'user:catalogue' %}">Banarasi Sarees</a>
+        <a href="{% url 'user:catalogue' %}">Kanjivaram Sarees</a>
+        <a href="{% url 'user:catalogue' %}">Bandhani Sarees</a>
+        <a href="{% url 'user:catalogue' %}">Patola Sarees</a>
+      </div>
 
-    <script src="{% static 'user/js/script.js' %}"></script>
+      <div class="footer-col">
+        <h3>Policy & Inquiry</h3>
+        <a href="{% url 'user:return_refund_policy' %}">Return & Refund Policy</a>
+        <a href="{% url 'user:terms_conditions' %}">Terms and Conditions</a>
+        <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
+      </div>
+
+      <div class="footer-col">
+        <h3>Contact</h3>
+        <p><i class="fa-solid fa-location-dot"></i> {{ footer_settings.store_address|default:"Pune, Maharashtra, India" }}</p>
+        <p><i class="fa-solid fa-phone"></i> {{ footer_settings.phone_number|default:"+91 98765 43210" }}</p>
+        <p><i class="fa-solid fa-envelope"></i> {{ footer_settings.email|default:"info@sanskrutibybani.com" }}</p>
+        <p><i class="fa-solid fa-clock"></i> Mon - Sat : 10 AM - 8 PM</p>
+      </div>
+    </div>
+
+    <div class="footer-newsletter">
+      <div>
+        <h3>Join Our Heritage Circle</h3>
+        <p>Get updates on new arrivals, festive collections & exclusive offers.</p>
+      </div>
+      <form class="newsletter-form">
+        <input type="email" placeholder="Enter your email">
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 Sanskruti By Bani. All Rights Reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
+        <a href="{% url 'user:terms_conditions' %}">Terms & Conditions</a>
+        <a href="{% url 'user:return_refund_policy' %}">Return & Exchange Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'user/js/script.js' %}"></script>
 </body>
 </html>
