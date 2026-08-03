@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return & Refund Policy - Sanskruti by Bani</title>
+    {% load static %}
+    
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- MATERIAL ICONS & PHOSPHOR ICONS -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"> 
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- TAILWIND -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { 
+                        brand: { 
+                            maroon: '#71041a', 
+                            maroonDeep: '#38000b',
+                            maroonLight: '#8a0a25', 
+                            gold: '#e7c27a' 
+                        } 
+                    },
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'], 
+                        serif: ['Cinzel', 'serif'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- MAIN HOMEPAGE CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+</head>
+<body class="bg-[#FAF7F2] font-sans antialiased text-slate-900 flex flex-col min-h-screen">
+
+    <!-- TOP OFFER BAR -->
+    <div class="top-bar">
+        <button class="tb-btn prev">‹</button>
+        <div class="tb-window">
+            {% for item in offer_items %}
+            <div class="tb-item{% if forloop.first %} active{% endif %}">{{ item.text }}</div>
+            {% empty %}
+            <div class="tb-item active">Free Discount</div>
+            <div class="tb-item">COD across India</div>
+            <div class="tb-item">Easy Return & Exchange*</div>
+            {% endfor %}
+        </div>
+        <button class="tb-btn next">›</button>
+    </div>
+
+    <!-- NAVBAR -->
+    <header id="navbar">
+        <div class="nav-wrap">
+            <button class="mobile-toggle" id="mobileToggle">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+
+            <nav class="menu left-menu">
+                <a href="{% url 'user:index' %}">Home</a>
+                <a href="{% url 'user:catalogue' %}">New Arrivals</a>
+            </nav>
+
+            <a href="{% url 'user:index' %}" class="reveal-section">
+                <div class="luxury-logo">
+                    <div class="logo-main">
+                        <span>S</span><span>A</span><span>N</span><span>S</span><span>K</span><span>R</span><span>U</span><span>T</span><span>I</span>
+                    </div>
+                    <div class="logo-divider"></div>
+                    <div class="logo-sub">
+                        <span>B</span><span>Y</span><span class="space"></span><span>B</span><span>A</span><span>N</span><span>I</span>
+                    </div>
+                </div>
+            </a>
+
+            <nav class="menu right-menu">
+                <a href="{% url 'user:catalogue' %}">Collections</a>
+                <a href="{% url 'user:product' %}">Sarees</a>
+                <a href="{% url 'user:profile' %}">My Account</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="action-btn" id="searchTrigger" title="Search">
+                    <span class="material-symbols-outlined">search</span>
+                </button>
+                <a href="{% url 'user:profile' %}" class="action-btn" title="Account">
+                    <span class="material-symbols-outlined">person</span>
+                </a>
+                <button class="action-btn cart-btn" id="cartOpenBtn" title="Cart">
+                    <span class="material-symbols-outlined">shopping_bag</span>
+                    <span class="cart-badge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- BREADCRUMB -->
+    <div class="bg-white border-b border-slate-200/80 py-3.5 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 flex items-center gap-2 text-xs text-slate-500 font-medium">
+            <a href="{% url 'user:index' %}" class="hover:text-brand-maroon">Home</a>
+            <i class="ph ph-caret-right text-xs"></i>
+            <span class="text-brand-maroon font-bold">Return & Refund Policy</span>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT CARD -->
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-10">
+        
+        <div class="bg-white rounded-3xl p-6 sm:p-10 border border-brand-gold/30 shadow-lg space-y-8">
+            
+            <!-- HEADER -->
+            <div class="border-b border-slate-100 pb-6">
+                <span class="text-xs font-bold uppercase tracking-widest text-brand-gold block mb-1">Customer Care & Protection</span>
+                <h1 class="text-2xl sm:text-3xl font-bold font-serif text-brand-maroon" style="font-family: 'Cinzel', serif;">Return & Refund Policy</h1>
+                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                    At <strong>SANSKRUTI BY - BANI</strong> (a brand under <strong>BLUENOTES</strong>), we strive to ensure that you have a smooth and satisfying shopping experience. Please read our return and refund policy carefully before making a purchase.
+                </p>
+            </div>
+
+            <!-- SECTIONS -->
+            <div class="space-y-6 text-sm text-slate-700 leading-relaxed">
+                
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">1</span>
+                        Return Eligibility
+                    </h3>
+                    <ul class="pl-8 list-disc text-xs text-slate-600 space-y-1">
+                        <li>Customers can request a return within <strong>7 days</strong> of delivery.</li>
+                        <li>The product must be unused, unwashed, and in its original condition.</li>
+                        <li>All original tags, packaging, and invoices must be intact.</li>
+                    </ul>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">2</span>
+                        Non-Returnable Items
+                    </h3>
+                    <ul class="pl-8 list-disc text-xs text-slate-600 space-y-1">
+                        <li>Products that have been used, worn, or washed.</li>
+                        <li>Items damaged due to customer handling or improper care.</li>
+                        <li>Customized, altered, or tailor-fitted products.</li>
+                    </ul>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">3</span>
+                        Return Request Process
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600">
+                        To initiate a return, customers must contact us via email or WhatsApp with your order details. Once the return request is approved, we will arrange a pickup (if serviceable in your area) or guide you on how to ship the product back safely.
+                    </p>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">4</span>
+                        Refund Process
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600">
+                        After receiving the returned product at our facility, it will undergo a quality inspection. Once approved, the refund will be processed within <strong>5–7 business days</strong> and credited back to the original payment method.
+                    </p>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">5</span>
+                        Cash on Delivery (COD) Orders
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600">
+                        For Cash on Delivery (COD) orders, refunds will be processed via direct bank transfer or UPI once bank details are provided by the customer.
+                    </p>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">6</span>
+                        Shipping Charges
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600">
+                        If the return is due to a defective or incorrect product delivered, return shipping will be completely <strong>FREE</strong>. For all other personal preference returns, return shipping charges will be borne by the customer.
+                    </p>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">7</span>
+                        Damaged or Incorrect Product
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600">
+                        Customers must report any damaged or incorrect products received within <strong>24–48 hours</strong> of delivery. Clear unboxing photos or videos must be shared for verification.
+                    </p>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">8</span>
+                        Exchange Policy
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600">
+                        Exchanges are subject to product availability. If there is any price difference between the items, the balance amount will be adjusted accordingly.
+                    </p>
+                </section>
+
+                <section class="mt-8 p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                    <h3 class="font-bold text-base text-brand-maroon flex items-center gap-2">
+                        <i class="ph ph-arrow-counter-clockwise text-lg"></i>
+                        9. Contact Us for Returns
+                    </h3>
+                    <p class="text-xs text-slate-600">For any return or refund queries, please contact our support team:</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-2 font-medium">
+                        <div><strong class="text-slate-900">Company Name:</strong> BLUENOTES</div>
+                        <div><strong class="text-slate-900">Brand Name:</strong> SANSKRUTI BY - BANI</div>
+                        <div class="sm:col-span-2"><strong class="text-slate-900">Address:</strong> Vrindavan Building, Shop No. 1, Ground Floor, Mira Gaon, Mira Road East - 401107</div>
+                        <div><strong class="text-slate-900">Email:</strong> <a href="mailto:care@bani.boutique" class="text-brand-maroon underline">care@bani.boutique</a> / <a href="mailto:care.bani.boutique@gmail.com" class="text-brand-maroon underline">care.bani.boutique@gmail.com</a></div>
+                        <div><strong class="text-slate-900">Phone / WhatsApp:</strong> +91 9372471363</div>
+                    </div>
+                    <p class="text-[11px] text-slate-400 italic pt-2 border-t border-slate-200 mt-3">
+                        Note: SANSKRUTI BY - BANI reserves the right to refuse returns that do not meet the above conditions.
+                    </p>
+                </section>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-brand-maroon text-[#fff8f4] border-t border-brand-gold/30 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+            <div class="text-brand-gold/80 text-center sm:text-left">
+                © 2026 Sanskruti By Bani (BLUENOTES). All Rights Reserved.
+            </div>
+            <div class="flex items-center gap-6 text-brand-gold font-medium">
+                <a href="{% url 'user:terms_conditions' %}" class="hover:underline">Terms & Conditions</a>
+                <a href="{% url 'user:return_refund_policy' %}" class="hover:underline">Return & Refund Policy</a>
+                <a href="{% url 'user:privacy_policy' %}" class="hover:underline">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

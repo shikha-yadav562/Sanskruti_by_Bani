@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Sanskruti by Bani</title>
+    {% load static %}
+    
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- MATERIAL ICONS & PHOSPHOR ICONS -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"> 
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- TAILWIND -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { 
+                        brand: { 
+                            maroon: '#71041a', 
+                            maroonDeep: '#38000b',
+                            maroonLight: '#8a0a25', 
+                            gold: '#e7c27a' 
+                        } 
+                    },
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'], 
+                        serif: ['Cinzel', 'serif'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- MAIN HOMEPAGE CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+</head>
+<body class="bg-[#FAF7F2] font-sans antialiased text-slate-900 flex flex-col min-h-screen">
+
+    <!-- TOP OFFER BAR -->
+    <div class="top-bar">
+        <button class="tb-btn prev">‹</button>
+        <div class="tb-window">
+            {% for item in offer_items %}
+            <div class="tb-item{% if forloop.first %} active{% endif %}">{{ item.text }}</div>
+            {% empty %}
+            <div class="tb-item active">Free Discount</div>
+            <div class="tb-item">COD across India</div>
+            <div class="tb-item">Easy Return & Exchange*</div>
+            {% endfor %}
+        </div>
+        <button class="tb-btn next">›</button>
+    </div>
+
+    <!-- NAVBAR -->
+    <header id="navbar">
+        <div class="nav-wrap">
+            <button class="mobile-toggle" id="mobileToggle">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+
+            <nav class="menu left-menu">
+                <a href="{% url 'user:index' %}">Home</a>
+                <a href="{% url 'user:catalogue' %}">New Arrivals</a>
+            </nav>
+
+            <a href="{% url 'user:index' %}" class="reveal-section">
+                <div class="luxury-logo">
+                    <div class="logo-main">
+                        <span>S</span><span>A</span><span>N</span><span>S</span><span>K</span><span>R</span><span>U</span><span>T</span><span>I</span>
+                    </div>
+                    <div class="logo-divider"></div>
+                    <div class="logo-sub">
+                        <span>B</span><span>Y</span><span class="space"></span><span>B</span><span>A</span><span>N</span><span>I</span>
+                    </div>
+                </div>
+            </a>
+
+            <nav class="menu right-menu">
+                <a href="{% url 'user:catalogue' %}">Collections</a>
+                <a href="{% url 'user:product' %}">Sarees</a>
+                <a href="{% url 'user:profile' %}">My Account</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="action-btn" id="searchTrigger" title="Search">
+                    <span class="material-symbols-outlined">search</span>
+                </button>
+                <a href="{% url 'user:profile' %}" class="action-btn" title="Account">
+                    <span class="material-symbols-outlined">person</span>
+                </a>
+                <button class="action-btn cart-btn" id="cartOpenBtn" title="Cart">
+                    <span class="material-symbols-outlined">shopping_bag</span>
+                    <span class="cart-badge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- BREADCRUMB -->
+    <div class="bg-white border-b border-slate-200/80 py-3.5 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 flex items-center gap-2 text-xs text-slate-500 font-medium">
+            <a href="{% url 'user:index' %}" class="hover:text-brand-maroon">Home</a>
+            <i class="ph ph-caret-right text-xs"></i>
+            <span class="text-brand-maroon font-bold">Privacy Policy</span>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT CARD -->
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-10">
+        
+        <div class="bg-white rounded-3xl p-6 sm:p-10 border border-brand-gold/30 shadow-lg space-y-8">
+            
+            <!-- HEADER -->
+            <div class="border-b border-slate-100 pb-6">
+                <span class="text-xs font-bold uppercase tracking-widest text-brand-gold block mb-1">Data Privacy & Security</span>
+                <h1 class="text-2xl sm:text-3xl font-bold font-serif text-brand-maroon" style="font-family: 'Cinzel', serif;">Privacy Policy</h1>
+                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                    At <strong>SANSKRUTI BY - BANI</strong> (a brand under <strong>BLUENOTES</strong>), we value your privacy and are committed to protecting your personal information.
+                </p>
+            </div>
+
+            <!-- SECTIONS -->
+            <div class="space-y-6 text-sm text-slate-700 leading-relaxed">
+                
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">1</span>
+                        Information We Collect
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600 mb-2">We may collect the following information when you interact with our website:</p>
+                    <ul class="pl-8 list-disc text-xs text-slate-600 space-y-1">
+                        <li>Name, phone number, and email address</li>
+                        <li>Shipping and billing address</li>
+                        <li>Payment details (processed securely via payment gateways)</li>
+                        <li>Order history and browsing preferences</li>
+                    </ul>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">2</span>
+                        How We Use Your Information
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600 mb-2">Your information is strictly used to:</p>
+                    <ul class="pl-8 list-disc text-xs text-slate-600 space-y-1">
+                        <li>Process and deliver your orders accurately</li>
+                        <li>Communicate order updates and shipment tracking</li>
+                        <li>Improve our products, customer service, and shopping experience</li>
+                        <li>Send promotional offers and seasonal updates (only if you opt-in)</li>
+                    </ul>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">3</span>
+                        Payment Security
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600">
+                        We use secure and trusted payment gateways. Your credit card, debit card, or net banking credentials are processed with bank-level encryption and are <strong>never stored on our servers</strong>.
+                    </p>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">4</span>
+                        Sharing of Information
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600 mb-2">We do not sell, trade, or rent your personal data to third parties. Your information may be shared only with:</p>
+                    <ul class="pl-8 list-disc text-xs text-slate-600 space-y-1">
+                        <li>Trusted courier partners for order delivery</li>
+                        <li>Verified payment service providers for transaction processing</li>
+                    </ul>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">5</span>
+                        Cookies
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600">
+                        Our website uses cookies to enhance your browsing experience, remember shopping cart items, and analyze overall site performance. You can disable cookies in your browser settings if preferred.
+                    </p>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">6</span>
+                        Data Protection
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600">
+                        We take appropriate technical and organizational security measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction.
+                    </p>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">7</span>
+                        Your Rights
+                    </h3>
+                    <ul class="pl-8 list-disc text-xs text-slate-600 space-y-1">
+                        <li>Access your personal data held by us.</li>
+                        <li>Request correction or deletion of your data at any time.</li>
+                    </ul>
+                </section>
+
+                <section class="space-y-2">
+                    <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-maroon/10 text-brand-maroon flex items-center justify-center text-xs">8</span>
+                        Changes to Policy
+                    </h3>
+                    <p class="pl-8 text-xs text-slate-600">
+                        We may update this privacy policy periodically. Any changes will be posted immediately on this page with an updated revision date.
+                    </p>
+                </section>
+
+                <section class="mt-8 p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                    <h3 class="font-bold text-base text-brand-maroon flex items-center gap-2">
+                        <i class="ph ph-shield-check text-lg"></i>
+                        9. Contact Us
+                    </h3>
+                    <p class="text-xs text-slate-600">For any privacy-related concerns or data inquiries, please contact us:</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-2 font-medium">
+                        <div><strong class="text-slate-900">Company Name:</strong> BLUENOTES</div>
+                        <div><strong class="text-slate-900">Brand Name:</strong> SANSKRUTI BY - BANI</div>
+                        <div class="sm:col-span-2"><strong class="text-slate-900">Address:</strong> Vrindavan Building, Shop No. 1, Ground Floor, Mira Gaon, Mira Road East - 401107</div>
+                        <div><strong class="text-slate-900">Email:</strong> <a href="mailto:care@bani.boutique" class="text-brand-maroon underline">care@bani.boutique</a> / <a href="mailto:care.bani.boutique@gmail.com" class="text-brand-maroon underline">care.bani.boutique@gmail.com</a></div>
+                        <div><strong class="text-slate-900">Phone:</strong> +91 9372471363</div>
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-brand-maroon text-[#fff8f4] border-t border-brand-gold/30 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+            <div class="text-brand-gold/80 text-center sm:text-left">
+                © 2026 Sanskruti By Bani (BLUENOTES). All Rights Reserved.
+            </div>
+            <div class="flex items-center gap-6 text-brand-gold font-medium">
+                <a href="{% url 'user:terms_conditions' %}" class="hover:underline">Terms & Conditions</a>
+                <a href="{% url 'user:return_refund_policy' %}" class="hover:underline">Return & Refund Policy</a>
+                <a href="{% url 'user:privacy_policy' %}" class="hover:underline">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

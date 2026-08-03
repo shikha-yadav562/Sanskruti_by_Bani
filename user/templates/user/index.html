@@ -1170,10 +1170,9 @@ LUXURY FOOTER SECTION
 
         <h3>Policy & Inquiry</h3>
 
-        <a href="#">Return & Exchange Policy</a>
-        <a href="#">Shipping Policy</a>
-        <a href="#">Terms and Conditions</a>
-        <a href="#">Privacy Policy</a>
+        <a href="{% url 'user:return_refund_policy' %}">Return & Refund Policy</a>
+        <a href="{% url 'user:terms_conditions' %}">Terms and Conditions</a>
+        <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
         <a href="#">Wholesale Inquiry</a>
 
       </div>
@@ -1238,9 +1237,9 @@ LUXURY FOOTER SECTION
 
       <div class="footer-bottom-links">
 
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms & Conditions</a>
-        <a href="#">Shipping Policy</a>
+        <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
+        <a href="{% url 'user:terms_conditions' %}">Terms & Conditions</a>
+        <a href="{% url 'user:return_refund_policy' %}">Return & Exchange Policy</a>
 
       </div>
 

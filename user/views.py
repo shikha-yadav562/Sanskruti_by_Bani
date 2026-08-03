@@ -78,6 +78,30 @@ def profile_view(request):
     }
     return render(request, 'user/profile.html', context)
 
+def terms_conditions(request):
+    context = {
+        "header_settings": HeaderSettings.load(),
+        "offer_items": OfferBarItem.objects.all(),
+        "footer_settings": FooterSettings.load(),
+    }
+    return render(request, 'user/terms_conditions.html', context)
+
+def return_refund_policy(request):
+    context = {
+        "header_settings": HeaderSettings.load(),
+        "offer_items": OfferBarItem.objects.all(),
+        "footer_settings": FooterSettings.load(),
+    }
+    return render(request, 'user/return_refund_policy.html', context)
+
+def privacy_policy(request):
+    context = {
+        "header_settings": HeaderSettings.load(),
+        "offer_items": OfferBarItem.objects.all(),
+        "footer_settings": FooterSettings.load(),
+    }
+    return render(request, 'user/privacy_policy.html', context)
+
 
 def signup_view(request):
     if request.method == 'POST':
