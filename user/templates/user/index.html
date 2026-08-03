@@ -227,9 +227,9 @@
         </div>
 
         <!-- ICONS -->
-        <button class="icon-btn" title="Wishlist">
-          <span class="material-symbols-outlined">favorite</span>
-        </button>
+       <button class="icon-btn" onclick="logoutUser()">
+    <span class="material-symbols-outlined">logout</span>
+</button>
 
         <button class="icon-btn" title="Cart">
           <span class="material-symbols-outlined">shopping_bag</span>
@@ -1248,6 +1248,30 @@ LUXURY FOOTER SECTION
 
   <script src="{% static 'user/js/script.js' %}"></script>
 
+<script>
+async function logoutUser() {
+    try {
+        const response = await fetch("/api/auth/logout/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            credentials: "same-origin"
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            window.location.href = data.redirect_url;
+        } else {
+            alert(data.error || "Logout failed.");
+        }
+    } catch (error) {
+        console.error("Logout error:", error);
+    }
+}
+</script>
 </body>
 
 </html>

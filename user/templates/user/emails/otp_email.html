@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+        .header { background-color: #520211; padding: 30px 20px; text-align: center; }
+        .header h1 { color: #D4AF37; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 1px; }
+        .content { padding: 40px 30px; text-align: center; color: #334155; }
+        .greeting { font-size: 18px; margin-bottom: 20px; font-weight: 500; }
+        .message { font-size: 15px; line-height: 1.6; margin-bottom: 30px; color: #64748b; }
+        .otp-box { background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 30px auto; max-width: 300px; }
+        .otp-code { font-size: 32px; font-weight: bold; color: #520211; letter-spacing: 8px; margin: 0; }
+        .warning { font-size: 13px; color: #94a3b8; margin-top: 20px; }
+        .footer { background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+        .footer a { color: #520211; text-decoration: none; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SANSKRUTI BY BANI</h1>
+        </div>
+        <div class="content">
+            <div class="greeting">Hello,</div>
+            <div class="message">
+                We received a request to verify your account credentials. Please use the verification code below. This code will expire in {{ expiration_minutes }} minutes.
+            </div>
+            
+            <div class="otp-box">
+                <p class="otp-code">{{ otp }}</p>
+            </div>
+            
+            <div class="warning">
+                If you did not request this code, you can safely ignore this email.
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 Sanskruti By Bani. All rights reserved.</p>
+            <p>Need help? Contact <a href="mailto:support@sanskruti.com">support@sanskruti.com</a></p>
+        </div>
+    </div>
+</body>
+</html>
