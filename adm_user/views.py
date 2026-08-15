@@ -684,21 +684,34 @@ def signup(request):
 # WEBSITE BUILDER
 # ==========================================
  
-MAX_IMAGE_SIZE_MB = 9  # matches the "Max 2MB per image" guideline in your UI
+MAX_IMAGE_SIZE_MB = 25  # Relaxed size limit to support high-res banners
 MAX_MEMORY_IMAGES = 20  # sane production cap so the slider can't grow unbounded
  
  
 def _validate_image_file(f):
     """
-    ImageField validates that the file IS an image, but does nothing
-    about size — enforce that here so a 40MB phone photo doesn't hit
-    your media storage (and R2 bill) unchecked.
+    Validates uploaded image size and verifies format using Pillow with clear user-facing error messages.
     """
+    file_size_mb = round(f.size / (1024 * 1024), 2)
+    filename = getattr(f, 'name', 'Uploaded image')
+
     if f.size > MAX_IMAGE_SIZE_MB * 1024 * 1024:
-        raise ValidationError(f"Image must be under {MAX_IMAGE_SIZE_MB}MB.")
-    ext = f.name.rsplit(".", 1)[-1].lower()
-    if ext not in get_available_image_extensions():
-        raise ValidationError("Unsupported image file type.")
+        raise ValidationError(
+            f"Image '{filename}' is too large ({file_size_mb}MB). Maximum allowed image size is {MAX_IMAGE_SIZE_MB}MB. Please compress or choose a smaller image."
+        )
+    
+    try:
+        from PIL import Image
+        img = Image.open(f)
+        img.verify()
+        f.seek(0)
+    except Exception:
+        ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+        allowed = set(get_available_image_extensions()) | {"jpg", "jpeg", "png", "webp", "gif", "bmp", "jfif", "avif", "svg", "blob", ""}
+        if ext not in allowed:
+            raise ValidationError(
+                f"File '{filename}' is not a recognized image format. Please upload a JPG, PNG, or WEBP image."
+            )
  
  
 # ---------------------------------------------------------------------
@@ -739,7 +752,8 @@ def _save_singleton_text_fields(instance, data, fields):
     for field in fields:
         if field in data:
             setattr(instance, field, data[field])
-    instance.full_clean(exclude=[f.name for f in instance._meta.fields if f.name.endswith("image") or f.name in ("desktop_image", "mobile_image", "logo", "about_image")])
+    from django.db import models
+    instance.full_clean(exclude=[f.name for f in instance._meta.fields if isinstance(f, models.ImageField)])
     instance.save()
  
  
@@ -776,6 +790,8 @@ def save_hero_main(request):
             _save_singleton_image(hero, request.FILES, "mobile_image")
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": f"Error saving Main Hero Slide: {str(e)}"}, status=400)
     return JsonResponse({"saved": True})
  
  
@@ -789,6 +805,8 @@ def save_hero_image_only(request):
             _save_singleton_image(hero, request.FILES, "mobile_image")
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": f"Error saving Image Only Slide: {str(e)}"}, status=400)
     return JsonResponse({"saved": True})
  
  
@@ -807,6 +825,8 @@ def save_hero_offer(request):
             _save_singleton_image(hero, request.FILES, "mobile_image")
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": f"Error saving Hero Offer Banner: {str(e)}"}, status=400)
     return JsonResponse({"saved": True})
  
  

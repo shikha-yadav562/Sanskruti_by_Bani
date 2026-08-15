@@ -3,10 +3,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-try:
-    from .forms import SignupForm, LoginForm
-except ImportError:
-    pass
+from .forms import SignupForm, LoginForm
 from adm_user.models import AboutUsSection, HeroSlideOffer, HeroSlideMain, HeroSlideImageOnly, HeaderSettings, OfferBarItem, FooterSettings, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, SignatureCategoryItem
 
 # Create your views here.
@@ -18,6 +15,7 @@ from .models import Address, ProductReview, ReviewHelpful
 # Create your views here.
 def index(request):
     context = {
+        "hero_offer": HeroSlideOffer.load(),
         "hero_main": HeroSlideMain.load(),
         "hero_image_only": HeroSlideImageOnly.load(),
         "header_settings": HeaderSettings.load(),

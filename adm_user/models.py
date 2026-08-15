@@ -458,8 +458,8 @@ class HeroSlideMain(SingletonModel):
     description = models.TextField(blank=True)
     button_1_text = models.CharField(max_length=50, blank=True)
     button_2_text = models.CharField(max_length=50, blank=True)
-    desktop_image = models.ImageField(upload_to="website/hero/slide1/desktop/")
-    mobile_image = models.ImageField(upload_to="website/hero/slide1/mobile/")
+    desktop_image = models.ImageField(upload_to="website/hero/slide1/desktop/", blank=True)
+    mobile_image = models.ImageField(upload_to="website/hero/slide1/mobile/", blank=True)
 
     def __str__(self):
         return "Hero Slide 1 (Main)"
@@ -468,8 +468,8 @@ class HeroSlideMain(SingletonModel):
 class HeroSlideImageOnly(SingletonModel):
     """Slide 2: Full Image Banner — no text overlay."""
 
-    desktop_image = models.ImageField(upload_to="website/hero/slide2/desktop/")
-    mobile_image = models.ImageField(upload_to="website/hero/slide2/mobile/")
+    desktop_image = models.ImageField(upload_to="website/hero/slide2/desktop/", blank=True)
+    mobile_image = models.ImageField(upload_to="website/hero/slide2/mobile/", blank=True)
 
     def __str__(self):
         return "Hero Slide 2 (Image Only)"

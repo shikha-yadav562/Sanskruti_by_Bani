@@ -798,6 +798,7 @@ Sanskruti By - Bani ही त्या संस्कृतीची सुर
     });
 
     async function postSection(url, root, silent) {
+        if (!root) return { ok: true };
         const formData = new FormData();
         root.querySelectorAll('input[name], textarea[name]').forEach(el => {
             if (el.type === 'file') return;
@@ -808,29 +809,31 @@ Sanskruti By - Bani ही त्या संस्कृतीची सुर
             if (el.files[0]) formData.append(el.name, el.files[0]);
         });
 
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'X-CSRFToken': getCSRFToken() },
-            body: formData,
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-            if (!silent) alert(data.error || 'Save failed.');
-            return false;
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() },
+                body: formData,
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                const errMsg = data.error || `Server error (HTTP ${res.status})`;
+                if (!silent) alert(errMsg);
+                return { ok: false, error: errMsg };
+            }
+            return { ok: true };
+        } catch (err) {
+            const errMsg = err.message || 'Network connectivity error';
+            if (!silent) alert(errMsg);
+            return { ok: false, error: errMsg };
         }
-        return true;
     }
 
     async function saveWebsiteChanges(clickEvent) {
-        // Saves ALL tabs at once, regardless of which one is currently
-        // visible — hidden tabs stay in the DOM (just CSS `.hidden`,
-        // never removed), so their field values are still readable here.
-        // This avoids silently losing edits made on a tab the admin
-        // switched away from before clicking Save.
         const jobs = [
+            { label: 'Hero (Offer Slide)', url: HERO_OFFER_URL, root: document.querySelector('[data-slide="hero-offer"]') },
             { label: 'Hero (Main Slide)', url: SITE_CONTENT_URLS.hero, root: document.querySelector('[data-slide="hero-main"]') },
             { label: 'Hero (Image Slide)', url: HERO_IMAGE_ONLY_URL, root: document.querySelector('[data-slide="hero-image-only"]') },
-            { label: 'Hero (Offer Slide)', url: HERO_OFFER_URL, root: document.querySelector('[data-slide="hero-offer"]') },
             { label: 'Sweet Memories', url: SITE_CONTENT_URLS.memories, root: document.getElementById('editor-memories') },
             { label: 'Header & Nav', url: SITE_CONTENT_URLS.header, root: document.getElementById('editor-header') },
             { label: 'Footer & Links', url: SITE_CONTENT_URLS.footer, root: document.getElementById('editor-footer') },
@@ -846,8 +849,10 @@ Sanskruti By - Bani ही त्या संस्कृतीची सुर
 
         const failed = [];
         for (const job of jobs) {
-            const ok = await postSection(job.url, job.root, /* silent */ true);
-            if (!ok) failed.push(job.label);
+            const res = await postSection(job.url, job.root, /* silent */ true);
+            if (!res.ok) {
+                failed.push({ label: job.label, reason: res.error });
+            }
         }
 
         if (saveBtn) {
@@ -856,9 +861,10 @@ Sanskruti By - Bani ही त्या संस्कृतीची सुर
         }
 
         if (failed.length === 0) {
-            alert('All sections saved successfully!');
+            alert('✅ All sections saved successfully!');
         } else {
-            alert('Saved, but these sections failed: ' + failed.join(', '));
+            const errorDetails = failed.map(f => `• ${f.label}:\n   ${f.reason}`).join('\n\n');
+            alert(`⚠️ Some sections could not be saved:\n\n${errorDetails}`);
         }
     }
 

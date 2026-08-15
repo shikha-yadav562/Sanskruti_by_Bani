@@ -2332,9 +2332,9 @@ CARD
    position: relative;
    overflow: hidden;
 
-   height: 480px;
+   height: 490px;
 
-   border-radius: 28px;
+   border-radius: 38px;
 
    background: #510416;
 
@@ -2342,11 +2342,11 @@ CARD
 
    isolation: isolate;
 
-   border: 1.5px solid rgba(212, 175, 55, 0.3);
+   border: 2.5px solid #71041a;
 
    box-shadow:
-     0 18px 45px rgba(90, 0, 18, .16),
-     inset 0 1px 0 rgba(255, 255, 255, .12);
+     0 18px 45px rgba(90, 0, 18, .22),
+     inset 0 1px 0 rgba(255, 255, 255, .15);
 
    transition:
      transform .5s ease,
@@ -2376,11 +2376,12 @@ OVERLAY
    inset: 0;
    z-index: 1;
 
-   background: linear-gradient(to top, rgba(20, 0, 0, 0.72) 0%, rgba(50, 0, 10, 0.25) 20%, transparent 35%);
-   backdrop-filter: blur(6px);
-   -webkit-backdrop-filter: blur(6px);
-   mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0) 35%);
-   -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0) 35%);
+   background: linear-gradient(
+     to top,
+     rgba(0, 0, 0, 0.65) 0%,
+     rgba(0, 0, 0, 0.25) 25%,
+     transparent 50%
+   );
    pointer-events: none;
  }
 
@@ -2406,18 +2407,18 @@ OVERLAY
  .luxury-card::after {
    content: "";
    position: absolute;
-   inset: 12px;
+   inset: 10px;
    z-index: 3;
 
-   border-radius: 22px;
+   border-radius: 30px;
 
-   border: 1px solid rgba(231, 194, 122, .22);
+   border: 1px solid rgba(231, 194, 122, .25);
 
    pointer-events: none;
  }
 
  /* =========================================
-CONTENT (CLEAN SEAMLESS OVERLAY - NO RECTANGLE BOX)
+CONTENT (SEAMLESS TEXT & TRANSPARENT GLASS BUTTON)
 ========================================= */
 
  .luxury-content {
@@ -2439,50 +2440,23 @@ CONTENT (CLEAN SEAMLESS OVERLAY - NO RECTANGLE BOX)
    box-shadow: none !important;
  }
 
- /* TAG */
-
- .luxury-tag {
-   display: inline-flex;
-   align-items: center;
-   gap: 8px;
-
-   padding: 7px 14px;
-
-   border-radius: 50px;
-
-   background:
-     linear-gradient(135deg,
-       rgba(231, 194, 122, .18),
-       rgba(255, 255, 255, .06));
-
-   border: 1px solid rgba(231, 194, 122, .20);
-
-   backdrop-filter: blur(12px);
-
-   color: var(--gold2);
-
-   font-size: 9px;
-   letter-spacing: 2.5px;
-   text-transform: uppercase;
-   font-weight: 700;
-
-   margin-bottom: 14px;
- }
-
  /* TITLE */
 
  .luxury-content h3 {
-   color: #fff;
+   color: #ffffff;
 
-   font-size: 24px;
-   line-height: 1.15;
+   font-size: 20px;
+   font-weight: 700;
+   letter-spacing: 1.5px;
+   text-transform: uppercase;
+   line-height: 1.2;
 
    margin-bottom: 10px;
 
    font-family: 'Cinzel', serif;
 
    text-shadow:
-     0 5px 18px rgba(0, 0, 0, .55);
+     0 3px 10px rgba(0, 0, 0, .75);
  }
 
  /* DESCRIPTION */
@@ -2501,33 +2475,42 @@ CONTENT (CLEAN SEAMLESS OVERLAY - NO RECTANGLE BOX)
      0 2px 10px rgba(0, 0, 0, .55);
  }
 
- /* BUTTON */
+ /* BUTTON (COMPACT TRANSPARENT GLASSMORPHISM PILL) */
 
  .luxury-link {
    display: inline-flex;
    align-items: center;
+   justify-content: center;
    gap: 6px;
 
    padding: 6px 14px;
 
    border-radius: 50px;
 
-   background:
-     linear-gradient(135deg,
-       rgba(231, 194, 122, .25),
-       rgba(255, 255, 255, .10));
+   background: rgba(255, 255, 255, 0.14) !important;
+   backdrop-filter: blur(12px) saturate(180%) !important;
+   -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
 
-   border: 1px solid rgba(231, 194, 122, .35);
+   border: 1px solid rgba(231, 194, 122, 0.5) !important;
 
-   backdrop-filter: blur(12px);
+   color: #e7c27a !important;
 
-   color: var(--gold2);
-
-   font-size: 9.5px;
+   font-size: 9px;
    font-weight: 700;
-   letter-spacing: 1px;
+   letter-spacing: 1.2px;
+   text-transform: uppercase;
 
-   transition: .4s ease;
+   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+
+   transition: all 0.35s ease;
+ }
+
+ .luxury-card:hover .luxury-link {
+   background: rgba(255, 255, 255, 0.26) !important;
+   border-color: #e7c27a !important;
+   color: #f5deb3 !important;
+   transform: translateY(-2px);
+   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(231, 194, 122, 0.4);
  }
 
  .luxury-whatsapp-btn {
