@@ -21,24 +21,24 @@
     
     <!-- Sidebar Navigation for Builder -->
     <div class="xl:col-span-1 space-y-2">
+        <button id="tab-header" type="button" onclick="showEditor('header')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center">
+            <span>1. Header & Navigation</span>
+            <i class="ph ph-caret-right"></i>
+        </button>
         <button id="tab-hero" type="button" onclick="showEditor('hero')" class="w-full text-left px-4 py-3 rounded-xl bg-white dark:bg-dark-panel border border-brand-maroon shadow-sm text-brand-maroon dark:text-brand-gold font-medium flex items-center justify-between transition-colors">
-            <span>Hero Banner</span>
+            <span>2. Hero Banner (3 Slides)</span>
             <i class="ph ph-caret-right"></i>
         </button>
         <button id="tab-memories" type="button" onclick="showEditor('memories')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-between">
-            <span>Sweet Memories</span>
-            <i class="ph ph-caret-right"></i>
-        </button>
-        <button id="tab-header" type="button" onclick="showEditor('header')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center">
-            <span>Header & Nav</span>
-            <i class="ph ph-caret-right"></i>
-        </button>
-        <button id="tab-footer" type="button" onclick="showEditor('footer')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center">
-            <span>Footer & Links</span>
+            <span>3. Sweet Memories</span>
             <i class="ph ph-caret-right"></i>
         </button>
         <button id="tab-about" type="button" onclick="showEditor('about')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center">
-            <span>About Us Section</span>
+            <span>4. About Us Section</span>
+            <i class="ph ph-caret-right"></i>
+        </button>
+        <button id="tab-footer" type="button" onclick="showEditor('footer')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center">
+            <span>5. Footer & Contact Links</span>
             <i class="ph ph-caret-right"></i>
         </button>
     </div>
@@ -237,6 +237,9 @@
         </div>
 
 
+
+
+
         <!-- SWEET MEMORIES EDITOR -->
         <div id="editor-memories" class="space-y-6 hidden" data-slide="memories">
             <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm flex items-center justify-between">
@@ -251,41 +254,149 @@
                 </div>
             </div>
 
+            <!-- SWEET MEMORIES SLIDE 1 (FESTIVE OFFER BANNER) -->
             <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
-                <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                    <i class="ph ph-text-aa text-brand-maroon"></i> Typography & Theme
-                </h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Section Label (Over Title)</label>
-                            <input type="text" name="section_label" value="{{ memories.section_label|default:'SWEET MEMORIES' }}" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Main Heading</label>
-                            <textarea rows="2" name="main_heading" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">{{ memories.main_heading|default:"Woven Into&#13;&#10;Your Beautiful Moments" }}</textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Background Theme</label>
-                            <div class="flex gap-3">
-                                <label class="cursor-pointer flex-1 relative">
-                                    <input type="radio" name="background_theme" class="peer sr-only" value="dark_maroon" {% if memories.background_theme == "light_gold" %}{% else %}checked{% endif %}>
-                                    <div class="w-full h-12 rounded-lg bg-[#2a0b06] border-2 border-transparent peer-checked:border-brand-gold peer-checked:ring-2 peer-checked:ring-brand-gold/20 flex items-center justify-center">
-                                        <span class="text-brand-gold text-xs font-semibold">Dark Maroon</span>
-                                    </div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-full bg-amber-100 text-brand-maroon flex items-center justify-center">
+                        <i class="ph ph-image text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-md font-semibold text-slate-800 dark:text-white">Sweet Memories Slide 1 (Festive Offer Banner)</h4>
+                        <p class="text-xs text-slate-500">Upload high-quality banner images for Slide 1 of the Sweet Memories slider.</p>
+                    </div>
+                </div>
+
+                <form id="memoriesOfferSlideForm" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <h5 class="text-xs font-bold text-slate-800 dark:text-white mb-3">Sweet Memories Slide 1 - 3 Offer Frame Cards (Images, Titles & Offers)</h5>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- FRAME 1 -->
+                            <div class="bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                                <label class="block text-[11px] font-bold text-slate-800 dark:text-white">Frame 1 (Left Offer Card)</label>
+                                <label class="block border border-dashed border-amber-400 bg-amber-50/50 rounded-xl p-2 text-center cursor-pointer hover:bg-amber-100/50 transition-colors h-32 relative overflow-hidden flex flex-col items-center justify-center">
+                                    <input type="file" name="frame1_image" accept="image/*" class="hidden" onchange="previewImage(this, 'memFrame1')">
+                                    <img id="memFrame1" src="{% if memories_offer_slide.frame1_image %}{{ memories_offer_slide.frame1_image.url }}{% else %}{% static 'user/assets/hero section slide 1.png' %}{% endif %}" class="absolute inset-0 w-full h-full object-cover z-0">
+                                    <div class="relative z-10 p-1.5 bg-white/80 dark:bg-black/80 rounded-lg text-brand-maroon text-[10px] font-bold">Change Frame 1 Image</div>
                                 </label>
-                                <label class="cursor-pointer flex-1 relative">
-                                    <input type="radio" name="background_theme" class="peer sr-only" value="light_gold" {% if memories.background_theme == "light_gold" %}checked{% endif %}>
-                                    <div class="w-full h-12 rounded-lg bg-amber-50 border-2 border-transparent peer-checked:border-brand-maroon peer-checked:ring-2 peer-checked:ring-brand-maroon/20 flex items-center justify-center">
-                                        <span class="text-brand-maroon text-xs font-semibold">Light Gold</span>
-                                    </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">Card Title</label>
+                                    <input type="text" name="frame1_title" value="{{ memories_offer_slide.frame1_title|default:'Timeless Tradition Collection' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">Badge Pill Text</label>
+                                    <input type="text" name="frame1_badge" value="{{ memories_offer_slide.frame1_badge|default:'SPECIAL DEAL · UP TO 50% OFF' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">Top Ribbon Tag</label>
+                                    <input type="text" name="frame1_ribbon" value="{{ memories_offer_slide.frame1_ribbon|default:'50% OFF' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">WhatsApp Enquiry Link</label>
+                                    <input type="text" name="frame1_wa_link" value="{{ memories_offer_slide.frame1_wa_link|default:'' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
+                            </div>
+
+                            <!-- FRAME 2 -->
+                            <div class="bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                                <label class="block text-[11px] font-bold text-slate-800 dark:text-white">Frame 2 (Center Spotlight Card)</label>
+                                <label class="block border border-dashed border-amber-400 bg-amber-50/50 rounded-xl p-2 text-center cursor-pointer hover:bg-amber-100/50 transition-colors h-32 relative overflow-hidden flex flex-col items-center justify-center">
+                                    <input type="file" name="frame2_image" accept="image/*" class="hidden" onchange="previewImage(this, 'memFrame2')">
+                                    <img id="memFrame2" src="{% if memories_offer_slide.frame2_image %}{{ memories_offer_slide.frame2_image.url }}{% else %}{% static 'user/assets/sweet-slide 1-1.jpeg' %}{% endif %}" class="absolute inset-0 w-full h-full object-cover z-0">
+                                    <div class="relative z-10 p-1.5 bg-white/80 dark:bg-black/80 rounded-lg text-brand-maroon text-[10px] font-bold">Change Frame 2 Image</div>
                                 </label>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">Card Title</label>
+                                    <input type="text" name="frame2_title" value="{{ memories_offer_slide.frame2_title|default:'10% Off 1st Order (Code: WELCOME10)' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">Badge Pill Text</label>
+                                    <input type="text" name="frame2_badge" value="{{ memories_offer_slide.frame2_badge|default:'✦ WELCOME OFFER · 10% OFF ✦' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">Top Ribbon Tag</label>
+                                    <input type="text" name="frame2_ribbon" value="{{ memories_offer_slide.frame2_ribbon|default:'10% OFF' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">WhatsApp Enquiry Link</label>
+                                    <input type="text" name="frame2_wa_link" value="{{ memories_offer_slide.frame2_wa_link|default:'' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
+                            </div>
+
+                            <!-- FRAME 3 -->
+                            <div class="bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                                <label class="block text-[11px] font-bold text-slate-800 dark:text-white">Frame 3 (Right Offer Card)</label>
+                                <label class="block border border-dashed border-amber-400 bg-amber-50/50 rounded-xl p-2 text-center cursor-pointer hover:bg-amber-100/50 transition-colors h-32 relative overflow-hidden flex flex-col items-center justify-center">
+                                    <input type="file" name="frame3_image" accept="image/*" class="hidden" onchange="previewImage(this, 'memFrame3')">
+                                    <img id="memFrame3" src="{% if memories_offer_slide.frame3_image %}{{ memories_offer_slide.frame3_image.url }}{% else %}{% static 'user/assets/rakhi-desktop.jpg' %}{% endif %}" class="absolute inset-0 w-full h-full object-cover z-0">
+                                    <div class="relative z-10 p-1.5 bg-white/80 dark:bg-black/80 rounded-lg text-brand-maroon text-[10px] font-bold">Change Frame 3 Image</div>
+                                </label>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">Card Title</label>
+                                    <input type="text" name="frame3_title" value="{{ memories_offer_slide.frame3_title|default:'Happy Rakhi Festive Special' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">Badge Pill Text</label>
+                                    <input type="text" name="frame3_badge" value="{{ memories_offer_slide.frame3_badge|default:'RAKHI FESTIVE · UP TO 65% OFF' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">Top Ribbon Tag</label>
+                                    <input type="text" name="frame3_ribbon" value="{{ memories_offer_slide.frame3_ribbon|default:'65% OFF' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-300">WhatsApp Enquiry Link</label>
+                                    <input type="text" name="frame3_wa_link" value="{{ memories_offer_slide.frame3_wa_link|default:'' }}" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white">
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Paragraph Text</label>
-                        <textarea rows="8" name="paragraph_text" class="w-full h-[calc(100%-24px)] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white custom-scrollbar">{{ memories.paragraph_text|default:"Some moments stay forever.
+
+                    <button type="button" onclick="saveMemoriesOfferSlide()"
+                        class="w-full flex items-center justify-center gap-2 bg-brand-maroon text-brand-gold font-bold px-6 py-3 rounded-xl hover:bg-brand-maroon/90 transition-colors shadow-sm">
+                        <i class="ph ph-floppy-disk"></i>
+                        Save Sweet Memories Slide 1 Banner & 3 Frames
+                    </button>
+                </form>
+            </div>
+
+            <!-- SWEET MEMORIES SLIDE 2 (CUSTOMER STORY) -->
+            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
+                <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                    <i class="ph ph-text-aa text-brand-maroon"></i> Slide 2: Customer Story Typography & Theme
+                </h4>
+                <form id="memoriesSectionForm" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Section Label (Over Title)</label>
+                                <input type="text" name="section_label" value="{{ memories.section_label|default:'SWEET MEMORIES' }}" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Main Heading</label>
+                                <textarea rows="2" name="main_heading" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">{{ memories.main_heading|default:"Woven Into&#13;&#10;Your Beautiful Moments" }}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Background Theme</label>
+                                <div class="flex gap-3">
+                                    <label class="cursor-pointer flex-1 relative">
+                                        <input type="radio" name="background_theme" class="peer sr-only" value="dark_maroon" {% if memories.background_theme == "light_gold" %}{% else %}checked{% endif %}>
+                                        <div class="w-full h-12 rounded-lg bg-[#2a0b06] border-2 border-transparent peer-checked:border-brand-gold peer-checked:ring-2 peer-checked:ring-brand-gold/20 flex items-center justify-center">
+                                            <span class="text-brand-gold text-xs font-semibold">Dark Maroon</span>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer flex-1 relative">
+                                        <input type="radio" name="background_theme" class="peer sr-only" value="light_gold" {% if memories.background_theme == "light_gold" %}checked{% endif %}>
+                                        <div class="w-full h-12 rounded-lg bg-amber-50 border-2 border-transparent peer-checked:border-brand-maroon peer-checked:ring-2 peer-checked:ring-brand-maroon/20 flex items-center justify-center">
+                                            <span class="text-brand-maroon text-xs font-semibold">Light Gold</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Paragraph Text</label>
+                            <textarea rows="8" name="paragraph_text" class="w-full h-[calc(100%-24px)] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white custom-scrollbar">{{ memories.paragraph_text|default:"Some moments stay forever.
 
 A wedding morning.
 A family celebration.
@@ -296,14 +407,21 @@ Our Paithani sarees become part of those unforgettable memories.
 At Sanskruti By Bani, every weave carries heritage, every drape carries emotion, and every celebration shines a little more beautifully.
 
 Because special moments deserve something timeless." }}</textarea>
+                        </div>
                     </div>
-                </div>
+
+                    <button type="button" onclick="saveMemoriesSection()"
+                        class="w-full flex items-center justify-center gap-2 bg-brand-maroon text-brand-gold font-bold px-6 py-3 rounded-xl hover:bg-brand-maroon/90 transition-colors shadow-sm">
+                        <i class="ph ph-floppy-disk"></i>
+                        Save Sweet Memories Slide 2 Story
+                    </button>
+                </form>
             </div>
 
             <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h4 class="text-md font-semibold text-slate-800 dark:text-white flex items-center gap-2">
-                        <i class="ph ph-images text-brand-maroon"></i> Slider Frames (Images)
+                        <i class="ph ph-images text-brand-maroon"></i> Customer Photos (Slide 2 Slider)
                     </h4>
                     <span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded">Drag to reorder</span>
                 </div>
@@ -330,53 +448,6 @@ Because special moments deserve something timeless." }}</textarea>
                     </div>
                     {% endfor %}
                 </div>
-            </div>
-
-            <!-- SWEET MEMORIES SLIDE 2 (FULL IMAGE BANNER) -->
-            <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border p-6 shadow-sm">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-full bg-amber-100 text-brand-maroon flex items-center justify-center">
-                        <i class="ph ph-image text-xl"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-md font-semibold text-slate-800 dark:text-white">Sweet Memories Slide 2 (Full Image Banner)</h4>
-                        <p class="text-xs text-slate-500">Upload high-quality banner images for Slide 2 of the Sweet Memories slider.</p>
-                    </div>
-                </div>
-
-                <form id="memoriesOfferSlideForm" enctype="multipart/form-data" class="space-y-6">
-                    {% csrf_token %}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Desktop Image (16:9)</label>
-                            <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-4 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors w-full h-44 flex flex-col items-center justify-center relative overflow-hidden">
-                                <input type="file" name="desktop_image" accept="image/*" class="hidden" onchange="previewImage(this, 'memSlide2Desktop')">
-                                <img id="memSlide2Desktop" src="{% if memories_offer_slide.desktop_image %}{{ memories_offer_slide.desktop_image.url }}{% else %}{% static 'user/assets/rakhi-desktop.jpg' %}{% endif %}" class="absolute inset-0 w-full h-full object-cover z-0">
-                                <div class="relative z-10 p-2 bg-white/80 dark:bg-black/80 rounded-lg backdrop-blur-sm shadow-sm flex flex-col items-center text-brand-maroon">
-                                    <i class="ph ph-upload-simple text-xl mb-1"></i>
-                                    <span class="text-xs font-semibold">Change Desktop</span>
-                                </div>
-                            </label>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Mobile Image (9:16)</label>
-                            <label class="block border-2 border-dashed border-brand-maroon/30 bg-brand-maroon/5 rounded-xl p-4 text-center cursor-pointer hover:bg-brand-maroon/10 transition-colors mx-auto w-28 h-44 flex flex-col items-center justify-center relative overflow-hidden">
-                                <input type="file" name="mobile_image" accept="image/*" class="hidden" onchange="previewImage(this, 'memSlide2Mobile')">
-                                <img id="memSlide2Mobile" src="{% if memories_offer_slide.mobile_image %}{{ memories_offer_slide.mobile_image.url }}{% else %}{% static 'user/assets/rakhi-mobile.jpg' %}{% endif %}" class="absolute inset-0 w-full h-full object-cover z-0">
-                                <div class="relative z-10 p-2 bg-white/80 dark:bg-black/80 rounded-lg backdrop-blur-sm shadow-sm flex flex-col items-center text-brand-maroon">
-                                    <i class="ph ph-upload-simple text-lg mb-1"></i>
-                                    <span class="text-[10px] font-semibold">Change Mobile</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <button type="button" onclick="saveMemoriesOfferSlide()"
-                        class="w-full flex items-center justify-center gap-2 bg-brand-maroon text-brand-gold font-bold px-6 py-3 rounded-xl hover:bg-brand-maroon/90 transition-colors shadow-sm">
-                        <i class="ph ph-floppy-disk"></i>
-                        Save Sweet Memories Slide 2 Banner
-                    </button>
-                </form>
             </div>
         </div>
 
@@ -691,7 +762,7 @@ Sanskruti By - Bani ही त्या संस्कृतीची सुर
     }
 
     function showEditor(section) {
-        const sections = ['hero', 'memories', 'header', 'footer', 'about'];
+        const sections = ['hero', 'signature', 'memories', 'header', 'footer', 'about'];
         sections.forEach(sec => {
             const ed = document.getElementById('editor-' + sec);
             if (ed) {
@@ -717,6 +788,14 @@ Sanskruti By - Bani ही त्या संस्कृतीची सुर
         });
     }
     window.showEditor = showEditor;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab && ['hero', 'signature', 'memories', 'header', 'footer', 'about'].includes(tab)) {
+            showEditor(tab);
+        }
+    });
 
     async function postSection(url, root, silent) {
         const formData = new FormData();
@@ -890,6 +969,75 @@ Sanskruti By - Bani ही त्या संस्कृतीची सुर
             btn.closest('[data-offer-id]').remove();
         } else {
             alert('Delete failed.');
+        }
+    }
+
+    async function saveMemoriesOfferSlide() {
+        const form = document.getElementById('memoriesOfferSlideForm');
+        const ok = await postSection('/adm/website-builder/save/memories-offer-slide/', form, false);
+        if (ok) alert('Sweet Memories Slide 1 - 3 Offer Frame Cards saved successfully!');
+    }
+
+    async function saveMemoriesSection() {
+        const form = document.getElementById('memoriesSectionForm');
+        const ok = await postSection(SITE_CONTENT_URLS.memories, form, false);
+        if (ok) alert('Sweet Memories Slide 2 Customer Story saved successfully!');
+    }
+
+    /* --------------------------------------------------
+       SIGNATURE CATEGORIES JS MANAGEMENT
+       -------------------------------------------------- */
+    const SIG_CAT_API = '/adm/website-builder/signature-categories/';
+
+    function editSigCategory(id, name, badgeText, originCraft, whatsappLink) {
+        document.getElementById('sigCatId').value = id;
+        document.getElementById('sigCatName').value = name;
+        document.getElementById('sigCatBadge').value = badgeText;
+        document.getElementById('sigCatCraft').value = originCraft;
+        document.getElementById('sigCatWa').value = whatsappLink;
+        document.getElementById('sigCatFormTitle').textContent = 'Edit Signature Category #' + id;
+        document.getElementById('sigCatForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetSigCatForm() {
+        document.getElementById('sigCatId').value = '';
+        document.getElementById('sigCatForm').reset();
+        document.getElementById('sigCatFormTitle').textContent = 'Add New Signature Category';
+    }
+
+    async function saveSignatureCategory() {
+        const catId = document.getElementById('sigCatId').value;
+        const form = document.getElementById('sigCatForm');
+        const formData = new FormData(form);
+        const url = catId ? `${SIG_CAT_API}${catId}/edit/` : SIG_CAT_API;
+
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCSRFToken() },
+            body: formData,
+        });
+
+        if (res.ok) {
+            alert('Signature category saved successfully!');
+            window.location.reload();
+        } else {
+            const data = await res.json().catch(() => ({}));
+            alert(data.error || 'Failed to save signature category.');
+        }
+    }
+
+    async function deleteSigCategory(id) {
+        if (!confirm('Are you sure you want to delete this signature category?')) return;
+        const res = await fetch(`${SIG_CAT_API}${id}/delete/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCSRFToken() },
+        });
+
+        if (res.ok) {
+            const card = document.getElementById(`sig-cat-card-${id}`);
+            if (card) card.remove();
+        } else {
+            alert('Failed to delete category.');
         }
     }
 </script>

@@ -15,7 +15,7 @@
   GOOGLE FONTS
   ===================================== -->
  <link
-    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap"
     rel="stylesheet">
 
   <!-- MATERIAL ICONS -->
@@ -29,7 +29,7 @@
  <script src="https://cdn.tailwindcss.com"></script> 
 
   <!-- MAIN CSS -->
-  <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'user/css/style.css' %}?v={% now 'U' %}">
 
 </head>
 
@@ -318,34 +318,25 @@ HERO SLIDER (LUXURY EDITION)
     <div class="hero-track" id="heroTrack">
 
       <!-- =========================
-      SLIDE 1 (FULL IMAGE BANNER / OFFER)
+      SLIDE 1 (50% OFF SPECIAL OFFER BANNER)
       ========================= -->
-      <div class="hero-slide hero-offer">
+      <div class="hero-slide hero-offer" style="height: 100vh; min-height: 520px; width: 100%; position: relative; background: #6e0318; display: flex; align-items: center; justify-content: center; overflow: hidden;">
         {% if hero_offer.desktop_image %}
-        <img src="{{ hero_offer.desktop_image.url }}" class="hero-offer-banner hero-offer-desktop" alt="Hero Offer Slide 1 Desktop">
+        <img src="{{ hero_offer.desktop_image.url }}" class="hero-offer-banner hero-offer-desktop" alt="Sanskruti By Bani 50% Off Special Offer Banner Desktop" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
         {% else %}
-        <img src="{% static 'user/assets/rakhi-desktop.jpg' %}" class="hero-offer-banner hero-offer-desktop" alt="Hero Offer Slide 1 Desktop">
+        <img src="{% static 'user/assets/hero section slide 1.png' %}" class="hero-offer-banner hero-offer-desktop" alt="Sanskruti By Bani 50% Off Special Offer Banner Desktop" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
         {% endif %}
 
         {% if hero_offer.mobile_image %}
-        <img src="{{ hero_offer.mobile_image.url }}" class="hero-offer-banner hero-offer-mobile" alt="Hero Offer Slide 1 Mobile">
+        <img src="{{ hero_offer.mobile_image.url }}" class="hero-offer-banner hero-offer-mobile" alt="Sanskruti By Bani 50% Off Special Offer Banner Mobile" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
         {% else %}
-        <img src="{% static 'user/assets/rakhi-mobile.jpg' %}" class="hero-offer-banner hero-offer-mobile" alt="Hero Offer Slide 1 Mobile">
-        {% endif %}
-
-        {% if hero_offer.big_highlight_text or hero_offer.small_top_text or hero_offer.button_text %}
-        <div class="offer-box">
-          {% if hero_offer.small_top_text %}<p>{{ hero_offer.small_top_text }}</p>{% endif %}
-          {% if hero_offer.big_highlight_text %}<h2>{{ hero_offer.big_highlight_text }}</h2>{% endif %}
-          {% if hero_offer.subtext %}<span>{{ hero_offer.subtext }}</span><br><br>{% endif %}
-          {% if hero_offer.button_text %}<a href="#" class="btn-primary">{{ hero_offer.button_text }}</a>{% endif %}
-        </div>
+        <img src="{% static 'user/assets/hero section slide 1.png' %}" class="hero-offer-banner hero-offer-mobile" alt="Sanskruti By Bani 50% Off Special Offer Banner Mobile" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
         {% endif %}
       </div>
 
       <!-- =========================
-    SLIDE 2 (CALLIGRAPHY HERO) — was Slide 1
-    ========================= -->
+      SLIDE 2 (CALLIGRAPHY HERO)
+      ========================= -->
       <div class="hero-slide hero-slide-1">
 
         <div class="hero-inner">
@@ -399,7 +390,6 @@ HERO SLIDER (LUXURY EDITION)
             <div class="glow"></div>
 
             <!-- DESKTOP IMAGE -->
-            {% comment %} <img src="{% static 'user/assets/slide1.png' %}" class="hero-img desktop-hero-img" alt="Founder Image"> {% endcomment %}
             {% if hero_main.desktop_image %}
             <img src="{{ hero_main.desktop_image.url }}" class="hero-img desktop-hero-img" alt="Founder Image">
             {% else %}
@@ -407,9 +397,6 @@ HERO SLIDER (LUXURY EDITION)
             {% endif %}
 
             <!-- MOBILE IMAGE -->
-            {% comment %} <img src="{% static 'user/assets/344941.png' %}" class="hero-img mobile-hero-img"
-              alt="Sanskruti By Bani Family"> {% endcomment %}
-
             {% if hero_main.mobile_image %}
             <img src="{{ hero_main.mobile_image.url }}" class="hero-img mobile-hero-img"
               alt="Sanskruti By Bani Family">
@@ -425,13 +412,12 @@ HERO SLIDER (LUXURY EDITION)
       </div>
 
       <!-- =========================
-      SLIDE 3 (DESKTOP + MOBILE) — was Slide 2
+      SLIDE 3 (FULL IMAGE BANNER)
       ========================= -->
 
       <div class="hero-slide image-slide">
 
         <!-- DESKTOP IMAGE -->
-        {% comment %} <img src="{% static 'user/assets/slide21.png' %}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner"> {% endcomment %}
         {% if hero_image_only.desktop_image %}
         <img src="{{ hero_image_only.desktop_image.url }}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner">
         {% else %}
@@ -441,8 +427,6 @@ HERO SLIDER (LUXURY EDITION)
         <!-- MOBILE LAYOUT (Full Image Only) -->
         <div class="slide2-mobile-layout premium-cover-layout"
           style="position: absolute; inset: 0; width: 100%; height: 100% !important;">
-          {% comment %} <img src="{% static 'user/assets/slide21-mobile.png' %}" class="premium-cover-img"
-            alt="Sanskruti By Bani Mobile Banner"> {% endcomment %}
 
           {% if hero_image_only.mobile_image %}
           <img src="{{ hero_image_only.mobile_image.url }}" class="premium-cover-img"
@@ -457,7 +441,7 @@ HERO SLIDER (LUXURY EDITION)
 
     </div>
 
-    <!-- DOTS -->
+    <!-- DOTS (3 SLIDES) -->
     <div class="hero-dots">
       <button class="active"></button>
       <button></button>
@@ -469,164 +453,48 @@ HERO SLIDER (LUXURY EDITION)
 LUXURY EDITORIAL COLLECTIONS
 ===================================== -->
 
-  <section class="editorial-showcase">
+  <!-- =====================================
+  5 SIGNATURE SAREE CATEGORIES (LUXURY CARD FRAME SHOWCASE)
+  ===================================== -->
+  <section class="sig-editorial-section max-w-[1440px] mx-auto py-12 px-4 sm:px-6 lg:px-10">
 
     <!-- HEADING -->
-    <div class="editorial-heading">
-      <p>Curated Heritage</p>
-      <h2>Luxury Saree Collections</h2>
+    <div class="sig-editorial-header text-center mb-10 space-y-3">
+      <span class="offer-editorial-eyebrow"> HERITAGE SAREE COLLECTIONS </span>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-[#71041a] tracking-wide" style="font-family: 'Cinzel', serif;">
+        5 Signature Saree Categories
+      </h2>
+      
     </div>
 
-    <!-- GRID -->
-    <div class="luxury-editorial-grid">
+    <!-- 5-FRAME LUXURY GRID -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
 
-      <!-- FEATURED : PAITHANI -->
-      <a href="#" class="luxury-card featured-card">
-
-        <img
-          src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}"
-          alt="Paithani">
-
-        <div class="luxury-overlay"></div>
-
-        <div class="luxury-content">
-
-          <span class="luxury-tag">
-            Our Signature Collection
-          </span>
-
-          <h3>Paithani</h3>
-
-          <p>
-            Timeless Maharashtrian elegance woven with rich heritage and handcrafted artistry.
-          </p>
-
-          <div class="luxury-link">
-            Explore Collection
-            <span>↗</span>
-          </div>
-
-        </div>
-
-      </a>
-
-      <!-- KANJIVARAM -->
-      <a href="#" class="luxury-card">
-
-        <img
-          src="{% static 'user/assets/PAITHANI SAREE PHOTO/PAITHANI SAREE PHOTO/PURE SOFT KANCHIVRAM  PETHANI SILK 21.jpeg' %}"
-          alt="Kanjivaram">
+      {% for cat in signature_categories %}
+      <a href="{% if cat.whatsapp_link %}{{ cat.whatsapp_link }}{% else %}https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20explore%20your%20{{ cat.name|urlencode }}%20collection{% endif %}" target="_blank" class="luxury-card sig-lux-frame">
+        {% if cat.image %}
+        <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+        {% else %}
+          {% if forloop.counter == 1 %}<img src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}" alt="Paithani">
+          {% elif forloop.counter == 2 %}<img src="{% static 'user/assets/PAITHANI SAREE PHOTO/PAITHANI SAREE PHOTO/PURE SOFT KANCHIVRAM  PETHANI SILK 21.jpeg' %}" alt="Kanjivaram">
+          {% elif forloop.counter == 3 %}<img src="{% static 'user/assets/Banarasi Sami Katan silk/Banarasi Sami Katan silk 10.jpeg' %}" alt="Banarasi">
+          {% elif forloop.counter == 4 %}<img src="{% static 'user/assets/bandhani patola/PATOLA 1.jpeg' %}" alt="Bandhani Patola">
+          {% else %}<img src="{% static 'user/assets/designer_signature.jpg' %}" alt="Designer Saree">
+          {% endif %}
+        {% endif %}
 
         <div class="luxury-overlay"></div>
 
-        <div class="luxury-content">
+        <div class="luxury-content flex flex-col justify-end items-center text-center pb-6">
+          <h3 class="font-serif text-white text-2xl font-bold mb-3 tracking-wide" style="font-family: 'Cinzel', serif;">{{ cat.name }}</h3>
 
-          <span class="luxury-tag">
-            Temple Silk
-          </span>
-
-          <h3>Kanjivaram</h3>
-
-          <p>
-            Regal South Indian silk sarees with luxurious zari craftsmanship.
-          </p>
-
-          <div class="luxury-link">
-            Discover
+          <div class="luxury-link w-full text-center flex items-center justify-center gap-2">
+            EXPLORE THE COLLECTION
             <span>↗</span>
           </div>
-
         </div>
-
       </a>
-
-      <!-- BANARASI -->
-      <a href="#" class="luxury-card">
-
-        <img src="{% static 'user/assets/Banarasi Sami Katan silk/Banarasi Sami Katan silk 10.jpeg' %}" alt="Banarasi">
-
-        <div class="luxury-overlay"></div>
-
-        <div class="luxury-content">
-
-          <span class="luxury-tag">
-            Ethereal
-          </span>
-
-          <h3>Banarasi</h3>
-
-          <p>
-
-            Banarasi Sami Katan silk All over beautiful light golden zari minakari buti & Designer minakari Pallu and
-            Border weaving
-
-          </p>
-
-          <div class="luxury-link">
-            Price-₹2995/-
-            <span>↗</span>
-          </div>
-
-        </div>
-
-      </a>
-
-      <!-- BANDHANI PATOLA -->
-      <a href="#" class="luxury-card">
-
-        <img src="{% static 'user/assets/bandhani patola/PATOLA 1.jpeg' %}" alt="Bandhani Patola">
-
-        <div class="luxury-overlay"></div>
-
-        <div class="luxury-content">
-
-          <span class="luxury-tag">
-            Premium Craft
-          </span>
-
-          <h3>Silk Patola Saree</h3>
-
-          <p>
-            Soft silk-blend saree with a graceful sheen and elegant rich-tone body.
-            Features a vibrant Patola-inspired pallu with intricate motifs and zari woven traditional borders.
-          </p>
-
-          <div class="luxury-link">
-            Price-₹2695/-
-            <span>↗</span>
-          </div>
-
-        </div>
-
-      </a>
-
-      <!-- DESIGNER -->
-      <a href="#" class="luxury-card">
-
-        <img src="img/designer.jpg" alt="Designer Saree">
-
-        <div class="luxury-overlay"></div>
-
-        <div class="luxury-content">
-
-          <span class="luxury-tag">
-            Modern Luxury
-          </span>
-
-          <h3>Designer Sarees</h3>
-
-          <p>
-            Contemporary statement sarees crafted for weddings and grand occasions.
-          </p>
-
-          <div class="luxury-link">
-            Discover
-            <span>↗</span>
-          </div>
-
-        </div>
-
-      </a>
+      {% endfor %}
 
     </div>
 
@@ -640,14 +508,101 @@ LUXURY EDITORIAL COLLECTIONS
     <div class="memories-outer-track" id="memoriesOuterTrack">
 
       <!-- =========================
-      SLIDE 1: SWEET MEMORIES CONTENT
+      SLIDE 1: EDITORIAL FESTIVE OFFER LAYOUT
+      ========================= -->
+      <div class="memories-outer-slide">
+        <!-- EDITORIAL OFFER SECTION -->
+        <div style="padding: 16px 5% 24px; background: #faf8f4;">
+
+          <!-- HEADER -->
+          <div class="offer-editorial-header">
+            <span class="offer-editorial-eyebrow"> CURATED FESTIVE COLLECTIONS </span>
+            <h2 class="offer-editorial-heading">Exclusive Offers & Heritage Weaves</h2>
+        
+            <p class="offer-editorial-desc">Handpicked sarees for life's most beautiful moments. Each piece crafted with devotion, delivered with love.</p>
+          </div>
+
+          <!-- 3-COLUMN PALACE ARCH ROYAL GALLERY SHOWCASE -->
+          <div class="offer-editorial-wrap">
+
+            <!-- CARD 1: 50% OFF SPECIAL DEAL -->
+            <div class="offer-editorial-card">
+              <div class="offer-editorial-img-box">
+                <span class="offer-ribbon-tag">{{ memories_offer_slide.frame1_ribbon|default:"50% OFF" }}</span>
+                {% if memories_offer_slide.frame1_image %}
+                <img class="offer-editorial-img" src="{{ memories_offer_slide.frame1_image.url }}" alt="{{ memories_offer_slide.frame1_title }}">
+                {% else %}
+                <img class="offer-editorial-img" src="{% static 'user/assets/hero section slide 1.png' %}" alt="{{ memories_offer_slide.frame1_title }}">
+                {% endif %}
+              </div>
+              <div class="offer-editorial-badge-wrap">
+                <span class="offer-editorial-pill">{{ memories_offer_slide.frame1_badge|default:"SPECIAL DEAL · UP TO 50% OFF" }}</span>
+              </div>
+              <div class="offer-editorial-body">
+                <h3 class="offer-editorial-title">{{ memories_offer_slide.frame1_title|default:"Timeless Tradition Collection" }}</h3>
+                <a href="{% if memories_offer_slide.frame1_wa_link %}{{ memories_offer_slide.frame1_wa_link }}{% else %}https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20know%20about%20Up%20To%2050%25%20Off%20Special%20Offer{% endif %}" target="_blank" class="offer-editorial-cta">
+                  <i class="fa-brands fa-whatsapp"></i> Enquire Offer
+                </a>
+              </div>
+            </div>
+
+            <!-- CARD 2: 10% OFF NOW LIVE WELCOME OFFER (CENTER SPOTLIGHT ARCH) -->
+            <div class="offer-editorial-card spotlight-card">
+              <div class="offer-editorial-img-box">
+                <span class="offer-ribbon-tag">{{ memories_offer_slide.frame2_ribbon|default:"10% OFF" }}</span>
+                {% if memories_offer_slide.frame2_image %}
+                <img class="offer-editorial-img" src="{{ memories_offer_slide.frame2_image.url }}" alt="{{ memories_offer_slide.frame2_title }}">
+                {% elif memories_offer_slide.desktop_image %}
+                <img class="offer-editorial-img" src="{{ memories_offer_slide.desktop_image.url }}" alt="{{ memories_offer_slide.frame2_title }}">
+                {% else %}
+                <img class="offer-editorial-img" src="{% static 'user/assets/sweet-slide 1-1.jpeg' %}" alt="{{ memories_offer_slide.frame2_title }}">
+                {% endif %}
+              </div>
+              <div class="offer-editorial-badge-wrap">
+                <span class="offer-editorial-pill">{{ memories_offer_slide.frame2_badge|default:"✦ WELCOME OFFER · 10% OFF ✦" }}</span>
+              </div>
+              <div class="offer-editorial-body">
+                <h3 class="offer-editorial-title">{{ memories_offer_slide.frame2_title|default:"10% Off 1st Order (Code: WELCOME10)" }}</h3>
+                <a href="{% if memories_offer_slide.frame2_wa_link %}{{ memories_offer_slide.frame2_wa_link }}{% else %}https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20avail%2010%25%20Off%20Welcome%20Offer%20with%20code%20WELCOME10{% endif %}" target="_blank" class="offer-editorial-cta">
+                  <i class="fa-brands fa-whatsapp"></i> Enquire Offer
+                </a>
+              </div>
+            </div>
+
+            <!-- CARD 3: 65% OFF RAKHI FESTIVE DEAL -->
+            <div class="offer-editorial-card">
+              <div class="offer-editorial-img-box">
+                <span class="offer-ribbon-tag">{{ memories_offer_slide.frame3_ribbon|default:"65% OFF" }}</span>
+                {% if memories_offer_slide.frame3_image %}
+                <img class="offer-editorial-img" src="{{ memories_offer_slide.frame3_image.url }}" alt="{{ memories_offer_slide.frame3_title }}">
+                {% else %}
+                <img class="offer-editorial-img" src="{% static 'user/assets/rakhi-desktop.jpg' %}" alt="{{ memories_offer_slide.frame3_title }}">
+                {% endif %}
+              </div>
+              <div class="offer-editorial-badge-wrap">
+                <span class="offer-editorial-pill">{{ memories_offer_slide.frame3_badge|default:"RAKHI FESTIVE · UP TO 65% OFF" }}</span>
+              </div>
+              <div class="offer-editorial-body">
+                <h3 class="offer-editorial-title">{{ memories_offer_slide.frame3_title|default:"Happy Rakhi Festive Special" }}</h3>
+                <a href="{% if memories_offer_slide.frame3_wa_link %}{{ memories_offer_slide.frame3_wa_link }}{% else %}https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20know%20about%20Up%20To%2065%25%20Off%20Rakhi%20Offer{% endif %}" target="_blank" class="offer-editorial-cta">
+                  <i class="fa-brands fa-whatsapp"></i> Enquire Offer
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================
+      SLIDE 2: SWEET MEMORIES CUSTOMER STORY (SIDE-BY-SIDE PREVIOUS LAYOUT)
       ========================= -->
       <div class="memories-outer-slide">
         <section class="sweet-memory-section theme-{{ memories_section.background_theme|default:'dark_maroon' }}">
 
           <div class="memory-container">
 
-            <!-- LEFT -->
+            <!-- LEFT: CUSTOMER MEMORY IMAGE CAROUSEL -->
             <div class="memory-image">
               <div class="slider-window">
                 <div class="slider-track">
@@ -655,51 +610,35 @@ LUXURY EDITORIAL COLLECTIONS
                   <img src="{{ img.image.url }}">
                   {% empty %}
                   <img src="{% static 'user/assets/SPECIAL MEMORIES/CARE FOR HER DAUGHTER.JPG' %}">
-                  <img src="{% static 'user/assets/SPECIAL MEMORIES/HEART TOUCHING FEELING WITH WEDDING SAREE.JPG' %}">
                   <img src="{% static 'user/assets/SPECIAL MEMORIES/WEDDING MOMENTS WITH YELLOW PAITHANI.JPG' %}">
-                  <img src="{% static 'user/assets/SPECIAL MEMORIES/MOTHER UNBITABLE LOVE TO HER DAUGHTER.JPG' %}">
-                  <img src="{% static 'user/assets/SPECIAL MEMORIES/FOREVER SPECIAL WITH SPECIAL 9 YARD SAREE.JPG' %}">
-                  <img src="{% static 'user/assets/SPECIAL MEMORIES/HAPPY CUSTOMER.JPG' %}">
-                  <img src="{% static 'user/assets/SPECIAL MEMORIES/HAPPY CUSTOMER WITH DESIGNER SAREE.JPG' %}">
                   <img src="{% static 'user/assets/SPECIAL MEMORIES/SILK PAITHANI FOR SONS WEDDING.jpeg' %}">
-                  <img src="{% static 'user/assets/SPECIAL MEMORIES/SPECIAL MEMORIES WITH BUAUTIFUL SAREE.JPG' %}">
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/MOTHER UNBITABLE LOVE TO HER DAUGHTER.JPG' %}">
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/HEART TOUCHING FEELING WITH WEDDING SAREE.JPG' %}">
+                  <img src="{% static 'user/assets/SPECIAL MEMORIES/FOREVER SPECIAL WITH SPECIAL 9 YARD SAREE.JPG' %}">
                   {% endfor %}
                 </div>
               </div>
             </div>
 
-            <!-- RIGHT -->
+            <!-- RIGHT: STORY TEXT CONTENT -->
             <div class="memory-content">
-              <span class="memory-label">SWEET MEMORIES</span>
+              <span class="memory-label">{{ memories_section.section_label|default:"SWEET MEMORIES" }}</span>
               <h2>
                 WOVEN INTO<br>YOUR <span style="color: #e7c27a !important; font-weight: 700;">BEAUTIFUL</span><br>MOMENTS
               </h2>
               <div class="gold-line"></div>
-              <p>Some moments stay forever. A wedding morning. A family celebration. A tradition passed through generations. Our Paithani sarees become part of those unforgettable memories. At <span style="color: #e7c27a !important; font-weight: 600;">Sanskruti By Bani</span>, every weave carries heritage, every drape carries emotion, and every celebration shines a little more beautifully. Because special moments deserve something timeless.</p>
+              <p>
+                {% if memories_section.paragraph_text and memories_section.paragraph_text != 'SWEET MEMORIES' %}
+                  {{ memories_section.paragraph_text|safe|linebreaksbr }}
+                {% else %}
+                  Some moments stay forever. A wedding morning. A family celebration. A tradition passed through generations. Our Paithani sarees become part of those unforgettable memories. At <span style="color: #e7c27a !important; font-weight: 600;">Sanskruti By Bani</span>, every weave carries heritage, every drape carries emotion, and every celebration shines a little more beautifully. Because special moments deserve something timeless.
+                {% endif %}
+              </p>
             </div>
 
+          </div>
+
         </section>
-      </div>
-
-      <!-- =========================
-      SLIDE 2: SWEET MEMORIES FULL IMAGE BANNER
-      ========================= -->
-      <div class="memories-outer-slide">
-        <div class="memories-image-slide theme-{{ memories_section.background_theme|default:'dark_maroon' }}">
-          
-          {% if memories_offer_slide.desktop_image %}
-          <img src="{{ memories_offer_slide.desktop_image.url }}" class="memories-banner-img memories-banner-desktop" alt="Sweet Memories Slide 2 Desktop Banner">
-          {% else %}
-          <img src="{% static 'user/assets/rakhi-desktop.jpg' %}" class="memories-banner-img memories-banner-desktop" alt="Sweet Memories Slide 2 Desktop Banner">
-          {% endif %}
-
-          {% if memories_offer_slide.mobile_image %}
-          <img src="{{ memories_offer_slide.mobile_image.url }}" class="memories-banner-img memories-banner-mobile" alt="Sweet Memories Slide 2 Mobile Banner">
-          {% else %}
-          <img src="{% static 'user/assets/rakhi-mobile.jpg' %}" class="memories-banner-img memories-banner-mobile" alt="Sweet Memories Slide 2 Mobile Banner">
-          {% endif %}
-
-        </div>
       </div>
 
     </div>
@@ -893,7 +832,7 @@ SPECIALITY = PAITHANI
       <div class="saree-card">
 
         <div class="saree-image">
-          <img src="{% static 'user/assets/p4.jpg' %}" alt="">
+          <img src="{% static 'user/assets/paithani_signature.jpg' %}" alt="Mor Pallu Heritage Paithani">
         </div>
 
         <div class="saree-info">
@@ -916,7 +855,7 @@ SPECIALITY = PAITHANI
               ₹26,500
             </div>
 
-            <a href="#" class="saree-link">
+            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20Mor%20Pallu%20Heritage%20Paithani" target="_blank" class="saree-link">
               <i class="fa-brands fa-whatsapp"></i>
               BUY NOW
             </a>
@@ -925,6 +864,82 @@ SPECIALITY = PAITHANI
 
         </div>
 
+      </div>
+
+      <!-- SECOND ROW: CARD 5 -->
+      <div class="saree-card">
+        <div class="saree-image">
+          <img src="{% static 'user/assets/PAITHANI SAREE PHOTO/PAITHANI SAREE PHOTO/PURE SOFT KANCHIVRAM  PETHANI SILK 21.jpeg' %}" alt="Kanjivaram Silk Paithani">
+          <span class="saree-badge">Best Seller</span>
+        </div>
+        <div class="saree-info">
+          <div class="saree-category">Pure Soft Kanjivaram</div>
+          <h3 class="saree-name">Temple Border Silk Paithani</h3>
+          <div class="saree-stars">★★★★★</div>
+          <div class="saree-bottom">
+            <div class="saree-price">₹24,500</div>
+            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20Temple%20Border%20Silk%20Paithani" target="_blank" class="saree-link">
+              <i class="fa-brands fa-whatsapp"></i> BUY NOW
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECOND ROW: CARD 6 -->
+      <div class="saree-card">
+        <div class="saree-image">
+          <img src="{% static 'user/assets/bandhani_signature.jpg' %}" alt="Royal Bandhani Patola">
+          <span class="saree-badge">Trending</span>
+        </div>
+        <div class="saree-info">
+          <div class="saree-category">Royal Bandhani Craft</div>
+          <h3 class="saree-name">Gold Zari Bandhani Patola</h3>
+          <div class="saree-stars">★★★★★</div>
+          <div class="saree-bottom">
+            <div class="saree-price">₹19,800</div>
+            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20Gold%20Zari%20Bandhani%20Patola" target="_blank" class="saree-link">
+              <i class="fa-brands fa-whatsapp"></i> BUY NOW
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECOND ROW: CARD 7 -->
+      <div class="saree-card">
+        <div class="saree-image">
+          <img src="{% static 'user/assets/Banarasi Sami Katan silk/Banarasi Sami Katan silk 10.jpeg' %}" alt="Banarasi Katan Silk">
+          <span class="saree-badge">Royal Edition</span>
+        </div>
+        <div class="saree-info">
+          <div class="saree-category">Banarasi Katan Silk</div>
+          <h3 class="saree-name">Katan Weave Heritage Saree</h3>
+          <div class="saree-stars">★★★★★</div>
+          <div class="saree-bottom">
+            <div class="saree-price">₹28,900</div>
+            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20Katan%20Weave%20Heritage%20Saree" target="_blank" class="saree-link">
+              <i class="fa-brands fa-whatsapp"></i> BUY NOW
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECOND ROW: CARD 8 -->
+      <div class="saree-card">
+        <div class="saree-image">
+          <img src="{% static 'user/assets/designer_signature.jpg' %}" alt="Organza Designer Luxury">
+          <span class="saree-badge">New Arrival</span>
+        </div>
+        <div class="saree-info">
+          <div class="saree-category">Organza Silk Modern</div>
+          <h3 class="saree-name">Modern Luxury Designer Saree</h3>
+          <div class="saree-stars">★★★★★</div>
+          <div class="saree-bottom">
+            <div class="saree-price">₹16,500</div>
+            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20Modern%20Luxury%20Designer%20Saree" target="_blank" class="saree-link">
+              <i class="fa-brands fa-whatsapp"></i> BUY NOW
+            </a>
+          </div>
+        </div>
       </div>
 
       <!-- CARD 5 -->
@@ -965,8 +980,47 @@ SPECIALITY = PAITHANI
         </div>
 
       </div>
+<div class="saree-card">
 
+        <div class="saree-image">
+          <img
+            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/PICHWAI NATURE SAREE/PICHWAI NATURE INSPIRED SAREE 10.jpeg' %}"
+            alt="">
+          <span class="saree-badge">Best Seller</span>
+        </div>
+
+        <div class="saree-info">
+
+          <div class="saree-category">
+            Pure Silk Paithani
+          </div>
+
+          <h3 class="saree-name">
+            Royal Peacock Paithani
+          </h3>
+
+          <div class="saree-stars">
+            ★★★★★
+          </div>
+
+          <div class="saree-bottom">
+
+            <div class="saree-price">
+              ₹18,500
+            </div>
+
+            <a href="#" class="saree-link">
+              <i class="fa-brands fa-whatsapp"></i>
+              BUY NOW
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
     </div>
+    
 
     <!-- VIEW ALL BUTTON (BOTTOM RIGHT) -->
     <div class="flex justify-end mt-10 w-full relative z-10 pr-2 lg:pr-0">

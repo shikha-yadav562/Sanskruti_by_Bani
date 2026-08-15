@@ -73,6 +73,11 @@ urlpatterns = [
     path("website-builder/memory-images/<int:pk>/", views.memory_image_delete, name="memory_image_delete"),
     path("website-builder/memory-images/reorder/", views.memory_images_reorder, name="memory_images_reorder"),
 
+    # Signature Categories management (5 Signature Saree Categories)
+    path("website-builder/signature-categories/", views.signature_categories_api, name="signature_categories_api"),
+    path("website-builder/signature-categories/<int:pk>/edit/", views.signature_category_edit, name="signature_category_edit"),
+    path("website-builder/signature-categories/<int:pk>/delete/", views.signature_category_delete, name="signature_category_delete"),
+
     # Customer Reviews Management
     path("reviews/", views.reviews_management, name="reviews_management"),
     path("reviews/approve/<int:pk>/", views.approve_review, name="approve_review"),

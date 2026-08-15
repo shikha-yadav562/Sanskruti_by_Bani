@@ -24,7 +24,11 @@ def dashboard(request):
 
 # Views For CATEGORY
 def categories(request):
-    return render(request, 'adm_user/categories.html')
+    from .models import SignatureCategoryItem
+    context = {
+        "signature_categories": SignatureCategoryItem.objects.all(),
+    }
+    return render(request, 'adm_user/categories.html', context)
 
 
 @require_http_methods(["GET", "POST"])
@@ -703,6 +707,7 @@ def _validate_image_file(f):
  
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 def website_builder(request):
+    from .models import SignatureCategoryItem
     context = {
         "hero_main": HeroSlideMain.load(),
         "hero_image_only": HeroSlideImageOnly.load(),
@@ -715,6 +720,7 @@ def website_builder(request):
         "header": HeaderSettings.load(),
         "footer": FooterSettings.load(),
         "about": AboutUsSection.load(),
+        "signature_categories": SignatureCategoryItem.objects.all(),
     }
     return render(request, "adm_user/website_builder.html", context)
  
@@ -831,8 +837,20 @@ def save_memories_offer_slide(request):
     try:
         with transaction.atomic():
             slide = MemoriesOfferSlide.load()
+            _save_singleton_text_fields(
+                slide,
+                request.POST,
+                [
+                    "frame1_title", "frame1_badge", "frame1_ribbon", "frame1_wa_link",
+                    "frame2_title", "frame2_badge", "frame2_ribbon", "frame2_wa_link",
+                    "frame3_title", "frame3_badge", "frame3_ribbon", "frame3_wa_link",
+                ]
+            )
             _save_singleton_image(slide, request.FILES, "desktop_image")
             _save_singleton_image(slide, request.FILES, "mobile_image")
+            _save_singleton_image(slide, request.FILES, "frame1_image")
+            _save_singleton_image(slide, request.FILES, "frame2_image")
+            _save_singleton_image(slide, request.FILES, "frame3_image")
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
     return JsonResponse({"saved": True})
@@ -1079,6 +1097,93 @@ def delete_review(request, pk):
     review = get_object_or_404(ProductReview, pk=pk)
     review.delete()
     return JsonResponse({"deleted": True})
- 
-    return JsonResponse({"reordered": True})
+
+
+# ---------------------------------------------------------------------
+# SIGNATURE CATEGORIES MANAGEMENT (5 SIGNATURE SAREE CATEGORIES)
+# ---------------------------------------------------------------------
+
+@require_http_methods(["GET", "POST"])
+def signature_categories_api(request):
+    from .models import SignatureCategoryItem
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip()
+        badge_text = request.POST.get("badge_text", "").strip()
+        origin_craft = request.POST.get("origin_craft", "").strip()
+        whatsapp_link = request.POST.get("whatsapp_link", "").strip()
+        display_order = request.POST.get("display_order", 0)
+
+        if not name:
+            return JsonResponse({"error": "Category name is required."}, status=400)
+
+        item = SignatureCategoryItem.objects.create(
+            name=name,
+            badge_text=badge_text,
+            origin_craft=origin_craft,
+            whatsapp_link=whatsapp_link,
+            display_order=int(display_order or 0),
+        )
+
+        if "image" in request.FILES:
+            item.image = request.FILES["image"]
+            item.save()
+
+        return JsonResponse({
+            "id": item.id,
+            "name": item.name,
+            "badge_text": item.badge_text,
+            "origin_craft": item.origin_craft,
+            "whatsapp_link": item.whatsapp_link,
+            "image_url": item.image.url if item.image else "",
+        })
+
+    categories = SignatureCategoryItem.objects.all()
+    data = [{
+        "id": c.id,
+        "name": c.name,
+        "badge_text": c.badge_text,
+        "origin_craft": c.origin_craft,
+        "whatsapp_link": c.whatsapp_link,
+        "image_url": c.image.url if c.image else "",
+        "display_order": c.display_order,
+    } for c in categories]
+    return JsonResponse({"categories": data})
+
+
+@require_http_methods(["POST"])
+def signature_category_edit(request, pk):
+    from .models import SignatureCategoryItem
+    item = get_object_or_404(SignatureCategoryItem, pk=pk)
+
+    if "name" in request.POST:
+        item.name = request.POST.get("name", "").strip()
+    if "badge_text" in request.POST:
+        item.badge_text = request.POST.get("badge_text", "").strip()
+    if "origin_craft" in request.POST:
+        item.origin_craft = request.POST.get("origin_craft", "").strip()
+    if "whatsapp_link" in request.POST:
+        item.whatsapp_link = request.POST.get("whatsapp_link", "").strip()
+    if "display_order" in request.POST:
+        item.display_order = int(request.POST.get("display_order", 0) or 0)
+    if "image" in request.FILES:
+        item.image = request.FILES["image"]
+
+    item.save()
+    return JsonResponse({
+        "id": item.id,
+        "name": item.name,
+        "badge_text": item.badge_text,
+        "origin_craft": item.origin_craft,
+        "whatsapp_link": item.whatsapp_link,
+        "image_url": item.image.url if item.image else "",
+    })
+
+
+@require_http_methods(["POST", "DELETE"])
+def signature_category_delete(request, pk):
+    from .models import SignatureCategoryItem
+    item = get_object_or_404(SignatureCategoryItem, pk=pk)
+    item.delete()
+    return JsonResponse({"deleted": True})
+
  

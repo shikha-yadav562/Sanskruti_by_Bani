@@ -3,7 +3,8 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from adm_user.models import AboutUsSection, HeroSlideOffer, HeroSlideMain, HeroSlideImageOnly, HeaderSettings, OfferBarItem, FooterSettings, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3
+from .forms import SignupForm, LoginForm
+from adm_user.models import AboutUsSection, HeroSlideOffer, HeroSlideMain, HeroSlideImageOnly, HeaderSettings, OfferBarItem, FooterSettings, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, SignatureCategoryItem
 
 # Create your views here.
 from django.db.models import Avg, Count
@@ -24,6 +25,7 @@ def index(request):
         "memory_images": SweetMemoryImage.objects.all(),
         "memories_offer_slide": MemoriesOfferSlide.load(),
         "memories_slide3": MemoriesSlide3.load(),
+        "signature_categories": SignatureCategoryItem.objects.filter(is_active=True),
     }
     return render(request, 'user/index.html', context)
 

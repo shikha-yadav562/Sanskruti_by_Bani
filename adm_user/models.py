@@ -490,6 +490,26 @@ class HeroSlideOffer(SingletonModel):
 
 
 # ---------------------------------------------------------------------
+# 5 SIGNATURE SAREE CATEGORIES
+# ---------------------------------------------------------------------
+
+class SignatureCategoryItem(TimeStampedModel):
+    name = models.CharField(max_length=100)
+    badge_text = models.CharField(max_length=100, blank=True)
+    origin_craft = models.CharField(max_length=100, blank=True)
+    image = models.ImageField(upload_to="website/signature/", blank=True)
+    whatsapp_link = models.CharField(max_length=500, blank=True)
+    display_order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["display_order"]
+
+    def __str__(self):
+        return self.name
+
+
+# ---------------------------------------------------------------------
 # SWEET MEMORIES
 # ---------------------------------------------------------------------
 
@@ -530,7 +550,7 @@ class SweetMemoryImage(TimeStampedModel):
 
 class MemoriesOfferSlide(SingletonModel):
     """
-    Slide 2 of Sweet Memories — Full Image Banner (Desktop & Mobile).
+    Slide 1 of Sweet Memories — 3 Festive Offer Frame Images.
     """
 
     desktop_image = models.ImageField(
@@ -539,9 +559,56 @@ class MemoriesOfferSlide(SingletonModel):
     mobile_image = models.ImageField(
         upload_to="website/memories_slide2/mobile/", blank=True
     )
+    frame1_image = models.ImageField(
+        upload_to="website/memories_slide1/frame1/", blank=True
+    )
+    frame1_title = models.CharField(
+        max_length=255, default="Timeless Tradition Collection", blank=True
+    )
+    frame1_badge = models.CharField(
+        max_length=100, default="SPECIAL DEAL · UP TO 50% OFF", blank=True
+    )
+    frame1_ribbon = models.CharField(
+        max_length=50, default="50% OFF", blank=True
+    )
+    frame1_wa_link = models.CharField(
+        max_length=500, default="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20know%20about%20Up%20To%2050%25%20Off%20Special%20Offer", blank=True
+    )
+
+    frame2_image = models.ImageField(
+        upload_to="website/memories_slide1/frame2/", blank=True
+    )
+    frame2_title = models.CharField(
+        max_length=255, default="10% Off 1st Order (Code: WELCOME10)", blank=True
+    )
+    frame2_badge = models.CharField(
+        max_length=100, default="✦ WELCOME OFFER · 10% OFF ✦", blank=True
+    )
+    frame2_ribbon = models.CharField(
+        max_length=50, default="10% OFF", blank=True
+    )
+    frame2_wa_link = models.CharField(
+        max_length=500, default="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20avail%2010%25%20Off%20Welcome%20Offer%20with%20code%20WELCOME10", blank=True
+    )
+
+    frame3_image = models.ImageField(
+        upload_to="website/memories_slide1/frame3/", blank=True
+    )
+    frame3_title = models.CharField(
+        max_length=255, default="Happy Rakhi Festive Special", blank=True
+    )
+    frame3_badge = models.CharField(
+        max_length=100, default="RAKHI FESTIVE · UP TO 65% OFF", blank=True
+    )
+    frame3_ribbon = models.CharField(
+        max_length=50, default="65% OFF", blank=True
+    )
+    frame3_wa_link = models.CharField(
+        max_length=500, default="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20know%20about%20Up%20To%2065%25%20Off%20Rakhi%20Offer", blank=True
+    )
 
     def __str__(self):
-        return "Sweet Memories Slide 2 (Image Banner)"
+        return "Sweet Memories Slide 1 (3 Offer Frames)"
 
 
 class MemoriesSlide3(SingletonModel):
