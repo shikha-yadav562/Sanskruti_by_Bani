@@ -15,6 +15,8 @@ urlpatterns = [
     # path('logout/', views.logout_view, name='logout'),
     path('review/submit/', views.submit_review, name='submit_review'),
     path('review/helpful/<int:review_id>/', views.toggle_review_helpful, name='toggle_review_helpful'),
+
+    
     
     #---------------LOGIN AND SIGNUP-------------
     # Pages

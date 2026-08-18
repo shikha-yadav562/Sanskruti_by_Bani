@@ -58,7 +58,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         </div>
         <div class="flex gap-3">
             <button
-                class="flex items-center gap-2 bg-white dark:bg-dark-panel border border-slate-200 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl font-medium transition-all">
+                class="flex items-center gap-2 bg-white dark:bg-dark-panel border border-slate-200 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl font-medium transition-all" type="button" onclick="exportProducts()">
                 <i class="ph ph-export"></i> Export
             </button>
             <button onclick="showAddProductPage()"
@@ -151,6 +151,8 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                     </td>
                     <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">₹{{ p.base_price|floatformat:0 }}</td>
                     <td class="p-4">
+                        <div class="stock-cell" data-slug="{{ p.slug }}" data-qty="{{ p.stock_quantity }}">
+        <span class="stock-badge cursor-pointer" onclick="startStockEdit(this)" title="Click to edit stock">
                         {% if p.stock_quantity == 0 %}
                         <span
                             class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border border-red-200 dark:border-red-800">
@@ -167,6 +169,8 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {{ p.stock_quantity }} in stock
                         </span>
                         {% endif %}
+                        </span>
+                    </div>
                     </td>
                     <td class="p-4 text-right">
                         <a href="{% url 'adm_user:update' p.slug %}" class="text-slate-400 hover:text-brand-maroon p-1 inline-block"><i
@@ -574,22 +578,122 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
 {% block extra_scripts %}
 <script>
 
-    window.applyProductFilters = function () {
-    const category = document.getElementById('filterCategory').value;
-    const stock = document.getElementById('filterStock').value;
-    const search = document.getElementById('filterSearch').value.trim().toLowerCase();
+    window.exportProducts = function () {
+        const category = document.getElementById('filterCategory').value;
+        const stock = document.getElementById('filterStock').value;
+        const search = document.getElementById('filterSearch').value.trim();
 
-    document.querySelectorAll('#view-products tbody tr[data-category]').forEach(row => {
+        const params = new URLSearchParams();
+        if (category) params.set('category', category);
+        if (stock) params.set('stock', stock);
+        if (search) params.set('search', search);
+
+        const query = params.toString();
+        window.location.href = "{% url 'adm_user:products_export' %}" + (query ? '?' + query : '');
+    };
+
+    window.applyProductFilters = function () {
+        const category = document.getElementById('filterCategory').value;
+        const stock = document.getElementById('filterStock').value;
+        const search = document.getElementById('filterSearch').value.trim().toLowerCase();
+
+        document.querySelectorAll('#view-products tbody tr[data-category]').forEach(row => {
         const matchesCategory = !category || row.dataset.category === category;
         const matchesStock = !stock || row.dataset.stock === stock;
         const matchesSearch = !search || row.dataset.search.includes(search);
         row.classList.toggle('hidden', !(matchesCategory && matchesStock && matchesSearch));
-    });
-};
+        });
+    };
 
-document.getElementById('filterCategory').addEventListener('change', applyProductFilters);
-document.getElementById('filterStock').addEventListener('change', applyProductFilters);
-document.getElementById('filterSearch').addEventListener('input', applyProductFilters);
+    document.getElementById('filterCategory').addEventListener('change', applyProductFilters);
+    document.getElementById('filterStock').addEventListener('change', applyProductFilters);
+    document.getElementById('filterSearch').addEventListener('input', applyProductFilters);
+
+
+    // ---- Inline stock editing ----
+    function getCookie(name) {
+        const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return match ? match.pop() : '';
+    }
+
+    window.startStockEdit = function (badgeEl) {
+        const cell = badgeEl.closest('.stock-cell');
+        if (cell.querySelector('.stock-edit-input')) return; // already editing
+
+        const currentQty = cell.dataset.qty;
+        badgeEl.classList.add('hidden');
+
+        const wrap = document.createElement('div');
+        wrap.className = 'flex items-center gap-1.5';
+        wrap.innerHTML = `
+            <input type="number" min="0" value="${currentQty}"
+                class="stock-edit-input w-20 px-2 py-1 text-sm rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-maroon/30 focus:border-brand-maroon">
+            <button type="button" class="stock-save-btn text-emerald-600    hover:text-emerald-700 p-1"><i class="ph ph-check text-lg"></i></button>
+            <button type="button" class="stock-cancel-btn text-slate-400 hover:text-red-500 p-1"><i class="ph ph-x text-lg"></i></button>
+            `;
+        cell.appendChild(wrap);
+
+        const input = wrap.querySelector('.stock-edit-input');
+        input.focus();
+        input.select();
+
+        const cleanup = () => { wrap.remove(); badgeEl.classList.remove('hidden'); };
+
+        wrap.querySelector('.stock-cancel-btn').addEventListener('click', cleanup);
+        wrap.querySelector('.stock-save-btn').addEventListener('click', () => saveStock(cell, input.value, cleanup));
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') saveStock(cell, input.value, cleanup);
+            if (e.key === 'Escape') cleanup();
+        });
+    };
+
+    function saveStock(cell, value, cleanup) {
+        const qty = parseInt(value, 10);
+        if (isNaN(qty) || qty < 0) {
+            alert('Enter a valid stock quantity.');
+            return;
+        }
+
+        const slug = cell.dataset.slug;
+        const url = window.productStockUpdateUrlTemplate.replace('__SLUG__', slug);
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({ stock_quantity: qty }),
+        })
+        .then(res => res.json().then(data => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+            if (!ok || !data.ok) {
+                alert(data.error || 'Could not update stock.');
+                return;
+            }
+            renderStockBadge(cell, data.stock_quantity, data.stock_status);
+            cleanup();
+        })
+        .catch(() => alert('Could not update stock. Please try again.'));
+    }
+
+    function renderStockBadge(cell, qty, status) {
+        cell.dataset.qty = qty;
+        cell.closest('tr').dataset.stock = status;
+
+        const styles = {
+            out: { cls: 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border-red-200 dark:border-red-800', dot: 'bg-red-500', label: 'Out of stock' },
+            low: { cls: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-800', dot: 'bg-amber-500', label: `${qty} in stock` },
+            in: { cls: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800', dot: 'bg-emerald-500', label: `${qty} in stock` },
+        }[status];
+
+        const badge = cell.querySelector('.stock-badge');
+        badge.innerHTML = `
+            <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border ${styles.cls}">
+                <span class="w-1.5 h-1.5 rounded-full ${styles.dot}"></span> ${styles.label}
+            </span>
+        `;
+    }
 
     window.showAddProductPage = function () {
         document.getElementById('view-products').classList.add('hidden');
@@ -597,6 +701,7 @@ document.getElementById('filterSearch').addEventListener('input', applyProductFi
     };
 
     window.editProductDetailUrl = "{% if product %}{% url 'adm_user:detail' product.slug %}{% endif %}";
+    window.productStockUpdateUrlTemplate = "{% url 'adm_user:product_stock_update' '__SLUG__' %}";
 
     window.hideAddProductPage = function () {
         if (window.editProductDetailUrl) {
@@ -717,10 +822,10 @@ document.getElementById('filterSearch').addEventListener('input', applyProductFi
     }
 
     document.querySelectorAll('.message-toast').forEach(function (el) {
-    setTimeout(function () {
-        el.classList.add('message-toast-hide');
-        setTimeout(function () { el.remove(); }, 300);
-    }, 3000);
-});
+        setTimeout(function () {
+            el.classList.add('message-toast-hide');
+            setTimeout(function () { el.remove(); }, 300);
+        }, 3000);
+    });
 </script>
 {% endblock %}

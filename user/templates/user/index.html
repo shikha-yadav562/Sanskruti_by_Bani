@@ -623,8 +623,8 @@ LUXURY EDITORIAL COLLECTIONS
             <!-- RIGHT: STORY TEXT CONTENT -->
             <div class="memory-content">
               <span class="memory-label">{{ memories_section.section_label|default:"SWEET MEMORIES" }}</span>
-              <h2>
-                WOVEN INTO<br>YOUR <span style="color: #e7c27a !important; font-weight: 700;">BEAUTIFUL</span><br>MOMENTS
+              <h2 style="color: #e7c27a !important; font-weight: 700;">
+                {{ memories_section.main_heading|safe|linebreaksbr }}
               </h2>
               <div class="gold-line"></div>
               <p>
@@ -1230,7 +1230,7 @@ LUXURY FOOTER SECTION
         <a href="{% url 'user:return_refund_policy' %}">Return & Refund Policy</a>
         <a href="{% url 'user:terms_conditions' %}">Terms and Conditions</a>
         <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
-        <a href="#">Wholesale Inquiry</a>
+        {% comment %} <a href="#">Wholesale Inquiry</a> {% endcomment %}
 
       </div>
 
@@ -1264,7 +1264,7 @@ LUXURY FOOTER SECTION
     </div>
 
     <!-- NEWSLETTER -->
-    <div class="footer-newsletter">
+    {% comment %} <div class="footer-newsletter">
 
       <div>
         <h3>Join Our Heritage Circle</h3>
@@ -1283,7 +1283,7 @@ LUXURY FOOTER SECTION
 
       </form>
 
-    </div>
+    </div> {% endcomment %}
 
     <!-- BOTTOM -->
     <div class="footer-bottom">

@@ -42,6 +42,9 @@ urlpatterns = [
     path("product/<slug:slug>/delete/", views.product_delete, name="delete"),
     path('product/<slug:slug>/', views.product_detail, name='detail'),
 
+    path('products/export/', views.products_export, name='products_export'),
+    path('products/<slug:slug>/stock/', views.product_stock_update, name='product_stock_update'),
+
     path('img_manager/', views.img_manager, name='img_manager'),
     path('website-builder/', views.website_builder, name='website_builder'),
     path('coming_soon/', views.coming_soon, name='coming_soon'),
