@@ -12,7 +12,7 @@ from django.utils.text import get_valid_filename
 from django.views.decorators.http import require_http_methods
 from django.core.validators import get_available_image_extensions
 
-from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage, HeroSlideMain, HeroSlideImageOnly, HeroSlideOffer, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, OfferBarItem, HeaderSettings, FooterSettings, AboutUsSection
+from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage, HeroSlideMain, HeroSlideImageOnly, HeroSlideOffer, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, OfferBarItem, HeaderSettings, FooterSettings, AboutUsSection,SignatureCategoryItem
 
 # Create your views here.
 def index(request):
@@ -463,7 +463,7 @@ def _save_uploaded_image(request, file_obj):
 
 def _product_form_context(product=None):
     context = {
-        "categories": Category.objects.filter(is_active=True),
+        "categories": SignatureCategoryItem.objects.filter(is_active=True),
         "fabrics": Fabric.objects.filter(is_active=True),
         "prints": Print.objects.filter(is_active=True),
         "colors": Color.objects.filter(is_active=True),
@@ -496,7 +496,7 @@ def _save_product_fields(product, request):
     category_id = post.get("category")
     if not category_id:
         raise ValueError("Category is required.")
-    product.category = get_object_or_404(Category, pk=category_id, is_active=True)
+    product.category = get_object_or_404(SignatureCategoryItem, pk=category_id, is_active=True)
 
     fabric_id = post.get("fabric")
     if not fabric_id:
@@ -768,9 +768,13 @@ def _save_singleton_image(instance, files, field_name):
     if not f:
         return
     _validate_image_file(f)
+
+    old_file = getattr(instance, field_name)
+    if old_file:
+        old_file.delete(save=False)   # remove old file from media/ so a new one doesn't get suffixed
+
     setattr(instance, field_name, f)
     instance.save()
- 
  
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["POST"])
