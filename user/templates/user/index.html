@@ -181,38 +181,39 @@
 
           <!-- MEGA MENU -->
           <div class="mega-menu">
-
+            {% for cat in nav_categories %}
+            <div class="mega-col">
+              <h4>{{ cat.name }}</h4>
+              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore Sarees</a>
+              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">New Arrivals</a>
+            </div>
+            {% empty %}
             <div class="mega-col">
               <h4>Banarasi</h4>
-              <a href="#">Katan Silk</a>
-              <a href="#">Organza</a>
-              <a href="#">Tissue</a>
+              <a href="{% url 'user:catalogue' %}">Katan Silk</a>
+              <a href="{% url 'user:catalogue' %}">Organza</a>
             </div>
-
             <div class="mega-col">
               <h4>Paithani</h4>
-              <a href="#">Traditional</a>
-              <a href="#">Lotus</a>
+              <a href="{% url 'user:catalogue' %}">Traditional</a>
+              <a href="{% url 'user:catalogue' %}">Lotus</a>
             </div>
-
             <div class="mega-col">
               <h4>Patola</h4>
-              <a href="#">Rajkot</a>
-              <a href="#">Double Ikat</a>
+              <a href="{% url 'user:catalogue' %}">Rajkot</a>
+              <a href="{% url 'user:catalogue' %}">Double Ikat</a>
             </div>
-
             <div class="mega-col">
               <h4>Bandhani</h4>
-              <a href="#">Leheriya</a>
-              <a href="#">Gharchola</a>
+              <a href="{% url 'user:catalogue' %}">Leheriya</a>
+              <a href="{% url 'user:catalogue' %}">Gharchola</a>
             </div>
-
             <div class="mega-col">
               <h4>Kanjivaram</h4>
-              <a href="#">Temple Border</a>
-              <a href="#">Soft Silk</a>
+              <a href="{% url 'user:catalogue' %}">Temple Border</a>
+              <a href="{% url 'user:catalogue' %}">Soft Silk</a>
             </div>
-
+            {% endfor %}
           </div>
 
         </div>
@@ -262,9 +263,9 @@
     <!-- LINKS -->
     <div class="mobile-links">
 
-      <a href="#">Home</a>
+      <a href="{% url 'user:index' %}">Home</a>
 
-      <!-- MOBILE COLLECTION -->
+      <!-- DROPDOWN -->
       <div class="mobile-dropdown">
 
         <div class="mobile-dropdown-head" id="mobileCollectionBtn">
@@ -278,27 +279,21 @@
         </div>
 
         <div class="mobile-dropdown-body">
-
+          {% for cat in nav_categories %}
+          <h5>{{ cat.name }}</h5>
+          <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore {{ cat.name }}</a>
+          {% empty %}
           <h5>Banarasi</h5>
-          <a href="#">Katan Silk</a>
-          <a href="#">Organza</a>
-
+          <a href="{% url 'user:catalogue' %}">Katan Silk</a>
           <h5>Paithani</h5>
-          <a href="#">Traditional</a>
-          <a href="#">Lotus</a>
-
+          <a href="{% url 'user:catalogue' %}">Traditional</a>
           <h5>Patola</h5>
-          <a href="#">Rajkot</a>
-          <a href="#">Double Ikat</a>
-
+          <a href="{% url 'user:catalogue' %}">Rajkot</a>
           <h5>Bandhani</h5>
-          <a href="#">Leheriya</a>
-          <a href="#">Gharchola</a>
-
+          <a href="{% url 'user:catalogue' %}">Leheriya</a>
           <h5>Kanjivaram</h5>
-          <a href="#">Temple Border</a>
-          <a href="#">Soft Silk</a>
-
+          <a href="{% url 'user:catalogue' %}">Temple Border</a>
+          {% endfor %}
         </div>
 
       </div>
