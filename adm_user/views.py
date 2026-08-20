@@ -12,7 +12,7 @@ from django.utils.text import get_valid_filename
 from django.views.decorators.http import require_http_methods
 from django.core.validators import get_available_image_extensions
 
-from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage, HeroSlideMain, HeroSlideImageOnly, HeroSlideOffer, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, OfferBarItem, HeaderSettings, FooterSettings, AboutUsSection
+from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage, HeroSlideMain, HeroSlideImageOnly, HeroSlideOffer, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, OfferBarItem, HeaderSettings, FooterSettings, AboutUsSection,SignatureCategoryItem
 
 # Create your views here.
 def index(request):
@@ -463,7 +463,7 @@ def _save_uploaded_image(request, file_obj):
 
 def _product_form_context(product=None):
     context = {
-        "categories": Category.objects.filter(is_active=True),
+        "categories": SignatureCategoryItem.objects.filter(is_active=True),
         "fabrics": Fabric.objects.filter(is_active=True),
         "prints": Print.objects.filter(is_active=True),
         "colors": Color.objects.filter(is_active=True),
@@ -496,7 +496,7 @@ def _save_product_fields(product, request):
     category_id = post.get("category")
     if not category_id:
         raise ValueError("Category is required.")
-    product.category = get_object_or_404(Category, pk=category_id, is_active=True)
+    product.category = get_object_or_404(SignatureCategoryItem, pk=category_id, is_active=True)
 
     fabric_id = post.get("fabric")
     if not fabric_id:
@@ -664,6 +664,106 @@ def product_delete(request, slug):
         return JsonResponse({"ok": True, "id": product_id})
     return redirect("adm_user:products")
 
+@require_http_methods(["GET"])
+def products_export(request):
+    """
+    Exports the product catalog as a CSV file.
+    Honours the same filters as the on-page table (category, stock, search)
+    when they're passed as query params, e.g. ?category=3&stock=low&search=silk
+    """
+    import csv
+    from django.http import HttpResponse
+    from django.db.models import Q
+
+    qs = Product.objects.filter(is_active=True).select_related("category", "fabric", "print_type")
+
+    category_id = request.GET.get("category")
+    if category_id:
+        qs = qs.filter(category_id=category_id)
+
+    stock = request.GET.get("stock")
+    if stock == "out":
+        qs = qs.filter(stock_quantity=0)
+    elif stock == "low":
+        qs = qs.filter(stock_quantity__gt=0, stock_quantity__lt=5)
+    elif stock == "in":
+        qs = qs.filter(stock_quantity__gte=5)
+
+    search = request.GET.get("search")
+    if search:
+        qs = qs.filter(Q(name__icontains=search) | Q(product_code__icontains=search))
+
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = 'attachment; filename="products_export.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow([
+        "Name", "Product Code", "Category", "Fabric", "Print Type",
+        "Base Price", "Discount Price", "Stock Quantity", "Stock Status", "Active",
+    ])
+    for p in qs:
+        if p.stock_quantity == 0:
+            stock_status = "Out of Stock"
+        elif p.stock_quantity < 5:
+            stock_status = "Low Stock"
+        else:
+            stock_status = "In Stock"
+
+        writer.writerow([
+            p.name,
+            p.product_code or "",
+            p.category.name if p.category else "",
+            p.fabric.name if p.fabric else "",
+            p.print_type.name if p.print_type else "",
+            p.base_price,
+            p.discount_price if p.discount_price is not None else "",
+            p.stock_quantity,
+            stock_status,
+            "Yes" if p.is_active else "No",
+        ])
+
+    return response
+
+@require_http_methods(["POST"])
+def product_stock_update(request, slug):
+    """
+    Inline stock edit from the products list.
+    Body: {"stock_quantity": 12}
+    """
+    product = get_object_or_404(Product, slug=slug)
+
+    try:
+        payload = json.loads(request.body)
+        new_stock = int(payload.get("stock_quantity"))
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return JsonResponse({"ok": False, "error": "Enter a valid stock quantity."}, status=400)
+
+    if new_stock < 0:
+        return JsonResponse({"ok": False, "error": "Stock can't be negative."}, status=400)
+
+    product.stock_quantity = new_stock
+    try:
+        product.full_clean(validate_unique=False)
+        product.save(update_fields=["stock_quantity"])
+    except ValidationError as e:
+        return JsonResponse({"ok": False, "error": " ".join(e.messages)}, status=400)
+
+    if new_stock == 0:
+        stock_status = "out"
+    elif new_stock < 5:
+        stock_status = "low"
+    else:
+        stock_status = "in"
+
+    return JsonResponse({
+        "ok": True,
+        "id": product.id,
+        "stock_quantity": product.stock_quantity,
+        "stock_status": stock_status,
+    })
+
+
+
 def img_manager(request):
     return render(request, 'adm_user/image_manager.html')
 
@@ -768,9 +868,13 @@ def _save_singleton_image(instance, files, field_name):
     if not f:
         return
     _validate_image_file(f)
+
+    old_file = getattr(instance, field_name)
+    if old_file:
+        old_file.delete(save=False)   # remove old file from media/ so a new one doesn't get suffixed
+
     setattr(instance, field_name, f)
     instance.save()
- 
  
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["POST"])

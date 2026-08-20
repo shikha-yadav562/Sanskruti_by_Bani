@@ -111,7 +111,36 @@ class Category(SlugMixin, TimeStampedModel):
 
     def __str__(self):
         return self.name
+    
+    
 
+# ---------------------------------------------------------------------
+# 5 SIGNATURE SAREE CATEGORIES
+# ---------------------------------------------------------------------
+from django.db.models.functions import Lower   # add at top of models.py if not already imported
+
+class SignatureCategoryItem(SlugMixin, TimeStampedModel):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
+    badge_text = models.CharField(max_length=100, blank=True)
+    origin_craft = models.CharField(max_length=100, blank=True)
+    image = models.ImageField(upload_to="website/signature/", blank=True)
+    whatsapp_link = models.CharField(max_length=500, blank=True)
+    display_order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["display_order"]
+        constraints = [
+            models.UniqueConstraint(
+                Lower("name"),
+                name="unique_signature_category_name_ci",
+                violation_error_message="This category already exists.",
+            ),
+        ]
+
+    def __str__(self):
+        return self.name
 
 class Color(SlugMixin, TimeStampedModel):
     name = models.CharField(max_length=50)
@@ -216,9 +245,10 @@ class Product(SlugMixin, TimeStampedModel):
     slug = models.SlugField(max_length=220, unique=True, blank=True)
     description = models.TextField(blank=True)
     category = models.ForeignKey(
-        Category,
+        SignatureCategoryItem,   # was: Category
         related_name="products",
         on_delete=models.PROTECT,
+        
     )
     product_code = models.CharField(
         max_length=50,
@@ -489,24 +519,8 @@ class HeroSlideOffer(SingletonModel):
         return "Hero Slide 1 (Offer Image Banner)"
 
 
-# ---------------------------------------------------------------------
-# 5 SIGNATURE SAREE CATEGORIES
-# ---------------------------------------------------------------------
 
-class SignatureCategoryItem(TimeStampedModel):
-    name = models.CharField(max_length=100)
-    badge_text = models.CharField(max_length=100, blank=True)
-    origin_craft = models.CharField(max_length=100, blank=True)
-    image = models.ImageField(upload_to="website/signature/", blank=True)
-    whatsapp_link = models.CharField(max_length=500, blank=True)
-    display_order = models.PositiveIntegerField(default=0)
-    is_active = models.BooleanField(default=True)
 
-    class Meta:
-        ordering = ["display_order"]
-
-    def __str__(self):
-        return self.name
 
 
 # ---------------------------------------------------------------------
