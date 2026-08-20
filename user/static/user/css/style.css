@@ -6957,6 +6957,27 @@ HERO SLIDE 1 FULL IMAGE BANNER RESPONSIVE
    font-family: 'Poppins', sans-serif;
  }
 
+ /* Badge pill — top-left of image */
+ .sig-lux-badge {
+   position: absolute;
+   top: 14px;
+   left: 14px;
+   background: rgba(113, 4, 26, 0.92);
+   color: #f5deb3;
+   border: 1px solid rgba(231, 194, 122, 0.5);
+   font-size: 9px;
+   font-weight: 700;
+   letter-spacing: 1.2px;
+   text-transform: uppercase;
+   padding: 5px 12px;
+   border-radius: 50px;
+   pointer-events: none;
+   font-family: 'Poppins', sans-serif;
+   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+   backdrop-filter: blur(6px);
+   z-index: 20;
+ }
+
  .sig-portrait-cta i {
    color: #25D366;
    font-size: 13px;

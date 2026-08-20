@@ -466,7 +466,11 @@ LUXURY EDITORIAL COLLECTIONS
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
 
       {% for cat in signature_categories %}
-      <a href="{% if cat.whatsapp_link %}{{ cat.whatsapp_link }}{% else %}https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20explore%20your%20{{ cat.name|urlencode }}%20collection{% endif %}" target="_blank" class="luxury-card sig-lux-frame">
+      <a href="{% if cat.whatsapp_link %}{{ cat.whatsapp_link }}{% else %}https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20explore%20your%20{{ cat.name|urlencode }}%20collection{% endif %}" target="_blank" class="luxury-card sig-lux-frame relative group block overflow-hidden rounded-2xl">
+        {% if cat.badge_text %}
+        <span class="sig-lux-badge z-20">{{ cat.badge_text }}</span>
+        {% endif %}
+
         {% if cat.image %}
         <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
         {% else %}
@@ -481,7 +485,10 @@ LUXURY EDITORIAL COLLECTIONS
         <div class="luxury-overlay"></div>
 
         <div class="luxury-content flex flex-col items-center text-center">
-          <h3 class="text-white font-bold mb-2 tracking-wide" style="font-family: 'Cinzel', serif;">{{ cat.name }}</h3>
+          {% if cat.origin_craft %}
+          <span class="text-[11px] font-semibold text-[#e7c27a] uppercase tracking-widest mb-1">{{ cat.origin_craft }}</span>
+          {% endif %}
+          <h3 class="text-white font-bold mb-2 tracking-wide text-lg sm:text-xl" style="font-family: 'Cinzel', serif;">{{ cat.name }}</h3>
 
           <div class="luxury-link w-full text-center flex items-center justify-center gap-1.5">
             EXPLORE THE COLLECTION
