@@ -433,10 +433,13 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                     <div id="var_{{ v.id }}" data-color-id="{{ v.color_id }}"
                         class="border border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-slate-50/50 dark:bg-slate-800/30 relative group">
                         <input type="hidden" name="variant_color_id" value="{{ v.color_id }}">
-                        <button type="button" onclick="removeColorVariant('var_{{ v.id }}', '{{ v.color_id }}')"
+                        <!-- CHANGED: pass the DB variant id ('{{ v.id }}') as 3rd arg so removeColorVariant() knows
+                             this variant is already saved and must be deactivated via AJAX (Bug 1 fix) -->
+                        <button type="button" onclick="removeColorVariant('var_{{ v.id }}', '{{ v.color_id }}', '{{ v.id }}')"
                             class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-dark-panel border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 shadow-sm transition-colors">
                             <i class="ph ph-trash text-lg"></i>
                         </button>
+                        <!-- END CHANGED -->
 
                         <h4 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-3">
                             <div class="w-5 h-5 rounded-full shadow-inner border border-slate-200 dark:border-slate-600 flex items-center justify-center"
@@ -478,11 +481,19 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                                     </label>
                                     <div id="preview_var_{{ v.id }}" class="flex gap-3">
                                         {% for img in v.images.all %}
-                                        <div
-                                            class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+                                        <!-- CHANGED: added id, relative/group/overflow-hidden, and hover-delete button (Bug 2 fix) -->
+                                        <div id="img_existing_{{ img.id }}"
+                                            class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm relative group">
                                             <img src="{{ img.image_url }}" class="w-full h-full object-cover"
                                                 alt="{{ img.alt_text }}">
+                                            <div class="absolute inset-0 bg-slate-900/60 hidden group-hover:flex items-center justify-center backdrop-blur-sm transition-all">
+                                                <button type="button" onclick="deleteExistingImage('{{ img.id }}', 'img_existing_{{ img.id }}')"
+                                                    class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform">
+                                                    <i class="ph ph-trash"></i>
+                                                </button>
+                                            </div>
                                         </div>
+                                        <!-- END CHANGED -->
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -534,10 +545,18 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                 <div id="defaultImagesPreview" class="flex flex-wrap gap-3 mt-4">
                     {% for img in product.images.all %}
                     {% if not img.variant_id %}
-                    <div
-                        class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+                    <!-- CHANGED: added id, relative/group/overflow-hidden, and hover-delete button (Bug 2 fix) -->
+                    <div id="img_existing_{{ img.id }}"
+                        class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm relative group">
                         <img src="{{ img.image_url }}" class="w-full h-full object-cover" alt="{{ img.alt_text }}">
+                        <div class="absolute inset-0 bg-slate-900/60 hidden group-hover:flex items-center justify-center backdrop-blur-sm transition-all">
+                            <button type="button" onclick="deleteExistingImage('{{ img.id }}', 'img_existing_{{ img.id }}')"
+                                class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform">
+                                <i class="ph ph-trash"></i>
+                            </button>
+                        </div>
                     </div>
+                    <!-- END CHANGED -->
                     {% endif %}
                     {% endfor %}
                 </div>
@@ -702,6 +721,38 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
 
     window.editProductDetailUrl = "{% if product %}{% url 'adm_user:detail' product.slug %}{% endif %}";
     window.productStockUpdateUrlTemplate = "{% url 'adm_user:product_stock_update' '__SLUG__' %}";
+    window.productImageDeleteUrlTemplate = "{% url 'adm_user:product_image_delete' '__ID__' %}";
+    // CHANGED: URL template for the variant-delete AJAX call (Bug 1 fix)
+    window.productVariantDeleteUrlTemplate = "{% url 'adm_user:product_variant_delete' '__ID__' %}";
+    // END CHANGED
+
+
+window.deleteExistingImage = function (imageId, wrapperId) {
+    const wrapper = document.getElementById(wrapperId);
+    const btn = wrapper.querySelector('button');
+    if (btn) btn.disabled = true;
+
+    const csrfToken = document.querySelector('#addProductForm [name=csrfmiddlewaretoken]').value;
+
+    fetch(window.productImageDeleteUrlTemplate.replace('__ID__', imageId), {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken },
+    })
+        .then(res => {
+            if (!res.ok) throw new Error('Delete request failed');
+            return res.json();
+        })
+        .then(data => {
+            if (!data.ok) throw new Error(data.error || 'Delete failed');
+            wrapper.remove();
+        })
+        .catch(err => {
+            console.error(err);
+            if (btn) btn.disabled = false;
+            alert('Could not delete image. Please try again.');
+        });
+}
+
 
     window.hideAddProductPage = function () {
         if (window.editProductDetailUrl) {
@@ -738,10 +789,13 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             <div id="${variantId}" data-color-id="${colorId}" class="bg-gray-50 border border-gray-200 rounded-2xl p-6 space-y-5 relative">
             <input type="hidden" name="variant_color_id" value="${colorId}">
 
-            <button type="button" onclick="removeColorVariant('${variantId}', '${colorId}')"
+            <!-- CHANGED: 3rd arg is null — this variant was never saved, so removeColorVariant() just
+                 removes the DOM node with no server call (Bug 1 fix) -->
+            <button type="button" onclick="removeColorVariant('${variantId}', '${colorId}', null)"
                 class="absolute top-5 right-5 w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 transition">
                 <i class="ph ph-trash text-lg"></i>
             </button>
+            <!-- END CHANGED -->
 
             <h4 class="flex items-center gap-2 font-bold text-gray-800 text-base">
                 <i class="ph-fill ph-circle text-lg" style="color: ${hex};"></i>
@@ -780,7 +834,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             </div>
             </div>
             `;
-        container.insertAdjacentHTML('beforeend', html);
+        container.insertAdjacentHTML('afterbegin', html);
 
         // Prevent picking the same color twice (mirrors the
         // unique_color_per_product constraint on the backend)
@@ -788,11 +842,61 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         select.value = '';
     }
 
-    window.removeColorVariant = function (variantId, colorId) {
-        document.getElementById(variantId).remove();
+    // CHANGED (Bug 1 fix): deletion is now independent of the Save button. A variant that was
+    // never saved (added this session via addColorVariant, dbVariantId is null) is just removed
+    // from the DOM. A variant that exists in the DB (dbVariantId set) is deactivated immediately
+    // via AJAX, then removed from the DOM on success.
+    window.removeColorVariant = function (variantId, colorId, dbVariantId) {
+        const el = document.getElementById(variantId);
         const select = document.getElementById('newColorSelect');
         const option = select.querySelector(`option[value="${colorId}"]`);
-        if (option) option.disabled = false;
+
+        if (!dbVariantId) {
+            el.remove();
+            if (option) option.disabled = false;
+            return;
+        }
+
+        const btn = el.querySelector('button');
+        if (btn) btn.disabled = true;
+
+        const csrfToken = document.querySelector('#addProductForm [name=csrfmiddlewaretoken]').value;
+
+        fetch(window.productVariantDeleteUrlTemplate.replace('__ID__', dbVariantId), {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Delete request failed');
+                return res.json();
+            })
+            .then(data => {
+                if (!data.ok) throw new Error(data.error || 'Delete failed');
+                el.remove();
+                if (option) option.disabled = false;
+            })
+            .catch(err => {
+                console.error(err);
+                if (btn) btn.disabled = false;
+                alert('Could not delete variant. Please try again.');
+            });
+    }
+    // END CHANGED
+
+    // CHANGED (Bug 2 fix, part A): handleImageRemove() was called but never defined, and
+    // `input` was not in scope inside the inline onclick string, so removing a just-picked
+    // file's preview never actually removed the file from the <input>'s FileList — it still
+    // got uploaded on Save. Replaced with a proper closure-based removeFileFromInput().
+    function removeFileFromInput(input, fileToRemove) {
+        const dt = new DataTransfer();
+        Array.from(input._dt.files).forEach(f => {
+            const isMatch = f.name === fileToRemove.name
+                && f.size === fileToRemove.size
+                && f.lastModified === fileToRemove.lastModified;
+            if (!isMatch) dt.items.add(f);
+        });
+        input._dt = dt;
+        input.files = dt.files;
     }
 
     // Handle Image Previews
@@ -803,23 +907,29 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         Array.from(input.files).forEach(file => {
             input._dt.items.add(file);
 
+            const imgId = 'img_' + Date.now() + Math.random().toString(36).substr(2, 5);
             const reader = new FileReader();
             reader.onload = function (e) {
-                const imgId = 'img_' + Date.now() + Math.random().toString(36).substr(2, 5);
                 const html = `
                 <div id="${imgId}" class="w-24 h-24 flex-shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 relative group overflow-hidden shadow-sm">
                     <img src="${e.target.result}" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-slate-900/60 hidden group-hover:flex items-center justify-center backdrop-blur-sm transition-all">
-                        <button type="button" onclick="document.getElementById('${imgId}').remove(); handleImageRemove(input, '${file.name}');" class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="ph ph-trash"></i></button>
+                        <button type="button" class="js-remove-preview w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="ph ph-trash"></i></button>
                     </div>
                 </div>
                 `;
                 container.insertAdjacentHTML('beforeend', html);
+                const wrapper = document.getElementById(imgId);
+                wrapper.querySelector('.js-remove-preview').addEventListener('click', function () {
+                    wrapper.remove();
+                    removeFileFromInput(input, file);
+                });
             }
             reader.readAsDataURL(file);
         });
         input.files = input._dt.files;
     }
+    // END CHANGED
 
     document.querySelectorAll('.message-toast').forEach(function (el) {
         setTimeout(function () {

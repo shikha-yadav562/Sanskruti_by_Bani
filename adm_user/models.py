@@ -349,7 +349,7 @@ class ProductVariant(TimeStampedModel):
     is_active = models.BooleanField(default=True, db_index=True)
 
     class Meta:
-        ordering = ["display_order"]
+        ordering = ["-created_at"]
         constraints = [
             models.UniqueConstraint(
                 fields=["product", "color"],

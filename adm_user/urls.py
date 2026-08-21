@@ -49,6 +49,10 @@ urlpatterns = [
     path('website-builder/', views.website_builder, name='website_builder'),
     path('coming_soon/', views.coming_soon, name='coming_soon'),
     
+    #------------ testing-------------
+    path("products/image/<str:image_id>/delete/", views.product_image_delete, name="product_image_delete"),
+    path("products/variant/<str:variant_id>/delete/", views.product_variant_delete, name="product_variant_delete"),
+    
     #------ Website Builder -------
     
 

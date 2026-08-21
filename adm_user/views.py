@@ -447,6 +447,20 @@ def tag_delete(request, pk):
 # PRODUCTS
 # ==========================================
 
+@require_http_methods(["POST"])
+def product_image_delete(request, image_id):
+    image = get_object_or_404(ProductImage, pk=image_id)
+    image.delete()
+    return JsonResponse({"ok": True, "id": image.id})
+
+@require_http_methods(["POST"])
+def product_variant_delete(request, variant_id):
+    variant = get_object_or_404(ProductVariant, pk=variant_id)
+    variant.is_active = False
+    variant.save(update_fields=["is_active"])
+    variant.images.all().delete()   # NEW — clear its images so re-adding this color starts fresh
+    return JsonResponse({"ok": True, "id": variant.id})
+
 @require_http_methods(["GET"])
 def products(request):
     context = {"products": Product.objects.filter(is_active=True).select_related("category")}
