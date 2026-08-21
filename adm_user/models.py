@@ -506,14 +506,10 @@ class HeroSlideImageOnly(SingletonModel):
 
 
 class HeroSlideOffer(SingletonModel):
-    """Slide 1: Offer Banner — Full Image Banner (Desktop & Mobile responsive) with optional text overlay."""
+    """Slide 1: Offer Banner — Full Image Banner (Desktop & Mobile responsive)."""
 
     desktop_image = models.ImageField(upload_to="website/hero/offer/desktop/", blank=True)
     mobile_image = models.ImageField(upload_to="website/hero/offer/mobile/", blank=True)
-    small_top_text = models.CharField(max_length=100, blank=True)
-    big_highlight_text = models.CharField(max_length=150, blank=True)
-    subtext = models.CharField(max_length=200, blank=True)
-    button_text = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return "Hero Slide 1 (Offer Image Banner)"
@@ -528,17 +524,9 @@ class HeroSlideOffer(SingletonModel):
 # ---------------------------------------------------------------------
 
 class SweetMemoriesSection(SingletonModel):
-    THEME_CHOICES = [
-        ("dark_maroon", "Dark Maroon"),
-        ("light_gold", "Light Gold"),
-    ]
-
     section_label = models.CharField(max_length=100, blank=True)
     main_heading = models.TextField(
         blank=True, help_text="Multi-line heading, e.g. 'Woven Into / Your Beautiful Moments'."
-    )
-    background_theme = models.CharField(
-        max_length=20, choices=THEME_CHOICES, default="dark_maroon"
     )
     paragraph_text = models.TextField(blank=True)
 

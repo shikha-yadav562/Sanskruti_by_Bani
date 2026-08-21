@@ -95,33 +95,6 @@
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-dark-panel rounded-xl border border-slate-100 dark:border-dark-border p-5 shadow-sm">
-                        <h4 class="text-sm font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                            <i class="ph ph-tag text-brand-maroon"></i> Hero Slide 1 Text Overlay (Optional)
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Small Top Text</label>
-                                    <input type="text" name="small_top_text" value="{{ hero_offer.small_top_text|default:'Limited Time Offer' }}" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Big Highlight Text</label>
-                                    <input type="text" name="big_highlight_text" value="{{ hero_offer.big_highlight_text|default:'Flat 25% OFF' }}" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
-                                </div>
-                            </div>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Subtext (Bottom)</label>
-                                    <input type="text" name="subtext" value="{{ hero_offer.subtext|default:'On Festive Saree Collection' }}" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Button Text</label>
-                                    <input type="text" name="button_text" value="{{ hero_offer.button_text|default:'Grab Offer' }}" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-brand-maroon dark:text-white">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -375,23 +348,6 @@
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Main Heading</label>
                                 <textarea rows="2" name="main_heading" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-brand-maroon dark:text-white">{{ memories.main_heading|default:"Woven Into&#13;&#10;Your Beautiful Moments" }}</textarea>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Background Theme</label>
-                                <div class="flex gap-3">
-                                    <label class="cursor-pointer flex-1 relative">
-                                        <input type="radio" name="background_theme" class="peer sr-only" value="dark_maroon" {% if memories.background_theme == "light_gold" %}{% else %}checked{% endif %}>
-                                        <div class="w-full h-12 rounded-lg bg-[#2a0b06] border-2 border-transparent peer-checked:border-brand-gold peer-checked:ring-2 peer-checked:ring-brand-gold/20 flex items-center justify-center">
-                                            <span class="text-brand-gold text-xs font-semibold">Dark Maroon</span>
-                                        </div>
-                                    </label>
-                                    <label class="cursor-pointer flex-1 relative">
-                                        <input type="radio" name="background_theme" class="peer sr-only" value="light_gold" {% if memories.background_theme == "light_gold" %}checked{% endif %}>
-                                        <div class="w-full h-12 rounded-lg bg-amber-50 border-2 border-transparent peer-checked:border-brand-maroon peer-checked:ring-2 peer-checked:ring-brand-maroon/20 flex items-center justify-center">
-                                            <span class="text-brand-maroon text-xs font-semibold">Light Gold</span>
-                                        </div>
-                                    </label>
-                                </div>
                             </div>
                         </div>
                         <div>

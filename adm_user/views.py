@@ -920,11 +920,6 @@ def save_hero_offer(request):
     try:
         with transaction.atomic():
             hero = HeroSlideOffer.load()
-            _save_singleton_text_fields(
-                hero,
-                request.POST,
-                ["small_top_text", "big_highlight_text", "subtext", "button_text"],
-            )
             _save_singleton_image(hero, request.FILES, "desktop_image")
             _save_singleton_image(hero, request.FILES, "mobile_image")
     except ValidationError as e:
@@ -937,18 +932,13 @@ def save_hero_offer(request):
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["POST"])
 def save_memories_section(request):
-    theme = request.POST.get("background_theme")
-    valid_themes = dict(SweetMemoriesSection.THEME_CHOICES)
-    if theme and theme not in valid_themes:
-        return JsonResponse({"error": "Invalid theme selection."}, status=400)
- 
     try:
         with transaction.atomic():
             section = SweetMemoriesSection.load()
             _save_singleton_text_fields(
                 section,
                 request.POST,
-                ["section_label", "main_heading", "background_theme", "paragraph_text"],
+                ["section_label", "main_heading", "paragraph_text"],
             )
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
