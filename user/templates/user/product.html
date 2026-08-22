@@ -4,7 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anuradha Paithani Soft Peacock Saree | Sanskruti by Bani</title>
+  <title>{{ product.name }} | Sanskruti by Bani</title>
+  <meta name="description" content="{{ product.description|truncatewords:30 }}">
+  {% if gallery_images %}<meta property="og:image" content="{{ gallery_images.0.image_url }}">{% endif %}
   {% load static %}
   <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap"
@@ -37,9 +39,13 @@
   <div class="top-bar">
     <button class="tb-btn prev">‹</button>
     <div class="tb-window">
-      <div class="tb-item active">Free Discount</div>
-      <div class="tb-item">COD across India</div>
+      {% for item in offer_items %}
+      <div class="tb-item{% if forloop.first %} active{% endif %}">{{ item.text }}</div>
+      {% empty %}
+      <div class="tb-item active">Free Shipping Across India</div>
+      <div class="tb-item">COD Available</div>
       <div class="tb-item">Easy Return & Exchange*</div>
+      {% endfor %}
     </div>
     <button class="tb-btn next">›</button>
   </div>
@@ -57,7 +63,7 @@
       <!-- LEFT MENU -->
       <nav class="menu left-menu">
         <a href="{% url 'user:index' %}">Home</a>
-        <a href="{% url 'user:catalogue' %}">New Arrivals</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ new_arrivals_tag.slug }}">New Arrivals</a>
       </nav>
 
       <section class="reveal-section">
@@ -86,11 +92,11 @@
           </a>
           <!-- MEGA MENU -->
           <div class="mega-menu">
-            {% for cat in nav_categories %}
+            {% for cat in signature_categories %}
             <div class="mega-col">
               <h4>{{ cat.name }}</h4>
               <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore Sarees</a>
-              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">New Arrivals</a>
+              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}&tag=new-arrival">New Arrivals</a>
             </div>
             {% empty %}
             <div class="mega-col">
@@ -121,18 +127,22 @@
             {% endfor %}
           </div>
         </div>
-        <a href="#">Bestsellers</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ bestsellers_tag.slug }}">Bestsellers</a>
         <!-- SEARCH -->
         <div class="search-box">
           <input type="text" placeholder="Search..." class="search-input">
         </div>
         <!-- ICONS -->
-        <button class="icon-btn">
+         <button class="icon-btn" onclick="logoutUser()">
+          <span class="material-symbols-outlined">logout</span>
+        </button>
+
+        {% comment %} <button class="icon-btn">
           <span class="material-symbols-outlined">favorite</span>
         </button>
         <button class="icon-btn">
           <span class="material-symbols-outlined">shopping_bag</span>
-        </button>
+        </button> {% endcomment %}
       </nav>
       <!-- SPACER -->
       <div class="nav-spacer"></div>
@@ -157,7 +167,7 @@
           <span class="material-symbols-outlined">expand_more</span>
         </div>
         <div class="mobile-dropdown-body">
-          {% for cat in nav_categories %}
+          {% for cat in signature_categories %}
           <h5>{{ cat.name }}</h5>
           <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore {{ cat.name }}</a>
           {% empty %}
@@ -184,7 +194,10 @@
       style="font-family: 'Inter', sans-serif;">
       <a href="{% url 'user:index' %}" class="hover:text-[#71041a] hover:opacity-100 transition">Home</a> /
       <a href="{% url 'user:catalogue' %}" class="hover:text-[#71041a] hover:opacity-100 transition">Catalogue</a> /
-      <span class="text-[#71041a] font-semibold opacity-100">Anuradha Paithani Saree</span>
+      {% if product.category %}
+      <a href="{% url 'user:catalogue' %}?category={{ product.category.slug }}" class="hover:text-[#71041a] hover:opacity-100 transition">{{ product.category.name }}</a> /
+      {% endif %}
+      <span class="text-[#71041a] font-semibold opacity-100">{{ product.name }}</span>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-10 lg:gap-16">
@@ -193,31 +206,25 @@
       <div class="w-full lg:w-[55%] flex flex-col md:flex-row gap-4">
 
         <!-- Thumbnails (Vertical on Desktop/Tablet, Horizontal on Mobile) -->
-        <div
+        <div id="thumbnailRail"
           class="flex md:flex-col gap-3 order-2 md:order-1 overflow-x-auto md:overflow-y-auto max-h-[600px] no-scrollbar py-1 w-full md:w-24 flex-shrink-0">
+          {% for img in gallery_images %}
           <img
-            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}"
-            class="w-20 h-24 md:w-24 md:h-32 object-cover cursor-pointer border-2 border-[#810820] opacity-100 transition-opacity"
-            alt="Thumb 1" onclick="changeMainImg(this.src, this)">
-          <img
-            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}"
-            class="w-20 h-24 md:w-24 md:h-32 object-cover cursor-pointer border-2 border-transparent opacity-60 hover:opacity-100 transition-opacity"
-            alt="Thumb 2" onclick="changeMainImg(this.src, this)">
-          <img
-            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}"
-            class="w-20 h-24 md:w-24 md:h-32 object-cover cursor-pointer border-2 border-transparent opacity-60 hover:opacity-100 transition-opacity"
-            alt="Thumb 3" onclick="changeMainImg(this.src, this)">
-          <img
-            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}"
-            class="w-20 h-24 md:w-24 md:h-32 object-cover cursor-pointer border-2 border-transparent opacity-60 hover:opacity-100 transition-opacity"
-            alt="Thumb 4" onclick="changeMainImg(this.src, this)">
+            src="{{ img.image_url }}"
+            class="w-20 h-24 md:w-24 md:h-32 object-cover cursor-pointer border-2 {% if forloop.first %}border-[#810820] opacity-100{% else %}border-transparent opacity-60 hover:opacity-100{% endif %} transition-opacity"
+            alt="{{ img.alt_text|default:product.name }}" onclick="changeMainImg(this.src, this)">
+          {% empty %}
+          <img src="{% static 'user/assets/placeholder-saree.jpg' %}"
+            class="w-20 h-24 md:w-24 md:h-32 object-cover border-2 border-[#810820] opacity-100"
+            alt="{{ product.name }}">
+          {% endfor %}
         </div>
 
         <!-- Main Image -->
         <div class="order-1 md:order-2 w-full relative group">
           <img id="mainProductImage"
-            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}"
-            class="w-full h-auto object-cover border border-[#e7c27a]/30 shadow-lg" alt="Anuradha Paithani Saree">
+            src="{% if gallery_images %}{{ gallery_images.0.image_url }}{% else %}{% static 'user/assets/placeholder-saree.jpg' %}{% endif %}"
+            class="w-full h-auto object-cover border border-[#e7c27a]/30 shadow-lg" alt="{{ product.name }}">
 
           <!-- Zoom Hint -->
           <div
@@ -230,76 +237,105 @@
       <!-- ================= RIGHT: PRODUCT INFO & BUY BOX ================= -->
       <div class="w-full lg:w-[45%] flex flex-col text-[#4a0c16]">
 
+        {% if product.category %}
         <p class="uppercase tracking-[0.4em] text-[#810820] font-semibold text-[10px] mb-2"
-          style="font-family: 'Inter', sans-serif;">Paithani Collection</p>
+          style="font-family: 'Inter', sans-serif;">{{ product.category.name }} Collection</p>
+        {% endif %}
 
-        <h1 class="text-3xl md:text-4xl font-serif leading-tight mb-2" style="font-family: 'Cinzel', serif;">Anuradha
-          Paithani Soft Peacock Design Saree</h1>
+        <div class="flex items-start justify-between gap-4 mb-2">
+          <h1 class="text-3xl md:text-4xl font-serif leading-tight" style="font-family: 'Cinzel', serif;">{{ product.name }}</h1>
+
+          <button type="button" id="shareProductBtn"
+            class="flex items-center gap-1 text-xs text-[#810820] font-semibold uppercase tracking-widest hover:text-[#4a0c16] transition-colors shrink-0 mt-1"
+              style="font-family: 'Inter', sans-serif;">
+            <span class="material-symbols-outlined text-lg">share</span>
+              Share
+          </button>
+        </div>
 
         <!-- Reviews Summary -->
         <div class="flex items-center gap-2 mb-4">
           <div class="flex text-[#e7c27a] text-sm">
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star-half-stroke"></i>
+            {% for i in "12345" %}
+            {% if total_reviews and forloop.counter <= full_stars %}
+              <i class="fa-solid fa-star"></i>
+            {% elif total_reviews and forloop.counter == full_stars|add:1 and has_half_star %}
+              <i class="fa-solid fa-star-half-stroke"></i>
+            {% else %}
+              <i class="fa-regular fa-star"></i>
+            {% endif %}
+            {% endfor %}
           </div>
-          <span class="text-xs text-[#810820] underline cursor-pointer font-semibold tracking-wider"
-            style="font-family: 'Inter', sans-serif;">42 Reviews</span>
+
+          {% if total_reviews %}
+          <a href="#writeReviewSection" class="text-xs text-[#810820] underline cursor-pointer font-semibold tracking-wider"
+          style="font-family: 'Inter', sans-serif;">{{ total_reviews }} Review{{ total_reviews|pluralize }}</a>
+          {% else %}
+          <a href="#writeReviewSection" class="text-xs text-[#810820] underline cursor-pointer font-semibold tracking-wider"
+          style="font-family: 'Inter', sans-serif;">Be the first to review</a>
+          {% endif %}
         </div>
 
         <!-- Price Section -->
         <div class="border-y border-[#e7c27a]/40 py-4 my-2">
-          <div class="flex items-baseline gap-3">
-            <span class="text-3xl md:text-4xl font-semibold text-[#810820]">₹8,499</span>
-            <span class="text-lg text-gray-500 line-through">₹12,999</span>
-            <span
+          <div class="flex items-baseline gap-3" id="priceBlock">
+            <span class="text-3xl md:text-4xl font-semibold text-[#810820]" id="currentPrice">₹{{ display_price|floatformat:0 }}</span>
+            {% if not default_variant.price and product.discount_price %}
+            <span class="text-lg text-gray-500 line-through" id="originalPrice">₹{{ product.base_price|floatformat:0 }}</span>
+            <span id="saveBadge"
               class="bg-[#810820] text-[#fff8f4] text-[10px] font-bold px-2 py-1 uppercase tracking-widest rounded-sm">Save
-              35%</span>
+              {% widthratio product.discount_price 1 100 %}%</span>
+            {% else %}
+            <span class="text-lg text-gray-500 line-through hidden" id="originalPrice">₹0</span>
+            <span id="saveBadge"
+              class="bg-[#810820] text-[#fff8f4] text-[10px] font-bold px-2 py-1 uppercase tracking-widest rounded-sm hidden">Save</span>
+            {% endif %}
           </div>
-          <p class="text-xs text-[#810820]/80 mt-1 uppercase tracking-widest" style="font-family: 'Inter', sans-serif;">
+          {% comment %} <p class="text-xs text-[#810820]/80 mt-1 uppercase tracking-widest" style="font-family: 'Inter', sans-serif;">
             Inclusive of all taxes. <span class="font-bold underline cursor-pointer">Shipping calculated at
-              checkout.</span></p>
+              checkout.</span></p> {% endcomment %}
         </div>
 
         <!-- Short Description -->
         <p class="text-sm my-6 leading-relaxed opacity-90" style="font-family: 'Poppins', sans-serif;">
-          Drape yourself in the regal elegance of our Anuradha Paithani. Handwoven with absolute precision, featuring
-          traditional peacock motifs and a rich zari border that defines timeless luxury. Perfect for weddings and grand
-          festive occasions.
+          {{ product.description|default:"Handwoven with absolute precision, this saree defines timeless luxury — perfect for weddings and grand festive occasions." }}
         </p>
 
         <!-- Color Options -->
+        {% if variants %}
         <div class="mb-6">
           <h4 class="text-xs font-bold uppercase tracking-widest text-[#810820] mb-3"
-            style="font-family: 'Inter', sans-serif;">Color: <span class="font-normal text-gray-700">Royal Maroon</span>
+            style="font-family: 'Inter', sans-serif;">Color: <span class="font-normal text-gray-700" id="selectedColorName">{{ default_variant.color.name }}</span>
           </h4>
-          <div class="flex gap-3">
+          <div class="flex gap-3" id="colorSwatches">
+            {% for v in variants %}
             <button
-              class="w-10 h-10 rounded-full bg-[#810820] border-2 border-[#e7c27a] ring-2 ring-transparent focus:ring-[#810820] outline-none"
-              title="Maroon"></button>
-            <button
-              class="w-10 h-10 rounded-full bg-[#1b3b28] border-2 border-transparent hover:border-[#e7c27a] transition-colors outline-none"
-              title="Bottle Green"></button>
-            <button
-              class="w-10 h-10 rounded-full bg-[#e7c27a] border-2 border-transparent hover:border-[#e7c27a] transition-colors outline-none"
-              title="Gold"></button>
+              class="variant-swatch w-10 h-10 rounded-full border-2 {% if v.id == default_variant.id %}border-[#e7c27a] ring-2 ring-[#810820]{% else %}border-transparent hover:border-[#e7c27a]{% endif %} transition-colors outline-none"
+              style="background-color: {{ v.color.hex_code }};"
+              title="{{ v.color.name }}"
+              data-variant-id="{{ v.id }}"
+              onclick="selectVariant({{ v.id }}, this)"></button>
+            {% endfor %}
           </div>
         </div>
+        {% endif %}
 
         <!-- Actions (Buy Box) -->
+        <input type="hidden" id="selectedVariantId" value="{{ default_variant.id|default:'' }}">
         <div class="flex flex-col gap-3 mt-4">
-          <button
-            class="w-full py-4 border-2 border-[#810820] text-[#810820] font-bold uppercase tracking-widest text-sm hover:bg-[#810820] hover:text-[#fff8f4] transition-colors"
-            style="font-family: 'Inter', sans-serif;">
-            Add To Cart
-          </button>
-          <button
-            class="w-full py-4 bg-[#810820] border-2 border-[#810820] text-[#e7c27a] font-bold uppercase tracking-widest text-sm hover:bg-[#4a0c16] hover:border-[#4a0c16] transition-colors shadow-lg shadow-[#810820]/20"
-            style="font-family: 'Inter', sans-serif;">
-            Buy It Now
-          </button>
+          {% comment %} <button id="addToCartBtn"
+            class="w-full py-4 border-2 border-[#810820] text-[#810820] font-bold uppercase tracking-widest text-sm hover:bg-[#810820] hover:text-[#fff8f4] transition-colors{% if default_variant and default_variant.stock_quantity <= 0 %} opacity-50 cursor-not-allowed{% endif %}"
+            style="font-family: 'Inter', sans-serif;"
+            {% if default_variant and default_variant.stock_quantity <= 0 %}disabled{% endif %}>
+            {% if default_variant and default_variant.stock_quantity <= 0 %}Out Of Stock{% else %}Add To Cart{% endif %}
+          </button> {% endcomment %}
+          <a href="https://wa.me/7900152351?text=Hi%2C%20I%20am%20interested%20in%20{{ product.name|urlencode }}.%20Price%3A%20%E2%82%B9{{ display_price|floatformat:0 }}.%20Product%20Link%3A%20{{ request.scheme }}%3A%2F%2F{{ request.get_host }}{% url 'user:product' product.slug %}"
+          target="_blank" rel="noopener"
+          class="w-full py-4 bg-[#810820] border-2 border-[#810820] text-[#e7c27a] font-bold uppercase tracking-widest text-sm hover:bg-[#4a0c16] hover:border-[#4a0c16] transition-colors shadow-lg shadow-[#810820]/20 flex items-center justify-center gap-2"
+          style="font-family: 'Inter', sans-serif;">
+          <i class="fa-brands fa-whatsapp text-lg"></i>
+         Buy It Now
+          </a>
         </div>
 
         <!-- Trust Badges -->
@@ -319,7 +355,7 @@
         </div>
 
         <!-- Delivery Pincode Widget -->
-        <div class="mt-6 border border-[#e7c27a]/40 p-4 rounded-sm">
+        {% comment %} <div class="mt-6 border border-[#e7c27a]/40 p-4 rounded-sm">
           <h4 class="text-xs font-bold uppercase tracking-widest text-[#810820] mb-3 flex items-center gap-2"
             style="font-family: 'Inter', sans-serif;">
             <span class="material-symbols-outlined text-lg">pin_drop</span> Check Delivery Date
@@ -330,7 +366,7 @@
             <button
               class="bg-[#e7c27a]/20 text-[#810820] px-4 text-xs font-bold uppercase tracking-wider hover:bg-[#e7c27a]/40 border border-[#e7c27a]/40 transition-colors">Check</button>
           </div>
-        </div>
+        </div> {% endcomment %}
 
         <!-- ACCORDIONS (Details) -->
         <div class="mt-8 border-t border-[#e7c27a]/40">
@@ -346,11 +382,18 @@
             <div class="accordion-content hidden pb-4 text-sm leading-relaxed text-[#4a0c16] opacity-90"
               style="font-family: 'Poppins', sans-serif;">
               <ul class="list-disc pl-5 space-y-2">
-                <li><strong>Fabric:</strong> Premium Soft Paithani Silk</li>
-                <li><strong>Saree Length:</strong> 5.5 Meters</li>
-                <li><strong>Blouse Piece:</strong> 0.8 Meters (Unstitched, matching border)</li>
-                <li><strong>Work:</strong> Zari woven traditional peacock and lotus motifs</li>
-                <li><strong>Pattern:</strong> Solid body with heavy pallu</li>
+                {% if product.fabric %}<li><strong>Fabric:</strong> {{ product.fabric.name }}</li>{% endif %}
+                {% if product.print_type %}<li><strong>Print:</strong> {{ product.print_type.name }}</li>{% endif %}
+                {% if product.saree_length %}<li><strong>Saree Length:</strong> {{ product.saree_length }}</li>{% endif %}
+                <li><strong>Blouse:</strong>
+                  {% if product.blouse_included %}
+                    Included{% if product.blouse_type %} — {{ product.blouse_type }}{% endif %}{% if product.blouse_size %} ({{ product.blouse_size }}){% endif %}
+                  {% else %}
+                    Not Included
+                  {% endif %}
+                </li>
+                {% if product.weaving_style %}<li><strong>Weaving Style:</strong> {{ product.weaving_style }}</li>{% endif %}
+                {% if product.border_style %}<li><strong>Border:</strong> {{ product.border_style }}</li>{% endif %}
               </ul>
             </div>
           </div>
@@ -365,12 +408,16 @@
             </button>
             <div class="accordion-content hidden pb-4 text-sm leading-relaxed text-[#4a0c16] opacity-90"
               style="font-family: 'Poppins', sans-serif;">
+              {% if product.care_instructions %}
+              <p>{{ product.care_instructions }}</p>
+              {% else %}
               <ul class="list-disc pl-5 space-y-2">
                 <li>Dry Clean Only.</li>
                 <li>Do not machine wash or hand wash.</li>
                 <li>Keep away from direct sunlight while drying.</li>
                 <li>Store in a clean, dry muslin cloth.</li>
               </ul>
+              {% endif %}
             </div>
           </div>
 
@@ -395,7 +442,7 @@
             <button
               class="w-full py-4 flex justify-between items-center text-left text-sm font-bold uppercase tracking-widest text-[#810820] focus:outline-none accordion-btn"
               style="font-family: 'Inter', sans-serif;">
-              Customer Ratings & Reviews ({{ total_reviews|default:"42" }})
+              Customer Ratings & Reviews ({{ total_reviews }})
               <span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
             </button>
 
@@ -406,16 +453,22 @@
                 
                 <!-- Left: Overall Rating Score -->
                 <div class="md:col-span-4 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-[#e7c27a]/30 pb-6 md:pb-0 md:pr-6">
-                  <span class="text-5xl font-bold text-[#810820] font-serif" style="font-family: 'Cinzel', serif;">{{ avg_rating|default:"4.8" }}</span>
+                  <span class="text-5xl font-bold text-[#810820] font-serif" style="font-family: 'Cinzel', serif;">{{ avg_rating }}</span>
                   <div class="flex text-[#e7c27a] text-lg my-2">
+                    {% for i in "12345" %}
+                    {% if forloop.counter <= full_stars %}
                     <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
+                    {% elif forloop.counter == full_stars|add:1 and has_half_star %}
                     <i class="fa-solid fa-star-half-stroke"></i>
+                    {% else %}
+                    <i class="fa-regular fa-star"></i>
+                    {% endif %}
+                    {% endfor %}
                   </div>
-                  <p class="text-xs text-[#810820] font-semibold uppercase tracking-wider">Based on {{ total_reviews|default:"42" }} verified reviews</p>
-                  <p class="text-[11px] text-gray-500 mt-1">96% of customers recommend this Paithani Saree</p>
+                  <p class="text-xs text-[#810820] font-semibold uppercase tracking-wider">Based on {{ total_reviews }} verified review{{ total_reviews|pluralize }}</p>
+                  {% if star_percents.5 or star_percents.4 %}
+                  <p class="text-[11px] text-gray-500 mt-1">{{ star_percents.5|add:star_percents.4 }}% of customers recommend this saree</p>
+                  {% endif %}
 
                   <button onclick="toggleReviewForm()" class="mt-4 px-6 py-2.5 bg-[#810820] text-[#e7c27a] font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#71041a] transition shadow-md">
                     <i class="fa-solid fa-pen mr-1"></i> Write A Review
@@ -480,8 +533,8 @@
 
                 <form id="customerReviewForm" onsubmit="handleReviewSubmit(event)" enctype="multipart/form-data" class="space-y-4">
                   {% csrf_token %}
-                  <input type="hidden" name="product_slug" value="anuradha-paithani-saree">
-                  <input type="hidden" name="product_name" value="Anuradha Paithani Soft Peacock Design Saree">
+                  <input type="hidden" name="product_slug" value="{{ product.slug }}">
+                  <input type="hidden" name="product_name" value="{{ product.name }}">
                   <input type="hidden" name="rating" id="ratingInput" value="5">
 
                   <!-- Interactive Star Picker -->
@@ -614,7 +667,7 @@
                     <button onclick="voteHelpful({{ rev.id }}, this)" class="text-gray-600 hover:text-[#810820] font-medium flex items-center gap-1.5 px-3 py-1 bg-gray-50 hover:bg-[#810820]/10 rounded-lg transition">
                       <i class="fa-regular fa-thumbs-up"></i> Helpful (<span class="helpful-count">{{ rev.helpful_count }}</span>)
                     </button>
-                    <span class="text-[10px] text-gray-400">Report Abuse</span>
+                    {% comment %} <span class="text-[10px] text-gray-400">Report Abuse</span> {% endcomment %}
                   </div>
 
                 </div>
@@ -738,70 +791,37 @@
   <section class="container mx-auto px-4 py-16 border-t border-[#e7c27a]/20 max-w-7xl">
     <div class="text-center mb-10">
       <h2 class="text-2xl md:text-3xl font-serif text-[#71041a] tracking-wider mb-2"
-        style="font-family: 'Cinzel', serif;">Customers Also Bought</h2>
+        style="font-family: 'Cinzel', serif;">Similar Products</h2>
       <div class="w-24 h-0.5 bg-[#e7c27a] mx-auto"></div>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-      <!-- Card 1 -->
-      <div class="group cursor-pointer">
+      {% for p in similar_products %}
+      <div class="group cursor-pointer {% if forloop.counter == 4 %}hidden md:block{% endif %}">
+        <a href="{% url 'user:product' p.slug %}">
         <div class="overflow-hidden relative bg-white aspect-[3/4] border border-[#e7c27a]/30">
           <img
-            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Saree">
-          <div
-            class="absolute top-2 left-2 bg-[#810820] text-[#e7c27a] text-[9px] uppercase px-2 py-1 font-bold tracking-widest">
-            Best Seller</div>
+            src="{% if p.thumb %}{{ p.thumb.image_url }}{% else %}{% static 'user/assets/placeholder.jpg' %}{% endif %}"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ p.name }}">
+          {% if p.tags.first %}
+          
+          <div class="absolute top-2 left-2 bg-[#810820] text-[#e7c27a] text-[9px] uppercase px-2 py-1 font-bold tracking-widest">
+            {{ p.tags.first.name }}</div>
+          {% endif %}
         </div>
+        
         <div class="py-4 text-center">
-          <h3 class="text-[#810820] font-serif text-sm md:text-base font-semibold group-hover:text-[#71041a]">Royal
-            Paithani Silk</h3>
-          <p class="text-[#e7c27a] text-xs uppercase tracking-widest mt-1 mb-2 font-bold">₹7,999 <span
-              class="text-gray-400 line-through text-[10px] ml-1">₹10,500</span></p>
+          <h3 class="text-[#810820] font-serif text-sm md:text-base font-semibold group-hover:text-[#71041a]">{{ p.name }}</h3>
+          <p class="text-[#e7c27a] text-xs uppercase tracking-widest mt-1 mb-2 font-bold">
+            ₹{{ p.final_price|floatformat:0 }}
+            {% if p.discount_price %}
+            <span class="text-gray-400 line-through text-[10px] ml-1">₹{{ p.base_price|floatformat:0 }}</span>
+            {% endif %}
+          </p>
         </div>
+        </a>
       </div>
-      <!-- Card 2 -->
-      <div class="group cursor-pointer">
-        <div class="overflow-hidden relative bg-white aspect-[3/4] border border-[#e7c27a]/30">
-          <img
-            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Saree">
-        </div>
-        <div class="py-4 text-center">
-          <h3 class="text-[#810820] font-serif text-sm md:text-base font-semibold group-hover:text-[#71041a]">Soft
-            Peacock Saree</h3>
-          <p class="text-[#e7c27a] text-xs uppercase tracking-widest mt-1 mb-2 font-bold">₹8,499</p>
-        </div>
-      </div>
-      <!-- Card 3 -->
-      <div class="group cursor-pointer">
-        <div class="overflow-hidden relative bg-white aspect-[3/4] border border-[#e7c27a]/30">
-          <img
-            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Saree">
-        </div>
-        <div class="py-4 text-center">
-          <h3 class="text-[#810820] font-serif text-sm md:text-base font-semibold group-hover:text-[#71041a]">Golden
-            Weave Paithani</h3>
-          <p class="text-[#e7c27a] text-xs uppercase tracking-widest mt-1 mb-2 font-bold">₹9,200</p>
-        </div>
-      </div>
-      <!-- Card 4 -->
-      <div class="group cursor-pointer hidden md:block">
-        <div class="overflow-hidden relative bg-white aspect-[3/4] border border-[#e7c27a]/30">
-          <img
-            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Saree">
-          <div
-            class="absolute top-2 left-2 bg-[#810820] text-[#e7c27a] text-[9px] uppercase px-2 py-1 font-bold tracking-widest">
-            New Arrival</div>
-        </div>
-        <div class="py-4 text-center">
-          <h3 class="text-[#810820] font-serif text-sm md:text-base font-semibold group-hover:text-[#71041a]">Classic
-            Zari Border</h3>
-          <p class="text-[#e7c27a] text-xs uppercase tracking-widest mt-1 mb-2 font-bold">₹11,499</p>
-        </div>
-      </div>
+      {% endfor %}
     </div>
   </section>
 
@@ -812,56 +832,62 @@ LUXURY FOOTER SECTION
     <div class="footer-top">
       <!-- BRAND -->
       <div class="footer-col footer-brand">
-        <h2>Sanskruti By Bani</h2>
-        <p>Celebrating timeless Indian heritage through handcrafted Paithani, Banarasi, Kanjivaram and luxury saree
-          collections woven with elegance, culture and emotion.</p>
+        <h2>{{ footer_settings.brand_name|default:"Sanskruti By Bani" }}</h2>
+        <p>{{ footer_settings.brand_description|default:"Celebrating timeless Indian heritage through handcrafted Paithani, Banarasi, Kanjivaram and luxury saree collections woven with elegance, culture and emotion." }}</p>
         <div class="footer-socials">
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#"><i class="fa-brands fa-youtube"></i></a>
-          <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+
+          <a href="{{ footer_settings.instagram_link|default:'#' }}">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+
+          <a href="#">
+            <i class="fa-brands fa-facebook-f"></i>
+          </a>
+
+          <a href="#">
+            <i class="fa-brands fa-youtube"></i>
+          </a>
+
+          <a href="https://wa.me/{{ footer_settings.whatsapp_number }}">
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+
         </div>
       </div>
       <!-- QUICK LINKS -->
       <div class="footer-col">
         <h3>Quick Links</h3>
         <a href="{% url 'user:index' %}">Home</a>
-        <a href="{% url 'user:catalogue' %}">New Arrivals</a>
-        <a href="#">Collections</a>
-        <a href="#">Best Sellers</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ new_arrivals_tag.slug }}">New Arrivals</a>
+        <a href="{% url 'user:catalogue' %}">Collections</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ bestsellers_tag.slug }}">Best Sellers</a>
       </div>
       <!-- COLLECTIONS -->
       <div class="footer-col">
         <h3>Collections</h3>
-        <a href="#">Paithani Sarees</a>
-        <a href="#">Banarasi Sarees</a>
-        <a href="#">Kanjivaram Sarees</a>
-        <a href="#">Bandhani Sarees</a>
-        <a href="#">Patola Sarees</a>
-        <a href="#">Designer Sarees</a>
+        {% for cat in signature_categories %}
+        <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">{{ cat.name }} Sarees</a>
+        {% endfor %}
       </div>
 
       <!-- POLICY & INQUIRY -->
       <div class="footer-col">
         <h3>Policy & Inquiry</h3>
-        <a href="#">Return & Exchange Policy</a>
-        <a href="#">Shipping Policy</a>
-        <a href="#">Terms and Conditions</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Wholesale Inquiry</a>
+        <a href="{% url 'user:return_refund_policy' %}">Return & Refund Policy</a>
+        <a href="{% url 'user:terms_conditions' %}">Terms and Conditions</a>
+        <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
       </div>
 
       <!-- CONTACT -->
       <div class="footer-col">
         <h3>Contact</h3>
-        <p><i class="fa-solid fa-location-dot"></i> Pune, Maharashtra, India</p>
-        <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
-        <p><i class="fa-solid fa-envelope"></i> info@sanskrutibybani.com</p>
-        <p><i class="fa-solid fa-clock"></i> Mon - Sat : 10 AM - 8 PM</p>
+        {% if footer_settings.store_address %}<p><i class="fa-solid fa-location-dot"></i> {{ footer_settings.store_address }}</p>{% endif %}
+        {% if footer_settings.phone_number %}<p><i class="fa-solid fa-phone"></i> {{ footer_settings.phone_number }}</p>{% endif %}
+        {% if footer_settings.email %}<p><i class="fa-solid fa-envelope"></i> {{ footer_settings.email }}</p>{% endif %}
       </div>
     </div>
     <!-- NEWSLETTER -->
-    <div class="footer-newsletter">
+    {% comment %} <div class="footer-newsletter">
       <div>
         <h3>Join Our Heritage Circle</h3>
         <p>Get updates on new arrivals, festive collections & exclusive offers.</p>
@@ -870,14 +896,16 @@ LUXURY FOOTER SECTION
         <input type="email" placeholder="Enter your email">
         <button type="submit">Subscribe</button>
       </form>
-    </div>
+    </div> {% endcomment %}
+
+
     <!-- BOTTOM -->
     <div class="footer-bottom">
       <p>© 2025 Sanskruti By Bani. All Rights Reserved.</p>
       <div class="footer-bottom-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms & Conditions</a>
-        <a href="#">Shipping Policy</a>
+        <a href="{% url 'user:return_refund_policy' %}">Return & Refund Policy</a>
+        <a href="{% url 'user:terms_conditions' %}">Terms and Conditions</a>
+        <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
       </div>
     </div>
   </footer>
@@ -900,6 +928,69 @@ LUXURY FOOTER SECTION
       clickedThumb.classList.add('border-[#810820]', 'opacity-100');
     }
 
+    // Color Variant Swapping Logic — driven by variants_json from the view
+    const productVariants = {{ variants_json|safe }};
+
+    function selectVariant(variantId, clickedBtn) {
+      const variant = productVariants.find(v => v.variant_id === variantId);
+      if (!variant) return;
+
+      const variantIdInput = document.getElementById('selectedVariantId');
+      if (variantIdInput) variantIdInput.value = variantId;
+
+      // Update selected color label
+      const nameEl = document.getElementById('selectedColorName');
+      if (nameEl) nameEl.innerText = variant.color_name;
+
+      // Update swatch active state
+      document.querySelectorAll('.variant-swatch').forEach(btn => {
+        btn.classList.remove('border-[#e7c27a]', 'ring-2', 'ring-[#810820]');
+        btn.classList.add('border-transparent');
+      });
+      clickedBtn.classList.remove('border-transparent');
+      clickedBtn.classList.add('border-[#e7c27a]', 'ring-2', 'ring-[#810820]');
+
+      // Update price — variant price overrides replace the base price entirely,
+      // so hide the strike-through / save badge in that case.
+      const priceEl = document.getElementById('currentPrice');
+      const originalPriceEl = document.getElementById('originalPrice');
+      const saveBadgeEl = document.getElementById('saveBadge');
+      if (priceEl) priceEl.innerText = '₹' + Math.round(parseFloat(variant.price)).toLocaleString('en-IN');
+      if (originalPriceEl) originalPriceEl.classList.add('hidden');
+      if (saveBadgeEl) saveBadgeEl.classList.add('hidden');
+
+      // Update gallery — swap thumbnails + main image to this variant's images
+      const rail = document.getElementById('thumbnailRail');
+      const mainImg = document.getElementById('mainProductImage');
+      if (rail && variant.images && variant.images.length) {
+        rail.innerHTML = '';
+        variant.images.forEach((url, idx) => {
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = variant.color_name;
+          img.className = 'w-20 h-24 md:w-24 md:h-32 object-cover cursor-pointer border-2 transition-opacity ' +
+            (idx === 0 ? 'border-[#810820] opacity-100' : 'border-transparent opacity-60 hover:opacity-100');
+          img.onclick = function () { changeMainImg(this.src, this); };
+          rail.appendChild(img);
+        });
+        if (mainImg) mainImg.src = variant.images[0];
+      }
+
+      // Out-of-stock messaging
+      const addToCartBtn = document.getElementById('addToCartBtn');
+      if (addToCartBtn) {
+        if (variant.stock_quantity <= 0) {
+          addToCartBtn.disabled = true;
+          addToCartBtn.innerText = 'Out Of Stock';
+          addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+          addToCartBtn.disabled = false;
+          addToCartBtn.innerText = 'Add To Cart';
+          addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+      }
+    }
+
     // Accordion Logic
     document.addEventListener('DOMContentLoaded', () => {
       const accordionBtns = document.querySelectorAll('.accordion-btn');
@@ -918,6 +1009,28 @@ LUXURY FOOTER SECTION
         });
       });
     });
+
+    document.getElementById('shareProductBtn').addEventListener('click', async function () {
+    const shareData = {
+      title: document.title,
+      text: 'Check out this saree from Sanskruti By Bani',
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        // user cancelled the share sheet — no action needed
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+      } catch (err) {
+        prompt('Copy this link:', window.location.href);
+      }
+    }
+  });
   </script>
 </body>
 

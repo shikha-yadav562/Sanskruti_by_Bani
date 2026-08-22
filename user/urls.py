@@ -4,7 +4,7 @@ app_name="user"
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('product/', views.product, name='product'),
+    path('product/<slug:slug>/', views.product, name='product'),
     path('catalogue/', views.catalogue, name='catalogue'),
     path('profile/', views.profile_view, name='profile'),
     path('terms-conditions/', views.terms_conditions, name='terms_conditions'),

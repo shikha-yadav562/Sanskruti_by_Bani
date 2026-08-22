@@ -120,7 +120,7 @@
       <nav class="menu left-menu">
 
         <a href="#">Home</a>
-        <a href="{% url 'user:catalogue' %}">New Arrivals</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ new_arrivals_tag.slug }}">New Arrivals</a>
 
       </nav>
 
@@ -181,11 +181,11 @@
 
           <!-- MEGA MENU -->
           <div class="mega-menu">
-            {% for cat in nav_categories %}
+            {% for cat in signature_categories %}
             <div class="mega-col">
               <h4>{{ cat.name }}</h4>
               <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore Sarees</a>
-              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">New Arrivals</a>
+              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}&tag=new-arrival">New Arrivals</a>
             </div>
             {% empty %}
             <div class="mega-col">
@@ -218,7 +218,7 @@
 
         </div>
 
-        <a href="#">Bestsellers</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ bestsellers_tag.slug }}">Bestsellers</a>
 
         <!-- SEARCH -->
         <div class="search-box">
@@ -228,13 +228,13 @@
         </div>
 
         <!-- ICONS -->
-       <button class="icon-btn" onclick="logoutUser()">
-    <span class="material-symbols-outlined">logout</span>
-</button>
-
-        <button class="icon-btn" title="Cart">
-          <span class="material-symbols-outlined">shopping_bag</span>
+        <button class="icon-btn" onclick="logoutUser()">
+          <span class="material-symbols-outlined">logout</span>
         </button>
+
+        {% comment %} <button class="icon-btn" title="Cart">
+          <span class="material-symbols-outlined">shopping_bag</span>
+        </button> {% endcomment %}
 
       </nav>
 
@@ -279,7 +279,7 @@
         </div>
 
         <div class="mobile-dropdown-body">
-          {% for cat in nav_categories %}
+          {% for cat in signature_categories %}
           <h5>{{ cat.name }}</h5>
           <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore {{ cat.name }}</a>
           {% empty %}
@@ -368,7 +368,7 @@ HERO SLIDER (LUXURY EDITION)
             <div class="hero-buttons">
 
               <a href="#" class="btn-primary">
-                {{ hero_main.button_1_text|default:"Explore Collection" }}
+                {{ hero_main.button_1_text|default:"Explore" }}
               </a>
 
               <a href="#" class="btn-outline">
@@ -710,39 +710,40 @@ SPECIALITY = PAITHANI
 
     </div>
 
-    <div class="bestseller-grid">
+      <div class="bestseller-grid">
 
-      <!-- CARD 1 -->
+      {% for product in bestseller_products %}
       <div class="saree-card">
 
         <div class="saree-image">
-          <img
-            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/PICHWAI NATURE SAREE/PICHWAI NATURE INSPIRED SAREE 10.jpeg' %}"
-            alt="">
+          {% if product.thumb %}
+          <img src="{{ product.thumb.image_url }}" alt="{{ product.name }}">
+          {% endif %}
           <span class="saree-badge">Best Seller</span>
         </div>
 
         <div class="saree-info">
 
           <div class="saree-category">
-            Pure Silk Paithani
+            {{ product.category.name }}
           </div>
 
           <h3 class="saree-name">
-            Royal Peacock Paithani
+            {{ product.name }}
           </h3>
 
-          <div class="saree-stars">
+          {% comment %} <div class="saree-stars">
             ★★★★★
-          </div>
+          </div> {% endcomment %}
 
           <div class="saree-bottom">
 
             <div class="saree-price">
-              ₹18,500
+              ₹{{ product.base_price|floatformat:0 }}
             </div>
 
-            <a href="#" class="saree-link">
+            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20{{ product.name|urlencode }}"
+              target="_blank" class="saree-link">
               <i class="fa-brands fa-whatsapp"></i>
               BUY NOW
             </a>
@@ -752,275 +753,8 @@ SPECIALITY = PAITHANI
         </div>
 
       </div>
+      {% endfor %}
 
-      <!-- CARD 2 -->
-      <div class="saree-card">
-
-        <div class="saree-image">
-          <img src="{% static 'user/assets/p2.jpg' %}" alt="">
-        </div>
-
-        <div class="saree-info">
-
-          <div class="saree-category">
-            Traditional Paithani
-          </div>
-
-          <h3 class="saree-name">
-            Lotus Border Paithani
-          </h3>
-
-          <div class="saree-stars">
-            ★★★★★
-          </div>
-
-          <div class="saree-bottom">
-
-            <div class="saree-price">
-              ₹21,000
-            </div>
-
-            <a href="#" class="saree-link">
-              <i class="fa-brands fa-whatsapp"></i>
-              BUY NOW
-            </a>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- CARD 3 -->
-      <div class="saree-card">
-
-        <div class="saree-image">
-          <img src="{% static 'user/assets/p3.jpg' %}" alt="">
-          <span class="saree-badge">New</span>
-        </div>
-
-        <div class="saree-info">
-
-          <div class="saree-category">
-            Bridal Paithani
-          </div>
-
-          <h3 class="saree-name">
-            Bridal Gold Zari Paithani
-          </h3>
-
-          <div class="saree-stars">
-            ★★★★★
-          </div>
-
-          <div class="saree-bottom">
-
-            <div class="saree-price">
-              ₹34,000
-            </div>
-
-            <a href="#" class="saree-link">
-              <i class="fa-brands fa-whatsapp"></i>
-              BUY NOW
-            </a>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- CARD 4 -->
-      <div class="saree-card">
-
-        <div class="saree-image">
-          <img src="{% static 'user/assets/paithani_signature.jpg' %}" alt="Mor Pallu Heritage Paithani">
-        </div>
-
-        <div class="saree-info">
-
-          <div class="saree-category">
-            Handwoven Paithani
-          </div>
-
-          <h3 class="saree-name">
-            Mor Pallu Heritage Paithani
-          </h3>
-
-          <div class="saree-stars">
-            ★★★★★
-          </div>
-
-          <div class="saree-bottom">
-
-            <div class="saree-price">
-              ₹26,500
-            </div>
-
-            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20Mor%20Pallu%20Heritage%20Paithani" target="_blank" class="saree-link">
-              <i class="fa-brands fa-whatsapp"></i>
-              BUY NOW
-            </a>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- SECOND ROW: CARD 5 -->
-      <div class="saree-card">
-        <div class="saree-image">
-          <img src="{% static 'user/assets/PAITHANI SAREE PHOTO/PAITHANI SAREE PHOTO/PURE SOFT KANCHIVRAM  PETHANI SILK 21.jpeg' %}" alt="Kanjivaram Silk Paithani">
-          <span class="saree-badge">Best Seller</span>
-        </div>
-        <div class="saree-info">
-          <div class="saree-category">Pure Soft Kanjivaram</div>
-          <h3 class="saree-name">Temple Border Silk Paithani</h3>
-          <div class="saree-stars">★★★★★</div>
-          <div class="saree-bottom">
-            <div class="saree-price">₹24,500</div>
-            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20Temple%20Border%20Silk%20Paithani" target="_blank" class="saree-link">
-              <i class="fa-brands fa-whatsapp"></i> BUY NOW
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECOND ROW: CARD 6 -->
-      <div class="saree-card">
-        <div class="saree-image">
-          <img src="{% static 'user/assets/bandhani_signature.jpg' %}" alt="Royal Bandhani Patola">
-          <span class="saree-badge">Trending</span>
-        </div>
-        <div class="saree-info">
-          <div class="saree-category">Royal Bandhani Craft</div>
-          <h3 class="saree-name">Gold Zari Bandhani Patola</h3>
-          <div class="saree-stars">★★★★★</div>
-          <div class="saree-bottom">
-            <div class="saree-price">₹19,800</div>
-            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20Gold%20Zari%20Bandhani%20Patola" target="_blank" class="saree-link">
-              <i class="fa-brands fa-whatsapp"></i> BUY NOW
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECOND ROW: CARD 7 -->
-      <div class="saree-card">
-        <div class="saree-image">
-          <img src="{% static 'user/assets/Banarasi Sami Katan silk/Banarasi Sami Katan silk 10.jpeg' %}" alt="Banarasi Katan Silk">
-          <span class="saree-badge">Royal Edition</span>
-        </div>
-        <div class="saree-info">
-          <div class="saree-category">Banarasi Katan Silk</div>
-          <h3 class="saree-name">Katan Weave Heritage Saree</h3>
-          <div class="saree-stars">★★★★★</div>
-          <div class="saree-bottom">
-            <div class="saree-price">₹28,900</div>
-            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20Katan%20Weave%20Heritage%20Saree" target="_blank" class="saree-link">
-              <i class="fa-brands fa-whatsapp"></i> BUY NOW
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECOND ROW: CARD 8 -->
-      <div class="saree-card">
-        <div class="saree-image">
-          <img src="{% static 'user/assets/designer_signature.jpg' %}" alt="Organza Designer Luxury">
-          <span class="saree-badge">New Arrival</span>
-        </div>
-        <div class="saree-info">
-          <div class="saree-category">Organza Silk Modern</div>
-          <h3 class="saree-name">Modern Luxury Designer Saree</h3>
-          <div class="saree-stars">★★★★★</div>
-          <div class="saree-bottom">
-            <div class="saree-price">₹16,500</div>
-            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20Modern%20Luxury%20Designer%20Saree" target="_blank" class="saree-link">
-              <i class="fa-brands fa-whatsapp"></i> BUY NOW
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- CARD 5 -->
-      <div class="saree-card">
-
-        <div class="saree-image">
-          <img src="{% static 'user/assets/p5.jpg' %}" alt="">
-          <span class="saree-badge">Exclusive</span>
-        </div>
-
-        <div class="saree-info">
-
-          <div class="saree-category">
-            Premium Paithani
-          </div>
-
-          <h3 class="saree-name">
-            Maharani Paithani Silk
-          </h3>
-
-          <div class="saree-stars">
-            ★★★★★
-          </div>
-
-          <div class="saree-bottom">
-
-            <div class="saree-price">
-              ₹39,500
-            </div>
-
-            <a href="#" class="saree-link">
-              <i class="fa-brands fa-whatsapp"></i>
-              BUY NOW
-            </a>
-
-          </div>
-
-        </div>
-
-      </div>
-<div class="saree-card">
-
-        <div class="saree-image">
-          <img
-            src="{% static 'user/assets/BEST SELLER SAREE FOLDER/PICHWAI NATURE SAREE/PICHWAI NATURE INSPIRED SAREE 10.jpeg' %}"
-            alt="">
-          <span class="saree-badge">Best Seller</span>
-        </div>
-
-        <div class="saree-info">
-
-          <div class="saree-category">
-            Pure Silk Paithani
-          </div>
-
-          <h3 class="saree-name">
-            Royal Peacock Paithani
-          </h3>
-
-          <div class="saree-stars">
-            ★★★★★
-          </div>
-
-          <div class="saree-bottom">
-
-            <div class="saree-price">
-              ₹18,500
-            </div>
-
-            <a href="#" class="saree-link">
-              <i class="fa-brands fa-whatsapp"></i>
-              BUY NOW
-            </a>
-
-          </div>
-
-        </div>
-
-      </div>
     </div>
     
 
@@ -1203,10 +937,10 @@ LUXURY FOOTER SECTION
 
         <h3>Quick Links</h3>
 
-        <a href="#">Home</a>
-        <a href="#">New Arrivals</a>
-        <a href="#">Collections</a>
-        <a href="#">Best Sellers</a>
+        <a href="{% url 'user:index' %}">Home</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ new_arrivals_tag.slug }}">New Arrivals</a>
+        <a href="{% url 'user:catalogue' %}">Collections</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ bestsellers_tag.slug }}">Best Sellers</a>
 
       </div>
 
@@ -1215,12 +949,9 @@ LUXURY FOOTER SECTION
 
         <h3>Collections</h3>
 
-        <a href="#">Paithani Sarees</a>
-        <a href="#">Banarasi Sarees</a>
-        <a href="#">Kanjivaram Sarees</a>
-        <a href="#">Bandhani Sarees</a>
-        <a href="#">Patola Sarees</a>
-        <a href="#">Designer Sarees</a>
+        {% for cat in signature_categories %}
+        <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">{{ cat.name }} Sarees</a>
+        {% endfor %}
 
       </div>
 
@@ -1254,11 +985,6 @@ LUXURY FOOTER SECTION
         <p>
           <i class="fa-solid fa-envelope"></i>
           {{ footer_settings.email|default:"info@sanskrutibybani.com" }}
-        </p>
-
-        <p>
-          <i class="fa-solid fa-clock"></i>
-          Mon - Sat : 10 AM - 8 PM
         </p>
 
       </div>

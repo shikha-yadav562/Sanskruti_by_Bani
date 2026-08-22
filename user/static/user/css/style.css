@@ -1721,7 +1721,7 @@ SMALL MOBILE
 
    .hero-title .line1 {
 
-     font-size: 34px;
+     font-size: 28px;
 
      line-height: 1.12;
 
@@ -1729,7 +1729,7 @@ SMALL MOBILE
 
    .hero-title .line2 {
 
-     font-size: 26px;
+     font-size: 19px;
 
    }
 
@@ -1743,7 +1743,7 @@ SMALL MOBILE
 
    .hero-desc {
 
-     font-size: 13.5px;
+     font-size: 11.5px;
 
      line-height: 1.85;
 
@@ -2237,7 +2237,7 @@ SMALL MOBILE
    @media(max-width:600px) {
 
      .mobile-hero-img {
-       max-width: 320px;
+       max-width: 200px;
        border-radius: 20px;
        left: 35px;
      }
@@ -5729,6 +5729,35 @@ TABLET
 
  @media(max-width:950px) {
 
+   .sweet-memory-section {
+     padding: 65px 1%;
+   }
+
+   .slider-window {
+     margin-left: 30px;
+     padding: 20px 0;
+   }
+
+   .slider-track {
+     gap: 14px;
+   }
+
+   .slider-track img {
+     width: 260px;
+     height: 400px;
+     border-radius: 10px;
+   }
+
+   .slider-track img.side {
+     transform: scale(.8);
+   }
+
+   .memory-content h2 {
+
+     font-size: 34px;
+
+   }
+
    .memory-container {
 
      grid-template-columns: 1fr;
@@ -5786,6 +5815,11 @@ TABLET
 
    }
 
+   .hero-tag {
+     margin-bottom: 13px;
+     font-size: 9px;
+   }
+
  }
 
  /* ===================
@@ -5795,38 +5829,25 @@ MOBILE
  @media(max-width:600px) {
 
    .sweet-memory-section {
-
      padding: 65px 1%;
-
    }
 
    .slider-window {
-
      padding: 20px 0;
-
    }
 
    .slider-track {
-
      gap: 14px;
-
    }
 
    .slider-track img {
-
-     width: 180px;
-
-     height: 270px;
-
+     width: 260px;
+     height: 440px;
      border-radius: 10px;
-
    }
 
    .slider-track img.side {
-
-     transform:
-       scale(.76);
-
+     transform: scale(.8);
    }
 
    .memory-content h2 {
@@ -5849,6 +5870,35 @@ MOBILE
 
      letter-spacing: 3px;
 
+   }
+
+   .hero-tag {
+     margin-bottom: 10px;
+     font-size: 9px;
+   }
+
+   .hero-desc {
+     margin-top: 10px;
+   }
+
+   .hero-buttons {
+     flex-direction: row !important;
+     flex-wrap: nowrap;
+     gap: 10px;
+     width: 100%;
+     padding: 0 16px;
+   }
+
+   .hero-buttons .btn-primary,
+   .hero-buttons .btn-outline {
+     flex: 1 1 0;
+     min-width: 0;
+     padding: 8px 10px;
+     font-size: 12px;
+     text-align: center;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
    }
 
  }
@@ -5917,13 +5967,6 @@ HERO
    margin-bottom: 35px;
  }
 
- .hero-buttons {
-   display: flex;
-   justify-content: center;
-   gap: 25px;
-   flex-wrap: wrap;
-   justify-self: center;
- }
 
  .hero-btn {
    padding: 14px 32px;
@@ -6579,7 +6622,8 @@ SMALL MOBILE
    }
 
    .hero-tag {
-     font-size: 11px;
+     margin-bottom: 10px;
+     font-size: 9px;
    }
 
    .collection-pills button {
@@ -7283,19 +7327,54 @@ HERO SLIDE 1 FULL IMAGE BANNER RESPONSIVE
    .offer-editorial-wrap {
      grid-template-columns: 1fr;
      border-radius: 16px;
+     gap: 16px;
+     max-width: 90%;
+     margin: 12px auto;
    }
 
    .offer-editorial-card {
      border-right: none;
      border-bottom: 1px solid rgba(201, 168, 76, 0.18);
+     padding: 10px 10px 12px;
    }
 
    .offer-editorial-card:last-child {
      border-bottom: none;
    }
 
+   .offer-editorial-card.spotlight-card {
+     transform: none;
+   }
+
+   .offer-editorial-card.spotlight-card:hover {
+     transform: translateY(-6px);
+   }
+
+   .offer-editorial-img-box {
+     height: 220px;
+   }
+
    .offer-editorial-img {
-     height: 280px;
+     height: 220px !important;
+   }
+
+   .offer-editorial-body {
+     padding: 10px 6px 2px;
+   }
+
+   .offer-editorial-title {
+     font-size: 14px;
+     margin-bottom: 8px;
+   }
+
+   .offer-editorial-pill {
+     font-size: 8px;
+     padding: 4px 12px;
+   }
+
+   .offer-editorial-cta {
+     font-size: 10px;
+     padding: 8px 14px;
    }
  }
 

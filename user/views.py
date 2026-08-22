@@ -1,17 +1,17 @@
-from django.shortcuts import render
+
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import SignupForm, LoginForm
 from adm_user.models import AboutUsSection, HeroSlideOffer, HeroSlideMain, HeroSlideImageOnly, HeaderSettings, OfferBarItem, FooterSettings, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, SignatureCategoryItem
 
 from django.core.paginator import Paginator
 from django.db.models import Prefetch, Q
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404,  redirect
+from django.core.serializers.json import DjangoJSONEncoder
 
 from adm_user.models import (
-    Product, ProductImage, SignatureCategoryItem, Color, Fabric, Print,
+    Product, ProductImage, SignatureCategoryItem, Color, Fabric, Print,Tag
 )
 
 # Create your views here.
@@ -41,6 +41,28 @@ SORT_MAP = {
 
 # Create your views here.
 def index(request):
+    bestseller_qs = (
+        Product.objects.filter(
+            is_active=True,
+            tags__slug="bestseller",
+            category__slug="paithani",
+        )
+        .select_related("category")
+        .prefetch_related(
+            Prefetch(
+                "images",
+                queryset=ProductImage.objects.order_by("display_order", "created_at"),
+                to_attr="all_images",
+            )
+        )
+        .distinct()
+        .order_by("-created_at")
+    )
+    bestseller_limit = 5 if bestseller_qs.count() < 10 else 10
+    bestseller_products = bestseller_qs[:bestseller_limit]
+    for product in bestseller_products:
+        product.thumb = product.all_images[0] if product.all_images else None
+
     context = {
         "hero_offer": HeroSlideOffer.load(),
         "hero_main": HeroSlideMain.load(),
@@ -54,45 +76,111 @@ def index(request):
         "memories_offer_slide": MemoriesOfferSlide.load(),
         "memories_slide3": MemoriesSlide3.load(),
         "signature_categories": SignatureCategoryItem.objects.filter(is_active=True),
+        "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
+        "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
+        "bestseller_products": bestseller_products,
     }
     return render(request, 'user/index.html', context)
 
-def product(request):
-    reviews = ProductReview.objects.filter(is_approved=True)
+def product(request, slug):
+    product = get_object_or_404(
+        Product.objects.select_related('category', 'fabric', 'print_type'),
+        slug=slug,
+        is_active=True,
+    )
+
+    variants = (
+        product.variants
+        .filter(is_active=True)
+        .select_related('color')
+        .prefetch_related('images')
+        .order_by('display_order')
+    )
+
+    default_images = product.images.filter(variant__isnull=True).order_by('display_order')
+
+    # First active variant is the default selection on page load.
+    default_variant = variants.first()
+    if default_variant:
+        gallery_images = default_variant.images.all() or default_images
+        display_price = default_variant.price or product.final_price
+    else:
+        gallery_images = default_images
+        display_price = product.final_price
+
+    # Serialized for the color-swatch JS — swaps images/price/stock
+    # client-side without a reload.
+    variants_json = [
+        {
+            "variant_id": v.id,
+            "color_name": v.color.name,
+            "color_hex": v.color.hex_code,
+            "price": str(v.price or product.final_price),
+            "stock_quantity": v.stock_quantity,
+            "images": [img.image_url for img in v.images.all()] or [img.image_url for img in default_images],
+        }
+        for v in variants
+    ]
+
+    reviews = ProductReview.objects.filter(product_slug=product.slug, is_approved=True)
     total_reviews = reviews.count()
     avg_rating = reviews.aggregate(Avg('rating'))['rating__avg'] or 5.0
     avg_rating_formatted = round(avg_rating, 1)
 
-    # Star rating breakdown
-    star_counts = {
-        5: reviews.filter(rating=5).count(),
-        4: reviews.filter(rating=4).count(),
-        3: reviews.filter(rating=3).count(),
-        2: reviews.filter(rating=2).count(),
-        1: reviews.filter(rating=1).count(),
+    full_stars = int(avg_rating_formatted)
+    has_half_star = (avg_rating_formatted - full_stars) >= 0.5
+
+    star_counts = {n: reviews.filter(rating=n).count() for n in range(5, 0, -1)}
+    star_percents = {
+        n: round((c / total_reviews * 100)) if total_reviews > 0 else 0
+        for n, c in star_counts.items()
     }
 
-    star_percents = {}
-    for star, count in star_counts.items():
-        star_percents[star] = round((count / total_reviews * 100)) if total_reviews > 0 else 0
-
-    # Customer photos from reviews
     customer_photos = []
     for r in reviews:
         if r.image_1: customer_photos.append(r.image_1)
         if r.image_2: customer_photos.append(r.image_2)
         if r.image_3: customer_photos.append(r.image_3)
 
+    similar_products = (
+        Product.objects.filter(is_active=True, category=product.category)
+        .exclude(pk=product.pk)
+        .select_related("category")
+        .prefetch_related(
+            Prefetch(
+                "images",
+                queryset=ProductImage.objects.order_by("display_order", "created_at"),
+                to_attr="all_images",
+            )
+        )
+        .order_by("-created_at")[:4]
+    )
+    for p in similar_products:
+        default_imgs = [img for img in p.all_images if img.variant_id is None]
+        p.thumb = default_imgs[0] if default_imgs else (p.all_images[0] if p.all_images else None)
+    
     context = {
         "header_settings": HeaderSettings.load(),
         "footer_settings": FooterSettings.load(),
         "offer_items": OfferBarItem.objects.all(),
+        "signature_categories": SignatureCategoryItem.objects.filter(is_active=True),
+        "product": product,
+        "variants": variants,
+        "default_variant": default_variant,
+        "gallery_images": gallery_images,
+        "display_price": display_price,
+        "variants_json": json.dumps(variants_json, cls=DjangoJSONEncoder),
         "reviews": reviews,
         "total_reviews": total_reviews,
         "avg_rating": avg_rating_formatted,
+        "full_stars": full_stars,
+        "has_half_star": has_half_star,
         "star_counts": star_counts,
         "star_percents": star_percents,
         "customer_photos": customer_photos,
+        "similar_products": similar_products,
+        "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
+        "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
     }
     return render(request, 'user/product.html', context)
 
@@ -116,6 +204,7 @@ def catalogue(request):
     print_slugs = request.GET.getlist("print")
     color_slugs = request.GET.getlist("color")
     price_keys = request.GET.getlist("price")
+    tag_slugs = request.GET.getlist("tag")
 
     if category_slugs:
         products = products.filter(category__slug__in=category_slugs)
@@ -125,6 +214,8 @@ def catalogue(request):
         products = products.filter(print_type__slug__in=print_slugs)
     if color_slugs:
         products = products.filter(variants__color__slug__in=color_slugs).distinct()
+    if tag_slugs:
+        products = products.filter(tags__slug__in=tag_slugs).distinct()
 
     if price_keys:
         price_q = Q()
@@ -174,12 +265,16 @@ def catalogue(request):
         "colors": Color.objects.filter(is_active=True),
         "fabrics": Fabric.objects.filter(is_active=True),
         "prints": Print.objects.filter(is_active=True),
+        "tags": Tag.objects.filter(),
+        "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
+        "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
 
         "selected_categories": category_slugs,
         "selected_fabrics": fabric_slugs,
         "selected_prints": print_slugs,
         "selected_colors": color_slugs,
         "selected_prices": price_keys,
+        "selected_tags": tag_slugs,
         "current_sort": sort_key,
         "base_qs": base_qs,
     }

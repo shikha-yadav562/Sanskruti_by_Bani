@@ -47,7 +47,7 @@
       <!-- LEFT MENU -->
       <nav class="menu left-menu">
         <a href="{% url 'user:index' %}">Home</a>
-        <a href="#">New Arrivals</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ new_arrivals_tag.slug }}">New Arrivals</a>
       </nav>
 
       <section class="reveal-section">
@@ -75,11 +75,11 @@
           </a>
           <!-- MEGA MENU -->
           <div class="mega-menu">
-            {% for cat in nav_categories %}
+            {% for cat in categories %}
             <div class="mega-col">
               <h4>{{ cat.name }}</h4>
               <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore Sarees</a>
-              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">New Arrivals</a>
+              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}&tag=new-arrival">New Arrivals</a>
             </div>
             {% empty %}
             <div class="mega-col">
@@ -110,17 +110,23 @@
             {% endfor %}
           </div>
         </div>
-        <a href="#">Bestsellers</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ bestsellers_tag.slug }}">Bestsellers</a>
+
         <!-- SEARCH -->
         <div class="search-box">
           <input type="text" placeholder="Search..." class="search-input">
         </div>
-        <button class="icon-btn">
+
+        <button class="icon-btn" onclick="logoutUser()">
+          <span class="material-symbols-outlined">logout</span>
+        </button>
+
+        {% comment %} <button class="icon-btn">
           <span class="material-symbols-outlined">favorite</span>
         </button>
         <button class="icon-btn">
           <span class="material-symbols-outlined">shopping_bag</span>
-        </button>
+        </button> {% endcomment %}
       </nav>
       <div class="nav-spacer"></div>
     </div>
@@ -141,7 +147,7 @@
           <span class="material-symbols-outlined">expand_more</span>
         </div>
         <div class="mobile-dropdown-body">
-          {% for cat in nav_categories %}
+          {% for cat in signature_categories %}
           <h5>{{ cat.name }}</h5>
           <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore {{ cat.name }}</a>
           {% empty %}
@@ -277,6 +283,23 @@
   </details>
 </div>
 
+<div class="mb-8 border-b border-[#e7c27a]/30 pb-5">
+  <details class="group/tags" open>
+    <summary class="flex items-center justify-between cursor-pointer list-none font-medium mb-4 tracking-wider uppercase text-sm text-[#71041a]">
+      Tags
+      <span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-open/tags:rotate-180">expand_more</span>
+    </summary>
+    <div class="space-y-3 text-[#4a1c1c] text-sm">
+      {% for tag in tags %}
+      <label class="flex items-center space-x-3 cursor-pointer hover:text-[#810820] transition">
+        <input type="checkbox" name="tag" value="{{ tag.slug }}" class="accent-[#810820] w-4 h-4 rounded-none cursor-pointer" {% if tag.slug in selected_tags %}checked{% endif %}>
+        <span>{{ tag.name }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </details>
+</div>
+
 <button type="submit"
   class="w-full bg-[#810820] text-[#fff8f4] py-4 uppercase tracking-widest text-xs font-semibold hover:bg-[#71041a] hover:shadow-lg transition-all duration-300 border border-[#810820]">Apply
   Filters</button>
@@ -324,8 +347,22 @@
             <img src="{% if product.thumb %}{{ product.thumb.image_url }}{% else %}{% static 'user/assets/placeholder.jpg' %}{% endif %}"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             alt="{% if product.thumb %}{{ product.thumb.alt_text|default:product.name }}{% else %}{{ product.name }}{% endif %}">
+
+            {% if product.tags.all %}
+            <div class="absolute top-2 left-2 flex flex-col gap-1 z-10">
+              {% for tag in product.tags.all %}
+              <span class="bg-[#71041a] text-[#fff8f4] text-[9px] uppercase tracking-widest font-semibold px-2 py-1 border border-[#e7c27a] rounded-md">
+                {{ tag.name }}
+              </span>
+              {% endfor %}
+            </div>
+            {% endif %}
+
             <div class="absolute inset-0 bg-[#71041a]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-              <button class="bg-[#fff8f4] text-[#810820] px-6 py-2 uppercase tracking-widest text-[10px] font-semibold transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-[#810820] hover:text-[#fff8f4] border border-[#810820]">Quick View</button>
+              <a href="{% url 'user:product' product.slug %}"
+              class="bg-[#fff8f4] text-[#810820] px-6 py-2 uppercase tracking-widest text-[10px] font-semibold transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-[#810820] hover:text-[#fff8f4] border border-[#810820]">
+                Quick View
+              </a>
             </div>
             {% comment %} <button class="absolute top-4 right-4 text-[#810820] hover:text-[#c4453e] transition bg-[#fff8f4]/90 p-2 rounded-full shadow-sm">
               <span class="material-symbols-outlined text-[20px] leading-none">favorite</span>
@@ -381,33 +418,42 @@
     <div class="footer-top">
       <!-- BRAND -->
       <div class="footer-col footer-brand">
-        <h2>Sanskruti By Bani</h2>
-        <p>Celebrating timeless Indian heritage through handcrafted Paithani, Banarasi, Kanjivaram and luxury saree
-          collections woven with elegance, culture and emotion.</p>
+        <h2>{{ footer_settings.brand_name|default:"Sanskruti By Bani" }}</h2>
+        <p>{{ footer_settings.brand_description|default:"Celebrating timeless Indian heritage through handcrafted Paithani, Banarasi, Kanjivaram and luxury saree collections woven with elegance, culture and emotion." }}</p>
         <div class="footer-socials">
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#"><i class="fa-brands fa-youtube"></i></a>
-          <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+
+          <a href="{{ footer_settings.instagram_link|default:'#' }}">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+
+          <a href="#">
+            <i class="fa-brands fa-facebook-f"></i>
+          </a>
+
+          <a href="#">
+            <i class="fa-brands fa-youtube"></i>
+          </a>
+
+          <a href="https://wa.me/{{ footer_settings.whatsapp_number }}">
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+
         </div>
       </div>
       <!-- QUICK LINKS -->
       <div class="footer-col">
         <h3>Quick Links</h3>
         <a href="{% url 'user:index' %}">Home</a>
-        <a href="{% url 'user:catalogue' %}">New Arrivals</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ new_arrivals_tag.slug }}">New Arrivals</a>
         <a href="{% url 'user:catalogue' %}">Collections</a>
-        <a href="{% url 'user:catalogue' %}">Best Sellers</a>
+        <a href="{% url 'user:catalogue' %}?tag={{ bestsellers_tag.slug }}">Best Sellers</a>
       </div>
       <!-- COLLECTIONS -->
       <div class="footer-col">
         <h3>Collections</h3>
-        <a href="{% url 'user:catalogue' %}">Paithani Sarees</a>
-        <a href="{% url 'user:catalogue' %}">Banarasi Sarees</a>
-        <a href="{% url 'user:catalogue' %}">Kanjivaram Sarees</a>
-        <a href="{% url 'user:catalogue' %}">Bandhani Sarees</a>
-        <a href="{% url 'user:catalogue' %}">Patola Sarees</a>
-        <a href="{% url 'user:catalogue' %}">Designer Sarees</a>
+        {% for cat in categories %}
+        <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">{{ cat.name }} Sarees</a>
+        {% endfor %}
       </div>
 
       <!-- POLICY & INQUIRY -->
@@ -415,25 +461,34 @@
 
         <h3>Policy & Inquiry</h3>
 
-        <a href="#">Return & Exchange Policy</a>
-        <a href="#">Shipping Policy</a>
-        <a href="#">Terms and Conditions</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Wholesale Inquiry</a>
+        <a href="{% url 'user:return_refund_policy' %}">Return & Refund Policy</a>
+        <a href="{% url 'user:terms_conditions' %}">Terms and Conditions</a>
+        <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
 
       </div>
 
       <!-- CONTACT -->
       <div class="footer-col">
         <h3>Contact</h3>
-        <p><i class="fa-solid fa-location-dot"></i> Pune, Maharashtra, India</p>
-        <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
-        <p><i class="fa-solid fa-envelope"></i> info@sanskrutibybani.com</p>
-        <p><i class="fa-solid fa-clock"></i> Mon - Sat : 10 AM - 8 PM</p>
+        <p>
+          <i class="fa-solid fa-location-dot"></i>
+          {{ footer_settings.store_address|default:"Pune, Maharashtra, India" }}
+        </p>
+
+        <p>
+          <i class="fa-solid fa-phone"></i>
+          {{ footer_settings.phone_number|default:"+91 98765 43210" }}
+        </p>
+
+        <p>
+          <i class="fa-solid fa-envelope"></i>
+          {{ footer_settings.email|default:"info@sanskrutibybani.com" }}
+        </p>
+
       </div>
     </div>
     <!-- NEWSLETTER -->
-    <div class="footer-newsletter">
+    {% comment %} <div class="footer-newsletter">
       <div>
         <h3>Join Our Heritage Circle</h3>
         <p>Get updates on new arrivals, festive collections & exclusive offers.</p>
@@ -442,14 +497,16 @@
         <input type="email" placeholder="Enter your email">
         <button type="submit">Subscribe</button>
       </form>
-    </div>
+    </div> {% endcomment %}
+
+
     <!-- BOTTOM -->
     <div class="footer-bottom">
       <p>© 2025 Sanskruti By Bani. All Rights Reserved.</p>
       <div class="footer-bottom-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms & Conditions</a>
-        <a href="#">Shipping Policy</a>
+        <a href="{% url 'user:return_refund_policy' %}">Return & Refund Policy</a>
+        <a href="{% url 'user:terms_conditions' %}">Terms and Conditions</a>
+        <a href="{% url 'user:privacy_policy' %}">Privacy Policy</a>
       </div>
     </div>
   </footer>
