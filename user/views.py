@@ -6,11 +6,38 @@ from django.contrib import messages
 from .forms import SignupForm, LoginForm
 from adm_user.models import AboutUsSection, HeroSlideOffer, HeroSlideMain, HeroSlideImageOnly, HeaderSettings, OfferBarItem, FooterSettings, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, SignatureCategoryItem
 
+from django.core.paginator import Paginator
+from django.db.models import Prefetch, Q
+from django.shortcuts import render
+
+from adm_user.models import (
+    Product, ProductImage, SignatureCategoryItem, Color, Fabric, Print,
+)
+
 # Create your views here.
 from django.db.models import Avg, Count
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from .models import Address, ProductReview, ReviewHelpful
+
+PRICE_BRACKETS = {
+    "under-5000": (None, 5000),
+    "5000-10000": (5000, 10000),
+    "10000-20000": (10000, 20000),
+    "above-20000": (20000, None),
+}
+price_choices = [
+    ("under-5000", "Under ₹5,000"),
+    ("5000-10000", "₹5,000 - ₹10,000"),
+    ("10000-20000", "₹10,000 - ₹20,000"),
+    ("above-20000", "Above ₹20,000"),
+]
+
+SORT_MAP = {
+    "newest": "-created_at",
+    "price-low": "base_price",
+    "price-high": "-base_price",
+}
 
 # Create your views here.
 def index(request):
@@ -69,8 +96,94 @@ def product(request):
     }
     return render(request, 'user/product.html', context)
 
+
 def catalogue(request):
-    return render(request, 'user/catalogue.html')
+    products = (
+        Product.objects.filter(is_active=True)
+        .select_related("category", "fabric", "print_type")
+        .prefetch_related(
+            Prefetch(
+                "images",
+                queryset=ProductImage.objects.select_related("variant__color").order_by("display_order", "created_at"),
+                to_attr="all_images",
+            ),
+            "variants__color",
+        )
+    )
+
+    category_slugs = request.GET.getlist("category")
+    fabric_slugs = request.GET.getlist("fabric")
+    print_slugs = request.GET.getlist("print")
+    color_slugs = request.GET.getlist("color")
+    price_keys = request.GET.getlist("price")
+
+    if category_slugs:
+        products = products.filter(category__slug__in=category_slugs)
+    if fabric_slugs:
+        products = products.filter(fabric__slug__in=fabric_slugs)
+    if print_slugs:
+        products = products.filter(print_type__slug__in=print_slugs)
+    if color_slugs:
+        products = products.filter(variants__color__slug__in=color_slugs).distinct()
+
+    if price_keys:
+        price_q = Q()
+        for key in price_keys:
+            lo, hi = PRICE_BRACKETS.get(key, (None, None))
+            bracket = Q()
+            if lo is not None:
+                bracket &= Q(base_price__gte=lo)
+            if hi is not None:
+                bracket &= Q(base_price__lt=hi)
+            price_q |= bracket
+        products = products.filter(price_q)
+
+    sort_key = request.GET.get("sort", "featured")
+    if sort_key in SORT_MAP:
+        products = products.order_by(SORT_MAP[sort_key])
+    # "featured" keeps Product.Meta's default ordering (-created_at)
+
+    paginator = Paginator(products, 5)
+    page_obj = paginator.get_page(request.GET.get("page", 1))
+
+    querydict = request.GET.copy()
+    querydict.pop("page", None)
+    base_qs = querydict.urlencode()
+
+    for product in page_obj.object_list:
+        thumb = None
+        if color_slugs:
+            thumb = next(
+                (img for img in product.all_images
+                 if img.variant_id and img.variant.color.slug in color_slugs),
+                None
+            )
+        if thumb is None:
+            thumb = next((img for img in product.all_images if img.variant_id is None), None)
+        if thumb is None and product.all_images:
+            thumb = product.all_images[0]
+        product.thumb = thumb
+
+    context = {
+        "page_obj": page_obj,
+        "products": page_obj.object_list,
+        "total_count": paginator.count,
+        "price_choices": price_choices,
+
+        "categories": SignatureCategoryItem.objects.filter(is_active=True),
+        "colors": Color.objects.filter(is_active=True),
+        "fabrics": Fabric.objects.filter(is_active=True),
+        "prints": Print.objects.filter(is_active=True),
+
+        "selected_categories": category_slugs,
+        "selected_fabrics": fabric_slugs,
+        "selected_prints": print_slugs,
+        "selected_colors": color_slugs,
+        "selected_prices": price_keys,
+        "current_sort": sort_key,
+        "base_qs": base_qs,
+    }
+    return render(request, "user/catalogue.html", context)
 
 def profile_view(request):
     context = {

@@ -307,6 +307,14 @@ class Product(SlugMixin, TimeStampedModel):
         help_text="Unpublish without deleting (keeps order history intact).",
     )
 
+    @property
+    def final_price(self):
+        """Selling price after discount. discount_price is stored as a
+        fraction (e.g. 0.2 = 20% off), not an absolute amount."""
+        if self.discount_price:
+            return round(self.base_price * (1 - self.discount_price))
+        return self.base_price
+
     class Meta:
         ordering = ["-created_at"]
         indexes = [

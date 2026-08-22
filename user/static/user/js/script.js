@@ -1,20 +1,18 @@
+/* splash screen */
+window.addEventListener("load", function () {
 
-  
-  /* splash screen */
-    window.addEventListener("load", function () {
+  setTimeout(function () {
 
-      setTimeout(function () {
+    const splash = document.getElementById("splash");
+    splash.classList.add("hide");
 
-        const splash = document.getElementById("splash");
-        splash.classList.add("hide");
+    setTimeout(function () {
+      splash.style.display = "none";
+    }, 1000);
 
-        setTimeout(function () {
-          splash.style.display = "none";
-        }, 1000);
+  }, 5200);   /* longer for movie intro */
 
-      }, 5200);   /* longer for movie intro */
-
-    });
+});
 document.addEventListener("DOMContentLoaded", function () {
 
   /* =========================
@@ -28,17 +26,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let index = 0;
 
-    function show(i){
+    function show(i) {
       items.forEach(el => el.classList.remove("active"));
       items[i].classList.add("active");
     }
 
-    function nextSlide(){
+    function nextSlide() {
       index = (index + 1) % items.length;
       show(index);
     }
 
-    function prevSlide(){
+    function prevSlide() {
       index = (index - 1 + items.length) % items.length;
       show(index);
     }
@@ -50,15 +48,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 });
-    /* MOBILE MENU */
+/* MOBILE MENU */
 
-    const mobileToggle =
-      document.getElementById("mobileToggle");
+const mobileToggle =
+  document.getElementById("mobileToggle");
 
-    const mobileDrawer =
-      document.getElementById("mobileDrawer");
+const mobileDrawer =
+  document.getElementById("mobileDrawer");
 
-   if(mobileToggle && mobileDrawer){
+if (mobileToggle && mobileDrawer) {
 
   mobileToggle.addEventListener("click", () => {
 
@@ -68,33 +66,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
 }
 
-    /* MOBILE COLLECTION */
+/* MOBILE COLLECTION */
 
-    const mobileCollectionBtn =
-      document.getElementById("mobileCollectionBtn");
+const mobileCollectionBtn =
+  document.getElementById("mobileCollectionBtn");
 
-    const mobileDropdown =
-      document.querySelector(".mobile-dropdown");
+const mobileDropdown =
+  document.querySelector(".mobile-dropdown");
 
-    mobileCollectionBtn.addEventListener("click", () => {
+mobileCollectionBtn.addEventListener("click", () => {
 
-      mobileDropdown.classList.toggle("active");
+  mobileDropdown.classList.toggle("active");
 
-    });
-    const closeMenu =
-      document.getElementById("closeMenu");
+});
+const closeMenu =
+  document.getElementById("closeMenu");
 
-    closeMenu.addEventListener("click", () => {
+closeMenu.addEventListener("click", () => {
 
-      mobileDrawer.classList.remove("active");
+  mobileDrawer.classList.remove("active");
 
-    });
+});
 
 const revealImg = document.querySelector(".reveal-img");
 
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
-    if(entry.isIntersecting){
+    if (entry.isIntersecting) {
       entry.target.style.transitionDelay = "0.2s";
       entry.target.classList.add("show");
     }
@@ -103,7 +101,7 @@ const observer = new IntersectionObserver((entries) => {
   threshold: 0.15
 });
 
-if(revealImg){
+if (revealImg) {
   observer.observe(revealImg);
 }
 
@@ -120,7 +118,7 @@ const counterSection =
 /* RESET COUNTERS ON LOAD */
 window.addEventListener("load", () => {
 
-  if(counters.length){
+  if (counters.length) {
 
     counters.forEach(counter => {
 
@@ -133,7 +131,7 @@ window.addEventListener("load", () => {
 });
 
 /* COUNTER FUNCTION */
-function startCounter(counter){
+function startCounter(counter) {
 
   const target =
     parseFloat(counter.dataset.count);
@@ -142,18 +140,18 @@ function startCounter(counter){
 
   const increment = target / 80;
 
-  function updateCounter(){
+  function updateCounter() {
 
     current += increment;
 
-    if(current < target){
+    if (current < target) {
 
-      if(target % 1 !== 0){
+      if (target % 1 !== 0) {
 
         counter.innerText =
           current.toFixed(1);
 
-      }else{
+      } else {
 
         counter.innerText =
           Math.floor(current);
@@ -162,7 +160,7 @@ function startCounter(counter){
 
       requestAnimationFrame(updateCounter);
 
-    }else{
+    } else {
 
       counter.innerText = target;
 
@@ -175,35 +173,35 @@ function startCounter(counter){
 
 /* INTERSECTION OBSERVER */
 const counterObserver =
-new IntersectionObserver((entries)=>{
+  new IntersectionObserver((entries) => {
 
-  entries.forEach(entry=>{
+    entries.forEach(entry => {
 
-    if(entry.isIntersecting){
+      if (entry.isIntersecting) {
 
-      counters.forEach(counter=>{
+        counters.forEach(counter => {
 
-        /* prevent repeating */
-        if(!counter.classList.contains("counted")){
+          /* prevent repeating */
+          if (!counter.classList.contains("counted")) {
 
-          counter.classList.add("counted");
+            counter.classList.add("counted");
 
-          startCounter(counter);
+            startCounter(counter);
 
-        }
+          }
 
-      });
+        });
 
-    }
+      }
 
+    });
+
+  }, {
+    threshold: 0.45
   });
 
-},{
-  threshold:0.45
-});
-
 /* OBSERVE SECTION */
-if(counterSection){
+if (counterSection) {
 
   counterObserver.observe(counterSection);
 
@@ -216,7 +214,7 @@ let index = 0;
 const total = 3;
 
 // MOVE SLIDE
-function go(i){
+function go(i) {
   track.style.transform = `translateX(-${i * 100}%)`;
   dots.forEach(d => d.classList.remove("active"));
   dots[i].classList.add("active");
@@ -224,7 +222,7 @@ function go(i){
 }
 
 // AUTO SLIDE
-function next(){
+function next() {
   index = (index + 1) % total;
   go(index);
 }
@@ -232,8 +230,8 @@ function next(){
 let auto = setInterval(next, 20000);
 
 // DOT CLICK
-dots.forEach((d,i)=>{
-  d.addEventListener("click",()=>{
+dots.forEach((d, i) => {
+  d.addEventListener("click", () => {
     go(i);
     clearInterval(auto);
     auto = setInterval(next, 5000);
@@ -243,16 +241,16 @@ dots.forEach((d,i)=>{
 // SWIPE
 let startX = 0;
 
-track.addEventListener("touchstart",(e)=>{
+track.addEventListener("touchstart", (e) => {
   startX = e.touches[0].clientX;
 });
 
-track.addEventListener("touchend",(e)=>{
+track.addEventListener("touchend", (e) => {
   let endX = e.changedTouches[0].clientX;
 
-  if(startX > endX + 40){
+  if (startX > endX + 40) {
     next();
-  } else if(startX < endX - 40){
+  } else if (startX < endX - 40) {
     index = (index - 1 + total) % total;
     go(index);
   }
@@ -263,28 +261,28 @@ ABOUT SECTION REVEAL
 ========================================= */
 
 const revealElements =
-document.querySelectorAll(
-  ".reveal-up, .reveal-left, .reveal-right"
-);
+  document.querySelectorAll(
+    ".reveal-up, .reveal-left, .reveal-right"
+  );
 
 const revealObserver =
-new IntersectionObserver((entries)=>{
+  new IntersectionObserver((entries) => {
 
-  entries.forEach(entry=>{
+    entries.forEach(entry => {
 
-    if(entry.isIntersecting){
+      if (entry.isIntersecting) {
 
-      entry.target.classList.add("active");
+        entry.target.classList.add("active");
 
-    }
+      }
 
+    });
+
+  }, {
+    threshold: .15
   });
 
-},{
-  threshold:.15
-});
-
-revealElements.forEach(el=>{
+revealElements.forEach(el => {
   revealObserver.observe(el);
 });
 
@@ -296,139 +294,115 @@ revealElements.forEach(el=>{
 
 document.addEventListener(
 
-"DOMContentLoaded",
+  "DOMContentLoaded",
 
-()=>{
+  () => {
 
-const slider=
+    const slider =
 
-document.querySelector(
-".slider-track"
-);
+      document.querySelector(
+        ".slider-track"
+      );
 
-const images=
+    const images =
 
-document.querySelectorAll(
-".slider-track img"
-);
+      document.querySelectorAll(
+        ".slider-track img"
+      );
 
-let current=1;
+    let current = 1;
 
-function updateSlider(){
+    function updateSlider() {
 
-images.forEach(
+      images.forEach(
 
-(img,index)=>{
+        (img, index) => {
 
-img.classList.remove(
+          img.classList.remove(
 
-"center",
-"side"
+            "center",
+            "side"
 
-);
+          );
 
-if(index===current){
+          if (index === current) {
 
-img.classList.add(
-"center"
-);
+            img.classList.add(
+              "center"
+            );
 
-}else{
+          } else {
 
-img.classList.add(
-"side"
-);
+            img.classList.add(
+              "side"
+            );
 
-}
+          }
 
-}
+        }
 
-);
+      );
 
-const imageWidth=
+      const imageWidth =
 
-images[0]
-.offsetWidth;
+        images[0]
+          .offsetWidth;
 
-const gap=28;
+      const gap = 28;
 
-const move=
+      const move =
 
-(
-current*
-(imageWidth+gap)
-)
+        (
+          current *
+          (imageWidth + gap)
+        )
 
--
+        -
 
-(
-slider.parentElement
-.offsetWidth/2
-)
+        (
+          slider.parentElement
+            .offsetWidth / 2
+        )
 
-+
+        +
 
-(
-imageWidth/2
-);
+        (
+          imageWidth / 2
+        );
 
-slider.style.transform=
+      slider.style.transform =
 
-`translateX(-${move}px)`;
+        `translateX(-${move}px)`;
 
-}
+    }
 
-function autoSlide(){
+    function autoSlide() {
 
-current++;
+      current++;
 
-if(
+      if (
 
-current>=
-images.length
+        current >=
+        images.length
 
-){
+      ) {
 
-current=0;
+        current = 0;
 
-}
+      }
 
-updateSlider();
+      updateSlider();
 
-}
+    }
 
-updateSlider();
+    updateSlider();
 
-setInterval(
+    setInterval(
 
-autoSlide,
+      autoSlide,
 
-5000
+      5000
 
-);
+    );
 
-});
-
-
-
-
-const filterBtn =
-document.querySelector(".filter-toggle");
-
-const drawer =
-document.querySelector(".mobile-filter-drawer");
-
-const closeFilter =
-document.querySelector(".close-filter");
-
-filterBtn.addEventListener("click",()=>{
-
-drawer.classList.add("active");
-
-});
-
-closeFilter.addEventListener("click",()=>{
-
-drawer.classList.remove("active");
-
-});
+  });
