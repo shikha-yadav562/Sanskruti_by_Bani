@@ -817,7 +817,7 @@ def catalogue(request):
         )
 
     # ---------------------------------------------------------
-    # EXISTING FILTERS — KEPT AS-IS
+    # EXISTING FILTERS 
     # ---------------------------------------------------------
     category_slugs = request.GET.getlist("category")
     fabric_slugs = request.GET.getlist("fabric")
@@ -852,7 +852,7 @@ def catalogue(request):
         ).distinct()
 
     # ---------------------------------------------------------
-    # EXISTING PRICE FILTER — KEPT AS-IS
+    # EXISTING PRICE FILTER 
     # ---------------------------------------------------------
     if price_keys:
         price_q = Q()
@@ -876,7 +876,7 @@ def catalogue(request):
         products = products.filter(price_q)
 
     # ---------------------------------------------------------
-    # EXISTING SORTING — KEPT AS-IS
+    # EXISTING SORTING 
     # ---------------------------------------------------------
     sort_key = request.GET.get("sort", "featured")
 
@@ -885,11 +885,10 @@ def catalogue(request):
             SORT_MAP[sort_key]
         )
 
-    # "featured" keeps Product.Meta's default ordering
-    # (-created_at)
+ 
 
     # ---------------------------------------------------------
-    # PAGINATION — KEPT AS-IS
+    # PAGINATION 
     # ---------------------------------------------------------
     paginator = Paginator(products, 5)
 
@@ -898,7 +897,7 @@ def catalogue(request):
     )
 
     # ---------------------------------------------------------
-    # KEEP SEARCH + FILTERS + SORT WHEN PAGINATING
+    #  SEARCH
     # ---------------------------------------------------------
     querydict = request.GET.copy()
     querydict.pop("page", None)
@@ -906,7 +905,7 @@ def catalogue(request):
     base_qs = querydict.urlencode()
 
     # ---------------------------------------------------------
-    # EXISTING COLOR-SPECIFIC THUMBNAIL LOGIC — KEPT AS-IS
+    # EXISTING COLOR-SPECIFIC THUMBNAIL LOGIC 
     # ---------------------------------------------------------
     for product in page_obj.object_list:
         thumb = None
