@@ -169,8 +169,8 @@
           {% endfor %}
         </div>
       </div>
-      <a href="#">New Arrivals</a>
-      <a href="#">Bestsellers</a>
+      <a href="{% url 'user:catalogue' %}?tag={{ new_arrivals_tag.slug }}">New Arrivals</a>
+      <a href="{% url 'user:catalogue' %}?tag={{ bestsellers_tag.slug }}">Bestsellers</a>
     </div>
   </div>
 

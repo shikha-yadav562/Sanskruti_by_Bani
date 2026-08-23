@@ -189,8 +189,8 @@
           {% endfor %}
         </div>
       </div>
-      <a href="#">New Arrivals</a>
-      <a href="#">Bestsellers</a>
+      <a href="{% url 'user:catalogue' %}?tag={{ new_arrivals_tag.slug }}">New Arrivals</a>
+      <a href="{% url 'user:catalogue' %}?tag={{ bestsellers_tag.slug }}">Bestsellers</a>
     </div>
   </div>
 
@@ -449,6 +449,7 @@
 
           <!-- Accordion Item 4: Amazon-Style Customer Reviews Hub -->
           <div class="border-b border-[#e7c27a]/40" id="writeReviewSection">
+            <div id="reviewAlertBox" class="hidden px-4 py-3 rounded-xl text-xs font-semibold items-center gap-2"></div>
             <button
               class="w-full py-4 flex justify-between items-center text-left text-sm font-bold uppercase tracking-widest text-[#810820] focus:outline-none accordion-btn"
               style="font-family: 'Inter', sans-serif;">
@@ -460,87 +461,95 @@
 
               <!-- AMAZON-STYLE RATING BREAKDOWN DASHBOARD -->
               <div class="grid grid-cols-1 md:grid-cols-12 gap-6 bg-white p-6 rounded-2xl border border-[#e7c27a]/40 shadow-sm">
-                
-                <!-- Left: Overall Rating Score -->
-                <div class="md:col-span-4 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-[#e7c27a]/30 pb-6 md:pb-0 md:pr-6">
-                  <span class="text-5xl font-bold text-[#810820] font-serif" style="font-family: 'Cinzel', serif;">{{ avg_rating }}</span>
-                  <div class="flex text-[#e7c27a] text-lg my-2">
-                    {% for i in "12345" %}
-                    {% if forloop.counter <= full_stars %}
-                    <i class="fa-solid fa-star"></i>
-                    {% elif forloop.counter == full_stars|add:1 and has_half_star %}
-                    <i class="fa-solid fa-star-half-stroke"></i>
-                    {% else %}
-                    <i class="fa-regular fa-star"></i>
-                    {% endif %}
-                    {% endfor %}
-                  </div>
-                  <p class="text-xs text-[#810820] font-semibold uppercase tracking-wider">Based on {{ total_reviews }} verified review{{ total_reviews|pluralize }}</p>
-                  {% if star_percents.5 or star_percents.4 %}
-                  <p class="text-[11px] text-gray-500 mt-1">{{ star_percents.5|add:star_percents.4 }}% of customers recommend this saree</p>
-                  {% endif %}
 
-                {% if request.user.is_authenticated %}
-<button onclick="toggleReviewForm()" class="mt-4 px-6 py-2.5 bg-[#810820] text-[#e7c27a] font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#71041a] transition shadow-md">
-  <i class="fa-solid fa-pen mr-1"></i> Write A Review
-</button>
-{% else %}
-<a href="{% url 'user:login' %}?next={{ request.path|urlencode }}%23writeReviewSection"
-   class="mt-4 px-6 py-2.5 bg-[#810820] text-[#e7c27a] font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#71041a] transition shadow-md inline-block">
-  <i class="fa-solid fa-pen mr-1"></i> Login To Write A Review
-</a>
-{% endif %}
-</div>
+              <!-- Left: Overall Rating Score -->
+                <div class="md:col-span-4 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-[#e7c27a]/30 pb-6 md:pb-0 md:pr-6">
+                  <span class="text-5xl font-bold text-[#810820] font-serif" style="font-family: 'Cinzel', serif;">
+                    {% if total_reviews > 0 %}{{ avg_rating }}{% else %}0.0{% endif %}
+                  </span>
+                  <div class="flex text-[#e7c27a] text-lg my-2">
+                  {% for i in "12345" %}
+                  {% if total_reviews > 0 and forloop.counter <= full_stars %}
+                    <i class="fa-solid fa-star"></i>
+                  {% elif total_reviews > 0 and forloop.counter == full_stars|add:1 and has_half_star %}
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                  {% else %}
+                    <i class="fa-regular fa-star"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <p class="text-xs text-[#810820] font-semibold uppercase tracking-wider">
+              {% if total_reviews > 0 %}
+                Based on {{ total_reviews }} verified review{{ total_reviews|pluralize }}
+              {% else %}
+                No reviews yet
+              {% endif %}
+              </p>
+              {% if total_reviews > 0 and star_percents.5 or star_percents.4 %}
+                <p class="text-[11px] text-gray-500 mt-1">{{ star_percents.5|add:star_percents.4 }}% of customers recommend this saree</p>
+              {% endif %}
+
+              {% if request.user.is_authenticated %}
+                <button onclick="toggleReviewForm()" class="mt-4 px-6 py-2.5 bg-[#810820] text-[#e7c27a] font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#71041a] transition shadow-md">
+                  <i class="fa-solid fa-pen mr-1"></i> Write A Review
+                </button>
+              {% else %}
+                <a href="{% url 'user:login' %}?next={{ request.path|urlencode }}%23writeReviewSection"
+                class="mt-4 px-6 py-2.5 bg-[#810820] text-[#e7c27a] font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#71041a] transition shadow-md inline-block">
+                  <i class="fa-solid fa-pen mr-1"></i> Login To Write A Review
+                </a>
+                {% endif %}
+              </div>
 
                 <!-- Center: Rating Bars (5 Star to 1 Star) -->
-                <div class="md:col-span-8 flex flex-col justify-center space-y-2.5">
-                  <!-- 5 Star Bar -->
-                  <div class="flex items-center gap-3 text-xs">
-                    <span class="w-12 font-bold text-[#810820]">5 Star</span>
-                    <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
-                      <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.5|default:85 }}%;"></div>
-                    </div>
-                    <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.5|default:85 }}%</span>
-                  </div>
-
-                  <!-- 4 Star Bar -->
-                  <div class="flex items-center gap-3 text-xs">
-                    <span class="w-12 font-bold text-[#810820]">4 Star</span>
-                    <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
-                      <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.4|default:10 }}%;"></div>
-                    </div>
-                    <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.4|default:10 }}%</span>
-                  </div>
-
-                  <!-- 3 Star Bar -->
-                  <div class="flex items-center gap-3 text-xs">
-                    <span class="w-12 font-bold text-[#810820]">3 Star</span>
-                    <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
-                      <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.3|default:3 }}%;"></div>
-                    </div>
-                    <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.3|default:3 }}%</span>
-                  </div>
-
-                  <!-- 2 Star Bar -->
-                  <div class="flex items-center gap-3 text-xs">
-                    <span class="w-12 font-bold text-[#810820]">2 Star</span>
-                    <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
-                      <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.2|default:2 }}%;"></div>
-                    </div>
-                    <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.2|default:2 }}%</span>
-                  </div>
-
-                  <!-- 1 Star Bar -->
-                  <div class="flex items-center gap-3 text-xs">
-                    <span class="w-12 font-bold text-[#810820]">1 Star</span>
-                    <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
-                      <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.1|default:0 }}%;"></div>
-                    </div>
-                    <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.1|default:0 }}%</span>
-                  </div>
+              <div class="md:col-span-8 flex flex-col justify-center space-y-2.5">
+              <!-- 5 Star Bar -->
+              <div class="flex items-center gap-3 text-xs">
+                <span class="w-12 font-bold text-[#810820]">5 Star</span>
+                <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
+                  <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.5|default:0 }}%;"></div>
                 </div>
-
+                <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.5|default:0 }}%</span>
               </div>
+
+              <!-- 4 Star Bar -->
+              <div class="flex items-center gap-3 text-xs">
+                <span class="w-12 font-bold text-[#810820]">4 Star</span>
+                <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
+                  <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.4|default:0 }}%;"></div>
+                </div>
+                <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.4|default:0 }}%</span>
+              </div>
+
+              <!-- 3 Star Bar -->
+              <div class="flex items-center gap-3 text-xs">
+                <span class="w-12 font-bold text-[#810820]">3 Star</span>
+                <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
+                  <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.3|default:0 }}%;"></div>
+                </div>
+                <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.3|default:0 }}%</span>
+              </div>
+
+              <!-- 2 Star Bar -->
+              <div class="flex items-center gap-3 text-xs">
+                <span class="w-12 font-bold text-[#810820]">2 Star</span>
+                <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
+                  <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.2|default:0 }}%;"></div>
+                </div>
+                <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.2|default:0 }}%</span>
+              </div>
+
+              <!-- 1 Star Bar -->
+              <div class="flex items-center gap-3 text-xs">
+                <span class="w-12 font-bold text-[#810820]">1 Star</span>
+                <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden border border-[#e7c27a]/30">
+                  <div class="h-full bg-[#810820] rounded-full" style="width: {{ star_percents.1|default:0 }}%;"></div>
+                </div>
+                <span class="w-10 text-right font-medium text-gray-600">{{ star_percents.1|default:0 }}%</span>
+              </div>
+              </div>
+
+            </div>
 
               <!-- WRITE A REVIEW FORM (AMAZON STYLE WITH PHOTO UPLOADS) -->
                {% if request.user.is_authenticated %}
@@ -560,11 +569,11 @@
                     <label class="block text-xs font-bold uppercase text-[#810820] mb-1">Overall Rating *</label>
                     <div class="flex items-center gap-1 text-2xl text-[#e7c27a] cursor-pointer" id="starPicker">
                         <i class="fa-regular fa-star star-btn" data-star="1" onclick="setRating(1)"></i>
-    <i class="fa-regular fa-star star-btn" data-star="2" onclick="setRating(2)"></i>
-    <i class="fa-regular fa-star star-btn" data-star="3" onclick="setRating(3)"></i>
-    <i class="fa-regular fa-star star-btn" data-star="4" onclick="setRating(4)"></i>
-    <i class="fa-regular fa-star star-btn" data-star="5" onclick="setRating(5)"></i>
-                      <span class="text-xs font-bold text-[#810820] ml-2" id="ratingText">0.0 / 5 Stars (Excellent)</span>
+                        <i class="fa-regular fa-star star-btn" data-star="2" onclick="setRating(2)"></i>
+                        <i class="fa-regular fa-star star-btn" data-star="3" onclick="setRating(3)"></i>
+                        <i class="fa-regular fa-star star-btn" data-star="4" onclick="setRating(4)"></i>
+                        <i class="fa-regular fa-star star-btn" data-star="5" onclick="setRating(5)"></i>
+                          <span class="text-xs font-bold text-[#810820] ml-2" id="ratingText">0.0 / 5 Stars (Excellent)</span>
                     </div>
                   </div>
 
@@ -753,26 +762,47 @@
               }
             }
 
-            function handleReviewSubmit(e) {
-              e.preventDefault();
-              const form = document.getElementById('customerReviewForm');
-              const fd = new FormData(form);
+            function showReviewAlert(message, type = "success") {
+  const box = document.getElementById("reviewAlertBox");
+  if (!box) {
+    console.error("reviewAlertBox not found in DOM");
+    return;
+  }
 
-              fetch('{% url "user:submit_review" %}', {
-                method: 'POST',
-                body: fd
-              })
-              .then(r => r.json())
-              .then(data => {
-                if (data.success) {
-                  alert('Thank you! Your product review has been submitted successfully.');
-                  window.location.reload();
-                } else {
-                  alert('Error: ' + (data.error || 'Could not submit review'));
-                }
-              })
-              .catch(() => alert('Network error. Please try again.'));
-            }
+  const styles = {
+    success: "bg-emerald-50 text-emerald-800 border border-emerald-200",
+    error: "bg-red-50 text-red-800 border border-red-200",
+  };
+
+  box.className = "px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-2 " + (styles[type] || styles.error);
+  box.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ${message}`;
+  box.classList.remove("hidden");
+  box.scrollIntoView({ behavior: "smooth", block: "center" });
+
+  clearTimeout(window._reviewAlertTimeout);
+  window._reviewAlertTimeout = setTimeout(() => box.classList.add("hidden"), 10000);
+}
+
+            function handleReviewSubmit(e) {
+  e.preventDefault();
+  const form = document.getElementById('customerReviewForm');
+  const fd = new FormData(form);
+
+  fetch('{% url "user:submit_review" %}', {
+    method: 'POST',
+    body: fd
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      showReviewAlert('Thank you! Your review has been submitted. <br/> It will be visible once Admin approves it.', 'success');
+      setTimeout(() => window.location.reload(), 5000);
+    } else {
+      showReviewAlert('Error: ' + (data.error || 'Could not submit review'), 'error');
+    }
+  })
+  .catch(() => showReviewAlert('Network error. Please try again.', 'error'));
+}
 
             function voteHelpful(reviewId, btn) {
               fetch('/review/helpful/' + reviewId + '/', {
@@ -823,10 +853,17 @@
             src="{% if p.thumb %}{{ p.thumb.image_url }}{% else %}{% static 'user/assets/placeholder.jpg' %}{% endif %}"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ p.name }}">
           {% if p.tags.first %}
-          
           <div class="absolute top-2 left-2 bg-[#810820] text-[#e7c27a] text-[9px] uppercase px-2 py-1 font-bold tracking-widest">
             {{ p.tags.first.name }}</div>
           {% endif %}
+
+          <!-- QUICK VIEW OVERLAY -->
+          <div class="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <span class="bg-[#fff8f4] text-[#810820] px-6 py-2 uppercase tracking-widest text-[10px] font-semibold transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-[#810820] hover:text-[#fff8f4] border border-[#810820]">
+              Quick View
+            </span>
+          </div>
+
         </div>
         
         <div class="py-4 text-center">

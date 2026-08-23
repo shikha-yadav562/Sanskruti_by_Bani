@@ -306,8 +306,8 @@
 
       </div>
 
-      <a href="#">New Arrivals</a>
-      <a href="#">Bestsellers</a>
+      <a href="{% url 'user:catalogue' %}?tag={{ new_arrivals_tag.slug }}">New Arrivals</a>
+      <a href="{% url 'user:catalogue' %}?tag={{ bestsellers_tag.slug }}">Bestsellers</a>
 
     </div>
 
@@ -375,11 +375,11 @@ HERO SLIDER (LUXURY EDITION)
 
             <div class="hero-buttons">
 
-              <a href="#" class="btn-primary">
+              <a href="#sig-categories" class="btn-primary">
                 {{ hero_main.button_1_text|default:"Explore" }}
               </a>
 
-              <a href="#" class="btn-outline">
+              <a href="{% url 'user:catalogue' %}" class="btn-outline">
                 {{ hero_main.button_2_text|default:"Shop Now" }}
               </a>
 
@@ -459,7 +459,7 @@ LUXURY EDITORIAL COLLECTIONS
   <!-- =====================================
   5 SIGNATURE SAREE CATEGORIES (LUXURY CARD FRAME SHOWCASE)
   ===================================== -->
-  <section class="sig-editorial-section max-w-[1440px] mx-auto py-12 px-4 sm:px-6 lg:px-10">
+  <section class="sig-editorial-section max-w-[1440px] mx-auto py-12 px-4 sm:px-6 lg:px-10" id="sig-categories">
 
     <!-- HEADING -->
     <div class="sig-editorial-header text-center mb-10 space-y-3">
@@ -633,11 +633,11 @@ LUXURY EDITORIAL COLLECTIONS
             <!-- RIGHT: STORY TEXT CONTENT -->
             <div class="memory-content">
               <span class="memory-label">{{ memories_section.section_label|default:"SWEET MEMORIES" }}</span>
-              <h2 style="color: #e7c27a !important; font-weight: 700;">
+              <h2 style="color: #fffdfa !important; font-weight: 700;">
                 {{ memories_section.main_heading|safe|linebreaksbr }}
               </h2>
               <div class="gold-line"></div>
-              <p>
+              <p style="color: #e7c27a">
                 {% if memories_section.paragraph_text and memories_section.paragraph_text != 'SWEET MEMORIES' %}
                   {{ memories_section.paragraph_text|safe|linebreaksbr }}
                 {% else %}
@@ -724,12 +724,16 @@ SPECIALITY = PAITHANI
       <div class="saree-card">
 
         <div class="saree-image">
-          {% if product.thumb %}
-          <img src="{{ product.thumb.image_url }}" alt="{{ product.name }}">
-          {% endif %}
+          <a href="{% url 'user:product' product.slug %}" class="saree-image-link group">
+            {% if product.thumb %}
+              <img src="{{ product.thumb.image_url }}" alt="{{ product.name }}">
+            {% endif %}
+            <div class="saree-quickview-wrap">
+              <span class="saree-quickview-btn">Quick View</span>
+            </div>
+          </a>
           <span class="saree-badge">Best Seller</span>
         </div>
-
         <div class="saree-info">
 
           <div class="saree-category">
