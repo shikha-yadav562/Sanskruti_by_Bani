@@ -219,7 +219,7 @@
             <div class="mt-6 text-center pt-3 border-t border-slate-200">
                 <p class="text-xs text-slate-500">
                     Don't have an account? 
-                    <a href="{% url 'user:signup' %}" class="font-bold text-[#540112] hover:text-[#D4AF37] transition-colors underline uppercase tracking-wider ml-1">Create Account</a>
+                <a href="{% url 'user:signup' %}" class="font-bold text-[#540112] hover:text-[#D4AF37] transition-colors underline uppercase tracking-wider ml-1">Create Account</a>
                 </p>
             </div>
 
@@ -242,6 +242,8 @@
             return cookieValue;
         }
         const csrftoken = getCookie('csrftoken');
+        const urlParams = new URLSearchParams(window.location.search);
+        const nextUrl = urlParams.get('next') || '';
 
         function showToast(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -309,7 +311,8 @@
             const payload = {
                 username: document.getElementById('login_username').value,
                 password: document.getElementById('login_password').value,
-                remember_me: document.getElementById('remember_me').checked
+                remember_me: document.getElementById('remember_me').checked,
+                 next: nextUrl
             };
 
             try {

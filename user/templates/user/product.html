@@ -129,9 +129,19 @@
         </div>
         <a href="{% url 'user:catalogue' %}?tag={{ bestsellers_tag.slug }}">Bestsellers</a>
         <!-- SEARCH -->
-        <div class="search-box">
-          <input type="text" placeholder="Search..." class="search-input">
-        </div>
+<div class="search-box relative">
+  <input
+    type="text"
+    id="storeSearchInput"
+    name="q"
+    placeholder="Search sarees..."
+    class="search-input"
+    autocomplete="off"
+  >
+  <div id="searchSuggestions"
+       class="hidden absolute top-full left-0 right-0 mt-2 bg-white border border-[#e7c27a]/40 rounded-lg shadow-xl z-[60] max-h-[420px] overflow-y-auto">
+  </div>
+</div>
         <!-- ICONS -->
          <button class="icon-btn" onclick="logoutUser()">
           <span class="material-symbols-outlined">logout</span>
@@ -329,13 +339,13 @@
             {% if default_variant and default_variant.stock_quantity <= 0 %}disabled{% endif %}>
             {% if default_variant and default_variant.stock_quantity <= 0 %}Out Of Stock{% else %}Add To Cart{% endif %}
           </button> {% endcomment %}
-          <a href="https://wa.me/7900152351?text=Hi%2C%20I%20am%20interested%20in%20{{ product.name|urlencode }}.%20Price%3A%20%E2%82%B9{{ display_price|floatformat:0 }}.%20Product%20Link%3A%20{{ request.scheme }}%3A%2F%2F{{ request.get_host }}{% url 'user:product' product.slug %}"
-          target="_blank" rel="noopener"
-          class="w-full py-4 bg-[#810820] border-2 border-[#810820] text-[#e7c27a] font-bold uppercase tracking-widest text-sm hover:bg-[#4a0c16] hover:border-[#4a0c16] transition-colors shadow-lg shadow-[#810820]/20 flex items-center justify-center gap-2"
-          style="font-family: 'Inter', sans-serif;">
-          <i class="fa-brands fa-whatsapp text-lg"></i>
-         Buy It Now
-          </a>
+<a href="{% url 'user:buy_now' product.slug %}?variant={{ default_variant.id|default:'' }}"
+   id="buyNowBtn" target="_blank" rel="noopener"
+   class="w-full py-4 bg-[#810820] border-2 border-[#810820] text-[#e7c27a] font-bold uppercase tracking-widest text-sm hover:bg-[#4a0c16] hover:border-[#4a0c16] transition-colors shadow-lg shadow-[#810820]/20 flex items-center justify-center gap-2"
+   style="font-family: 'Inter', sans-serif;">
+  <i class="fa-brands fa-whatsapp text-lg"></i>
+  Buy It Now
+</a>
         </div>
 
         <!-- Trust Badges -->
@@ -470,10 +480,17 @@
                   <p class="text-[11px] text-gray-500 mt-1">{{ star_percents.5|add:star_percents.4 }}% of customers recommend this saree</p>
                   {% endif %}
 
-                  <button onclick="toggleReviewForm()" class="mt-4 px-6 py-2.5 bg-[#810820] text-[#e7c27a] font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#71041a] transition shadow-md">
-                    <i class="fa-solid fa-pen mr-1"></i> Write A Review
-                  </button>
-                </div>
+                {% if request.user.is_authenticated %}
+<button onclick="toggleReviewForm()" class="mt-4 px-6 py-2.5 bg-[#810820] text-[#e7c27a] font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#71041a] transition shadow-md">
+  <i class="fa-solid fa-pen mr-1"></i> Write A Review
+</button>
+{% else %}
+<a href="{% url 'user:login' %}?next={{ request.path|urlencode }}%23writeReviewSection"
+   class="mt-4 px-6 py-2.5 bg-[#810820] text-[#e7c27a] font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#71041a] transition shadow-md inline-block">
+  <i class="fa-solid fa-pen mr-1"></i> Login To Write A Review
+</a>
+{% endif %}
+</div>
 
                 <!-- Center: Rating Bars (5 Star to 1 Star) -->
                 <div class="md:col-span-8 flex flex-col justify-center space-y-2.5">
@@ -526,6 +543,7 @@
               </div>
 
               <!-- WRITE A REVIEW FORM (AMAZON STYLE WITH PHOTO UPLOADS) -->
+               {% if request.user.is_authenticated %}
               <div id="reviewFormContainer" class="hidden bg-white p-6 rounded-2xl border-2 border-[#810820]/30 shadow-md">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-[#810820] mb-4 flex items-center gap-2">
                   <i class="fa-solid fa-star text-[#e7c27a]"></i> Write A Customer Review
@@ -535,18 +553,18 @@
                   {% csrf_token %}
                   <input type="hidden" name="product_slug" value="{{ product.slug }}">
                   <input type="hidden" name="product_name" value="{{ product.name }}">
-                  <input type="hidden" name="rating" id="ratingInput" value="5">
+                  <input type="hidden" name="rating" id="ratingInput" value="0">
 
                   <!-- Interactive Star Picker -->
                   <div>
                     <label class="block text-xs font-bold uppercase text-[#810820] mb-1">Overall Rating *</label>
                     <div class="flex items-center gap-1 text-2xl text-[#e7c27a] cursor-pointer" id="starPicker">
-                      <i class="fa-solid fa-star star-btn" data-star="1" onclick="setRating(1)"></i>
-                      <i class="fa-solid fa-star star-btn" data-star="2" onclick="setRating(2)"></i>
-                      <i class="fa-solid fa-star star-btn" data-star="3" onclick="setRating(3)"></i>
-                      <i class="fa-solid fa-star star-btn" data-star="4" onclick="setRating(4)"></i>
-                      <i class="fa-solid fa-star star-btn" data-star="5" onclick="setRating(5)"></i>
-                      <span class="text-xs font-bold text-[#810820] ml-2" id="ratingText">5.0 / 5 Stars (Excellent)</span>
+                        <i class="fa-regular fa-star star-btn" data-star="1" onclick="setRating(1)"></i>
+    <i class="fa-regular fa-star star-btn" data-star="2" onclick="setRating(2)"></i>
+    <i class="fa-regular fa-star star-btn" data-star="3" onclick="setRating(3)"></i>
+    <i class="fa-regular fa-star star-btn" data-star="4" onclick="setRating(4)"></i>
+    <i class="fa-regular fa-star star-btn" data-star="5" onclick="setRating(5)"></i>
+                      <span class="text-xs font-bold text-[#810820] ml-2" id="ratingText">0.0 / 5 Stars (Excellent)</span>
                     </div>
                   </div>
 
@@ -605,6 +623,7 @@
                   </div>
                 </form>
               </div>
+              {% endif %}
 
               <!-- REVIEWS LIST & CARDS -->
               <div class="space-y-6">
@@ -976,6 +995,14 @@ LUXURY FOOTER SECTION
         if (mainImg) mainImg.src = variant.images[0];
       }
 
+      // Keep the Buy Now link pointed at the currently selected variant
+const buyBtn = document.getElementById('buyNowBtn');
+if (buyBtn) {
+  const buyUrl = new URL(buyBtn.href, window.location.origin);
+  buyUrl.searchParams.set('variant', variantId);
+  buyBtn.href = buyUrl.toString();
+}
+
       // Out-of-stock messaging
       const addToCartBtn = document.getElementById('addToCartBtn');
       if (addToCartBtn) {
@@ -1032,6 +1059,91 @@ LUXURY FOOTER SECTION
     }
   });
   </script>
+
+  <script>
+(function () {
+  const input = document.getElementById('storeSearchInput');
+  const dropdown = document.getElementById('searchSuggestions');
+  const SUGGEST_URL = "{% url 'user:search_suggest' %}";
+  const CATALOGUE_URL = "{% url 'user:catalogue' %}";
+ 
+  let debounceTimer = null;
+  let currentController = null;  // cancels an in-flight request if a newer keystroke arrives
+ 
+  function renderSuggestions(results, query) {
+    if (results.length === 0) {
+      dropdown.innerHTML = `<div class="p-4 text-center text-xs text-gray-400">No results for "${query}"</div>`;
+      dropdown.classList.remove('hidden');
+      return;
+    }
+ 
+    const items = results.map(p => `
+      <a href="/product/${p.slug}/" class="flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] hover:bg-[#fff8f4] transition-colors">
+        ${p.thumbnail
+          ? `<img src="${p.thumbnail}" alt="${p.name}" class="w-10 h-13 object-cover rounded bg-gray-100 shrink-0">`
+          : `<div class="w-10 h-13 rounded bg-gray-100 shrink-0"></div>`}
+        <div class="min-w-0">
+          <div class="text-[13px] font-semibold truncate">${p.name}</div>
+          <div class="text-[11px] text-[#810820]/70">${p.category}</div>
+        </div>
+        <div class="ml-auto text-xs font-bold text-[#810820] whitespace-nowrap">₹${Math.round(p.price).toLocaleString('en-IN')}</div>
+      </a>
+    `).join('');
+ 
+    const viewAll = `
+      <a href="${CATALOGUE_URL}?q=${encodeURIComponent(query)}"
+         class="block text-center py-2.5 text-xs font-bold text-[#810820] border-t border-[#e7c27a]/30 hover:bg-[#fff8f4] transition-colors">
+        View all results for "${query}"
+      </a>`;
+ 
+    dropdown.innerHTML = items + viewAll;
+    dropdown.classList.remove('hidden');
+  }
+ 
+  input.addEventListener('input', function () {
+    const query = this.value.trim();
+    clearTimeout(debounceTimer);
+ 
+    if (query.length < 2) {
+      dropdown.classList.add('hidden');
+      return;
+    }
+ 
+    // Cancel the previous request so a slow older response can't
+    // overwrite a newer one that already came back (race condition
+    // guard -- important once results start streaming from typing fast).
+    if (currentController) currentController.abort();
+ 
+    debounceTimer = setTimeout(async () => {
+      currentController = new AbortController();
+      try {
+        const res = await fetch(`${SUGGEST_URL}?q=${encodeURIComponent(query)}`, {
+          signal: currentController.signal,
+        });
+        const data = await res.json();
+        renderSuggestions(data.results, query);
+      } catch (err) {
+        if (err.name !== 'AbortError') console.error(err);
+      }
+    }, 300);  // wait 300ms after the user stops typing
+  });
+ 
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      const query = this.value.trim();
+      if (query) window.location.href = `${CATALOGUE_URL}?q=${encodeURIComponent(query)}`;
+    }
+  });
+ 
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function (e) {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+})();
+</script>
+ 
 </body>
 
 </html>

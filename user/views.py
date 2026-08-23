@@ -366,6 +366,7 @@ from django.db import transaction
 from django.db.models import Q
 from . import services
 from .models import LoginHistory
+from django.utils.http import url_has_allowed_host_and_scheme
 
 Account = get_user_model()
 
@@ -388,6 +389,7 @@ def api_login(request: HttpRequest) -> JsonResponse:
         username = data.get('username', '').strip()
         password = data.get('password', '')
         remember_me = data.get('remember_me', False)
+        next_url = data.get('next', '').strip()
         
         account = authenticate(request, username=username, password=password)
         
@@ -401,7 +403,16 @@ def api_login(request: HttpRequest) -> JsonResponse:
                 request.session.set_expiry(30 * 24 * 60 * 60)
                 
             services.log_login_attempt(request, account, "success", attempted_identifier=username)
-            redirect_url = '/adm/' if account.role == 'admin' else '/'
+
+            if account.role == 'admin':
+                redirect_url = '/adm/'
+            elif next_url and url_has_allowed_host_and_scheme(
+                next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+            ):
+                redirect_url = next_url
+            else:
+                redirect_url = '/'
+
             return JsonResponse({"success": True, "redirect_url": redirect_url})
             
         else:
@@ -474,6 +485,7 @@ def api_signup_verify(request: HttpRequest) -> JsonResponse:
         
     data = json.loads(request.body)
     otp = data.get('otp')
+    next_url = data.get('next', '').strip()
     email = request.session.get('signup_email')
     
     if not email:
@@ -490,8 +502,17 @@ def api_signup_verify(request: HttpRequest) -> JsonResponse:
     login(request, account)
     request.session.cycle_key()
     services.log_login_attempt(request, account, "success", attempted_identifier=account.email)
-    
-    return JsonResponse({"success": True, "redirect_url": "/"})
+
+    if account.role == 'admin':
+        redirect_url = '/adm/'
+    elif next_url and url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        redirect_url = next_url
+    else:
+        redirect_url = '/'
+
+    return JsonResponse({"success": True, "redirect_url": redirect_url})
 
 def api_forgot_password_init(request: HttpRequest) -> JsonResponse:
     if request.method != "POST":
@@ -624,6 +645,7 @@ def api_delete_account(request: HttpRequest) -> JsonResponse:
 #-------------------------END OF LOGIN AND SIGNUP------------------------------------------
 #====================================================================================
 
+@login_required(login_url='user:login')
 @require_POST
 def submit_review(request):
     try:
@@ -633,10 +655,8 @@ def submit_review(request):
         product_slug = request.POST.get('product_slug', 'anuradha-paithani-saree')
         product_name = request.POST.get('product_name', 'Anuradha Paithani Soft Peacock Design Saree')
 
-        user = request.user if request.user.is_authenticated else None
-
         review = ProductReview.objects.create(
-            user=user,
+            user=request.user,
             product_slug=product_slug,
             product_name=product_name,
             title=title,
@@ -645,7 +665,7 @@ def submit_review(request):
             image_1=request.FILES.get('image_1'),
             image_2=request.FILES.get('image_2'),
             image_3=request.FILES.get('image_3'),
-            is_approved=True,
+            is_approved=False,
             is_verified_buyer=True
         )
         return JsonResponse({'success': True, 'message': 'Review submitted successfully!'})
@@ -672,3 +692,334 @@ def toggle_review_helpful(request, review_id):
         return JsonResponse({'success': True, 'helpful_count': review.helpful_count})
     except ProductReview.DoesNotExist:
         return JsonResponse({'error': 'Review not found'}, status=404)
+    
+
+#----------------------------SEARCH BAR----------------------------------------------------
+
+from django.core.paginator import Paginator
+from django.db.models import Q, Prefetch
+from django.http import JsonResponse
+from django.shortcuts import render
+
+from adm_user.models import (
+    Product,
+    ProductImage,
+    SignatureCategoryItem,
+    Category,
+    Color,
+    Fabric,
+    Print,
+    Tag,
+)
+
+
+def search_suggest(request):
+    q = request.GET.get("q", "").strip()
+
+    # Don't search for very short queries
+    if len(q) < 2:
+        return JsonResponse({"results": []})
+
+    products = (
+        Product.objects
+        .filter(is_active=True)
+        .filter(
+            Q(name__icontains=q)
+            | Q(product_code__icontains=q)
+            | Q(category__name__icontains=q)
+        )
+        .select_related("category")
+        .prefetch_related(
+            Prefetch(
+                "images",
+                queryset=ProductImage.objects
+                .select_related("variant__color")
+                .order_by("display_order", "created_at"),
+                to_attr="suggestion_images",
+            )
+        )[:6]
+    )
+
+    results = []
+
+    for product in products:
+        # Prefer the main/default product image
+        thumb = next(
+            (
+                img
+                for img in product.suggestion_images
+                if img.variant_id is None
+            ),
+            None,
+        )
+
+        # Fallback to first available image
+        if thumb is None and product.suggestion_images:
+            thumb = product.suggestion_images[0]
+
+        results.append(
+            {
+                "name": product.name,
+                "slug": product.slug,
+                "category": (
+                    product.category.name
+                    if product.category
+                    else ""
+                ),
+                "price": float(
+                    product.discount_price
+                    if product.discount_price is not None
+                    else product.base_price
+                ),
+                "thumbnail": (
+                    thumb.image_url
+                    if thumb
+                    else None
+                ),
+            }
+        )
+
+    return JsonResponse(
+        {
+            "results": results,
+            "query": q,
+        }
+    )
+
+
+def catalogue(request):
+    products = (
+        Product.objects.filter(is_active=True)
+        .select_related("category", "fabric", "print_type")
+        .prefetch_related(
+            Prefetch(
+                "images",
+                queryset=ProductImage.objects
+                .select_related("variant__color")
+                .order_by("display_order", "created_at"),
+                to_attr="all_images",
+            ),
+            "variants__color",
+        )
+    )
+
+    # ---------------------------------------------------------
+    # SEARCH
+    # ---------------------------------------------------------
+    q = request.GET.get("q", "").strip()
+
+    if q:
+        products = products.filter(
+            Q(name__icontains=q)
+            | Q(description__icontains=q)
+            | Q(product_code__icontains=q)
+            | Q(category__name__icontains=q)
+        )
+
+    # ---------------------------------------------------------
+    # EXISTING FILTERS — KEPT AS-IS
+    # ---------------------------------------------------------
+    category_slugs = request.GET.getlist("category")
+    fabric_slugs = request.GET.getlist("fabric")
+    print_slugs = request.GET.getlist("print")
+    color_slugs = request.GET.getlist("color")
+    price_keys = request.GET.getlist("price")
+    tag_slugs = request.GET.getlist("tag")
+
+    if category_slugs:
+        products = products.filter(
+            category__slug__in=category_slugs
+        )
+
+    if fabric_slugs:
+        products = products.filter(
+            fabric__slug__in=fabric_slugs
+        )
+
+    if print_slugs:
+        products = products.filter(
+            print_type__slug__in=print_slugs
+        )
+
+    if color_slugs:
+        products = products.filter(
+            variants__color__slug__in=color_slugs
+        ).distinct()
+
+    if tag_slugs:
+        products = products.filter(
+            tags__slug__in=tag_slugs
+        ).distinct()
+
+    # ---------------------------------------------------------
+    # EXISTING PRICE FILTER — KEPT AS-IS
+    # ---------------------------------------------------------
+    if price_keys:
+        price_q = Q()
+
+        for key in price_keys:
+            lo, hi = PRICE_BRACKETS.get(
+                key,
+                (None, None)
+            )
+
+            bracket = Q()
+
+            if lo is not None:
+                bracket &= Q(base_price__gte=lo)
+
+            if hi is not None:
+                bracket &= Q(base_price__lt=hi)
+
+            price_q |= bracket
+
+        products = products.filter(price_q)
+
+    # ---------------------------------------------------------
+    # EXISTING SORTING — KEPT AS-IS
+    # ---------------------------------------------------------
+    sort_key = request.GET.get("sort", "featured")
+
+    if sort_key in SORT_MAP:
+        products = products.order_by(
+            SORT_MAP[sort_key]
+        )
+
+    # "featured" keeps Product.Meta's default ordering
+    # (-created_at)
+
+    # ---------------------------------------------------------
+    # PAGINATION — KEPT AS-IS
+    # ---------------------------------------------------------
+    paginator = Paginator(products, 5)
+
+    page_obj = paginator.get_page(
+        request.GET.get("page", 1)
+    )
+
+    # ---------------------------------------------------------
+    # KEEP SEARCH + FILTERS + SORT WHEN PAGINATING
+    # ---------------------------------------------------------
+    querydict = request.GET.copy()
+    querydict.pop("page", None)
+
+    base_qs = querydict.urlencode()
+
+    # ---------------------------------------------------------
+    # EXISTING COLOR-SPECIFIC THUMBNAIL LOGIC — KEPT AS-IS
+    # ---------------------------------------------------------
+    for product in page_obj.object_list:
+        thumb = None
+
+        if color_slugs:
+            thumb = next(
+                (
+                    img
+                    for img in product.all_images
+                    if img.variant_id
+                    and img.variant.color.slug in color_slugs
+                ),
+                None,
+            )
+
+        if thumb is None:
+            thumb = next(
+                (
+                    img
+                    for img in product.all_images
+                    if img.variant_id is None
+                ),
+                None,
+            )
+
+        if thumb is None and product.all_images:
+            thumb = product.all_images[0]
+
+        product.thumb = thumb
+
+    # ---------------------------------------------------------
+    # CONTEXT
+    # ---------------------------------------------------------
+    context = {
+        "page_obj": page_obj,
+        "products": page_obj.object_list,
+        "total_count": paginator.count,
+
+        "price_choices": price_choices,
+
+        "categories": SignatureCategoryItem.objects.filter(
+            is_active=True
+        ),
+
+        "colors": Color.objects.filter(
+            is_active=True
+        ),
+
+        "fabrics": Fabric.objects.filter(
+            is_active=True
+        ),
+
+        "prints": Print.objects.filter(
+            is_active=True
+        ),
+
+        "tags": Tag.objects.all(),
+
+        "new_arrivals_tag": Tag.objects.filter(
+            slug="new-arrival"
+        ).first(),
+
+        "bestsellers_tag": Tag.objects.filter(
+            slug="bestseller"
+        ).first(),
+
+        "selected_categories": category_slugs,
+        "selected_fabrics": fabric_slugs,
+        "selected_prints": print_slugs,
+        "selected_colors": color_slugs,
+        "selected_prices": price_keys,
+        "selected_tags": tag_slugs,
+
+        "current_sort": sort_key,
+
+        # NEW: search query for the template
+        "query": q,
+
+        # Preserves q + filters + sort during pagination
+        "base_qs": base_qs,
+    }
+
+    return render(
+        request,
+        "user/catalogue.html",
+        context
+    )
+    
+    #--------------------------WHATSAPP REDIRECT BUY--------------------------------------
+    
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+from urllib.parse import quote
+@login_required(login_url='user:login')
+def buy_now(request, slug):
+    product = get_object_or_404(Product, slug=slug, is_active=True)
+
+    display_price = product.final_price
+    variant_id = request.GET.get('variant')
+    if variant_id:
+        variant = (
+            product.variants
+            .filter(id=variant_id, is_active=True)
+            .select_related('color')
+            .first()
+        )
+        if variant and variant.price:
+            display_price = variant.price
+
+    product_url = f"{request.scheme}://{request.get_host()}{reverse('user:product', args=[product.slug])}"
+    message = (
+        f"Hi, I am interested in {product.name}. "
+        f"Price: ₹{int(display_price)}. "
+        f"Product Link: {product_url}"
+    )
+    return redirect(f"https://wa.me/7900152351?text={quote(message)}")

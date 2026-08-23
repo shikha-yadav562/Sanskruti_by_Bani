@@ -34,4 +34,10 @@ urlpatterns = [
     path('api/auth/username/verify/', views.api_forgot_username_verify, name='api_forgot_username_verify'),
     path('api/profile/update/', views.api_update_profile, name='api_update_profile'),
     path('api/profile/delete/', views.api_delete_account, name='api_delete_account'),
+    
+    #----------------SEARCH BAR-----------------------------------------------
+      path("search/suggest/", views.search_suggest, name="search_suggest"),
+      
+    #----------------WHATSAPP--------------------------------------------------
+    path('product/<slug:slug>/buy/', views.buy_now, name='buy_now'),
 ]

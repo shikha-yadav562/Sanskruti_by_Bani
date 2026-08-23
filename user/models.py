@@ -231,7 +231,7 @@ class ProductReview(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews', null=True, blank=True)
     product_slug = models.CharField(max_length=200, default='anuradha-paithani-saree')
     product_name = models.CharField(max_length=200, default='Anuradha Paithani Soft Peacock Design Saree')
-    rating = models.PositiveSmallIntegerField(default=5)
+    rating = models.PositiveSmallIntegerField(default=0)
     title = models.CharField(max_length=200)
     comment = models.TextField()
     image_1 = models.ImageField(upload_to='reviews/', blank=True, null=True)

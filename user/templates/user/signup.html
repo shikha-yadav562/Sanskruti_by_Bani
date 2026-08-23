@@ -200,6 +200,8 @@
             return cookieValue;
         }
         const csrftoken = getCookie('csrftoken');
+        const urlParams = new URLSearchParams(window.location.search);
+        const nextUrl = urlParams.get('next') || '';
 
         function showToast(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -351,7 +353,7 @@
             
             btn.disabled = true; icon.classList.add('hidden'); spinner.classList.remove('hidden'); btnText.innerText = 'Verifying...';
 
-            const payload = { otp: document.getElementById('otp_code').value };
+            const payload = { otp: document.getElementById('otp_code').value, next: nextUrl };
 
             try {
                 const response = await fetch('/api/auth/signup/verify/', {
