@@ -1004,6 +1004,7 @@ ICONS
 
  .icon-btn span {
    color: var(--brand);
+   margin-top: 10px;
  }
 
  /* ===================================================
@@ -8055,4 +8056,15 @@ HERO SLIDE 1 FULL IMAGE BANNER RESPONSIVE
    transform: translateY(-8px);
    border-color: #b8892a;
    box-shadow: 0 20px 45px rgba(113, 4, 26, 0.18), 0 0 0 4px rgba(212, 175, 55, 0.15);
+ }
+
+ .no-scrollbar::-webkit-scrollbar {
+   display: none;
+ }
+
+ .no-scrollbar {
+   -ms-overflow-style: none;
+   /* IE and Edge */
+   scrollbar-width: none;
+   /* Firefox */
  }

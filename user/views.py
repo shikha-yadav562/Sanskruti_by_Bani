@@ -297,6 +297,9 @@ def terms_conditions(request):
         "header_settings": HeaderSettings.load(),
         "offer_items": OfferBarItem.objects.all(),
         "footer_settings": FooterSettings.load(),
+        "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
+        "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
+        "signature_categories": SignatureCategoryItem.objects.filter(is_active=True),
     }
     return render(request, 'user/terms_conditions.html', context)
 
@@ -305,6 +308,9 @@ def return_refund_policy(request):
         "header_settings": HeaderSettings.load(),
         "offer_items": OfferBarItem.objects.all(),
         "footer_settings": FooterSettings.load(),
+        "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
+        "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
+        "signature_categories": SignatureCategoryItem.objects.filter(is_active=True),
     }
     return render(request, 'user/return_refund_policy.html', context)
 
@@ -313,6 +319,8 @@ def privacy_policy(request):
         "header_settings": HeaderSettings.load(),
         "offer_items": OfferBarItem.objects.all(),
         "footer_settings": FooterSettings.load(),
+        "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
+        "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
     }
     return render(request, 'user/privacy_policy.html', context)
 

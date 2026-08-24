@@ -194,19 +194,26 @@
 
     <!-- FILTERS SIDEBAR (Drawer on Mobile, Sidebar on Desktop) -->
     <form method="get" action="" id="filterForm" style="display:contents">
-    <aside id="filterSidebar"
-      class="fixed inset-y-0 left-0 z-[1000] w-[85%] max-w-sm bg-[#fff8f4] shadow-2xl transform -translate-x-full transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 lg:z-[100] lg:w-1/4 lg:shadow-none lg:bg-transparent overflow-y-auto p-8 lg:p-0"
-      style="font-family: 'Poppins', sans-serif;">
+   <aside id="filterSidebar"
+  class="fixed inset-y-0 left-0 z-[1000] w-[85%] max-w-sm bg-[#fff8f4] shadow-2xl transform -translate-x-full transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 lg:z-[100] lg:w-1/4 lg:shadow-none lg:bg-transparent overflow-y-auto p-8 pb-24 lg:p-0"
+  style="font-family: 'Poppins', sans-serif;">
 
-      <div class="lg:sticky lg:top-24">
+      <div class="lg:sticky lg:top-0 lg:flex lg:flex-col lg:max-h-[calc(100vh-10rem)]">
         <div class="flex justify-between items-center mb-8 border-b-2 border-[#810820] pb-4">
           <h3 class="text-2xl font-serif tracking-wider text-[#71041a]" style="font-family: 'Cinzel', serif;">Refine
           </h3>
           <button id="closeFilterBtn" class="lg:hidden text-[#71041a] hover:text-[#c4453e] transition">
             <span class="material-symbols-outlined">close</span>
           </button>
-          <span class="hidden lg:inline text-sm text-[#810820] font-light">{{ total_count }} Item{{ total_count|pluralize }}</span>
+          {% if selected_prices or selected_categories or selected_tags or selected_colors or selected_fabrics or selected_prints %}
+<a href="{{ request.path }}" class="hidden lg:flex items-center gap-1 text-sm text-[#810820] font-semibold hover:text-[#c4453e] transition">
+  <span class="material-symbols-outlined text-[16px]">filter_alt_off</span> Remove Filters
+</a>
+{% else %}
+<span class="hidden lg:inline text-sm text-[#810820] font-light">{{ total_count }} Item{{ total_count|pluralize }}</span>
+{% endif %}
         </div>
+      <div class="lg:overflow-y-auto lg:flex-1 lg:pr-2 no-scrollbar">
 
         <!-- FILTER: PRICE -->
         <div class="mb-6 border-b border-[#e7c27a]/30 pb-5">
@@ -220,6 +227,42 @@
       <label class="flex items-center space-x-3 cursor-pointer hover:text-[#810820] transition">
         <input type="checkbox" name="price" value="{{ key }}" class="accent-[#810820] w-4 h-4 rounded-none cursor-pointer" {% if key in selected_prices %}checked{% endif %}>
         <span>{{ label }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </details>
+</div>
+
+<!-- FILTER: TYPE -->
+<div class="mb-6 border-b border-[#e7c27a]/30 pb-5">
+  <details class="group/type" open>
+    <summary class="flex items-center justify-between cursor-pointer list-none font-medium mb-4 tracking-wider uppercase text-sm text-[#71041a]">
+      Type
+      <span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-open/type:rotate-180">expand_more</span>
+    </summary>
+    <div class="space-y-3 text-[#4a1c1c] text-sm">
+      {% for cat in categories %}
+      <label class="flex items-center space-x-3 cursor-pointer hover:text-[#810820] transition">
+        <input type="checkbox" name="category" value="{{ cat.slug }}" class="accent-[#810820] w-4 h-4 rounded-none cursor-pointer" {% if cat.slug in selected_categories %}checked{% endif %}>
+        <span>{{ cat.name }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </details>
+</div>
+
+<!-- FILTER TAGS -->
+<div class="mb-8 border-b border-[#e7c27a]/30 pb-5">
+  <details class="group/tags" open>
+    <summary class="flex items-center justify-between cursor-pointer list-none font-medium mb-4 tracking-wider uppercase text-sm text-[#71041a]">
+      Tags
+      <span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-open/tags:rotate-180">expand_more</span>
+    </summary>
+    <div class="space-y-3 text-[#4a1c1c] text-sm">
+      {% for tag in tags %}
+      <label class="flex items-center space-x-3 cursor-pointer hover:text-[#810820] transition">
+        <input type="checkbox" name="tag" value="{{ tag.slug }}" class="accent-[#810820] w-4 h-4 rounded-none cursor-pointer" {% if tag.slug in selected_tags %}checked{% endif %}>
+        <span>{{ tag.name }}</span>
       </label>
       {% endfor %}
     </div>
@@ -263,24 +306,6 @@
   </details>
 </div>
 
-<!-- FILTER: TYPE -->
-<div class="mb-6 border-b border-[#e7c27a]/30 pb-5">
-  <details class="group/type" open>
-    <summary class="flex items-center justify-between cursor-pointer list-none font-medium mb-4 tracking-wider uppercase text-sm text-[#71041a]">
-      Type
-      <span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-open/type:rotate-180">expand_more</span>
-    </summary>
-    <div class="space-y-3 text-[#4a1c1c] text-sm">
-      {% for cat in categories %}
-      <label class="flex items-center space-x-3 cursor-pointer hover:text-[#810820] transition">
-        <input type="checkbox" name="category" value="{{ cat.slug }}" class="accent-[#810820] w-4 h-4 rounded-none cursor-pointer" {% if cat.slug in selected_categories %}checked{% endif %}>
-        <span>{{ cat.name }}</span>
-      </label>
-      {% endfor %}
-    </div>
-  </details>
-</div>
-
 <!-- FILTER: PRINT -->
 <div class="mb-8 border-b border-[#e7c27a]/30 pb-5">
   <details class="group/print" open>
@@ -299,25 +324,10 @@
   </details>
 </div>
 
-<div class="mb-8 border-b border-[#e7c27a]/30 pb-5">
-  <details class="group/tags" open>
-    <summary class="flex items-center justify-between cursor-pointer list-none font-medium mb-4 tracking-wider uppercase text-sm text-[#71041a]">
-      Tags
-      <span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-open/tags:rotate-180">expand_more</span>
-    </summary>
-    <div class="space-y-3 text-[#4a1c1c] text-sm">
-      {% for tag in tags %}
-      <label class="flex items-center space-x-3 cursor-pointer hover:text-[#810820] transition">
-        <input type="checkbox" name="tag" value="{{ tag.slug }}" class="accent-[#810820] w-4 h-4 rounded-none cursor-pointer" {% if tag.slug in selected_tags %}checked{% endif %}>
-        <span>{{ tag.name }}</span>
-      </label>
-      {% endfor %}
-    </div>
-  </details>
 </div>
 
 <button type="submit"
-  class="w-full bg-[#810820] text-[#fff8f4] py-4 uppercase tracking-widest text-xs font-semibold hover:bg-[#71041a] hover:shadow-lg transition-all duration-300 border border-[#810820]">Apply
+  class="sticky bottom-0 z-10 w-full mt-4 bg-[#810820] text-[#fff8f4] py-4 uppercase tracking-widest text-xs font-semibold hover:bg-[#71041a] hover:shadow-lg transition-all duration-300 border border-[#810820] shadow-[0_-4px_12px_rgba(0,0,0,0.15)]">Apply
   Filters</button>
 
         {% comment %} <button
@@ -367,8 +377,8 @@
             {% if product.tags.all %}
             <div class="absolute top-2 left-2 flex flex-col gap-1 z-10">
               {% for tag in product.tags.all %}
-              <span class="bg-[#71041a] text-[#fff8f4] text-[9px] uppercase tracking-widest font-semibold px-2 py-1 border border-[#e7c27a] rounded-md">
-                {{ tag.name }}
+              <span class="bg-[#71041a] text-[#fff8f4] text-[7px] sm:text-[9px] uppercase tracking-widest font-semibold px-2 py-1 border border-[#e7c27a] rounded-md">
+              {{ tag.name }}
               </span>
               {% endfor %}
             </div>
