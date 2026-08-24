@@ -6,40 +6,40 @@
 
 {% block content %}
 {% csrf_token %}
-<div class="mb-8 flex items-center justify-between">
+<div class="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
-        <h1 class="text-3xl font-bold text-slate-800 dark:text-white">Website Builder</h1>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage landing page sections and content.</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white">Website Builder</h1>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Manage landing page sections and content.</p>
     </div>
-    <button onclick="saveWebsiteChanges(event)" class="px-5 py-2.5 rounded-xl font-medium bg-brand-maroon hover:bg-brand-maroonLight text-white shadow-lg shadow-brand-maroon/30 transition-all flex items-center gap-2">
+    <button onclick="saveWebsiteChanges(event)" class="w-full sm:w-auto justify-center px-5 py-2.5 rounded-xl font-medium bg-brand-maroon hover:bg-brand-maroonLight text-white shadow-lg shadow-brand-maroon/30 transition-all flex items-center gap-2 text-sm">
         <i class="ph ph-floppy-disk"></i> Save Changes
     </button>
 </div>
 
 <!-- Builder Sections -->
-<div class="grid grid-cols-1 xl:grid-cols-4 gap-6 pb-10">
+<div class="grid grid-cols-1 xl:grid-cols-4 gap-4 sm:gap-6 pb-10">
     
-    <!-- Sidebar Navigation for Builder -->
-    <div class="xl:col-span-1 space-y-2">
-        <button id="tab-header" type="button" onclick="showEditor('header')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center">
-            <span>1. Header & Navigation</span>
-            <i class="ph ph-caret-right"></i>
+    <!-- Sidebar Navigation for Builder (Scrollable tabs on mobile) -->
+    <div class="xl:col-span-1 flex flex-row xl:flex-col gap-2 overflow-x-auto pb-2 xl:pb-0 hide-scrollbar">
+        <button id="tab-header" type="button" onclick="showEditor('header')" class="flex-shrink-0 xl:flex-shrink w-auto xl:w-full text-left px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center text-xs sm:text-sm whitespace-nowrap xl:whitespace-normal">
+            <span>1. Header & Nav</span>
+            <i class="ph ph-caret-right hidden xl:block"></i>
         </button>
-        <button id="tab-hero" type="button" onclick="showEditor('hero')" class="w-full text-left px-4 py-3 rounded-xl bg-white dark:bg-dark-panel border border-brand-maroon shadow-sm text-brand-maroon dark:text-brand-gold font-medium flex items-center justify-between transition-colors">
-            <span>2. Hero Banner (3 Slides)</span>
-            <i class="ph ph-caret-right"></i>
+        <button id="tab-hero" type="button" onclick="showEditor('hero')" class="flex-shrink-0 xl:flex-shrink w-auto xl:w-full text-left px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-white dark:bg-dark-panel border border-brand-maroon shadow-sm text-brand-maroon dark:text-brand-gold font-medium flex items-center justify-between transition-colors text-xs sm:text-sm whitespace-nowrap xl:whitespace-normal">
+            <span>2. Hero Banner</span>
+            <i class="ph ph-caret-right hidden xl:block"></i>
         </button>
-        <button id="tab-memories" type="button" onclick="showEditor('memories')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-between">
+        <button id="tab-memories" type="button" onclick="showEditor('memories')" class="flex-shrink-0 xl:flex-shrink w-auto xl:w-full text-left px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-between text-xs sm:text-sm whitespace-nowrap xl:whitespace-normal">
             <span>3. Sweet Memories</span>
-            <i class="ph ph-caret-right"></i>
+            <i class="ph ph-caret-right hidden xl:block"></i>
         </button>
-        <button id="tab-about" type="button" onclick="showEditor('about')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center">
-            <span>4. About Us Section</span>
-            <i class="ph ph-caret-right"></i>
+        <button id="tab-about" type="button" onclick="showEditor('about')" class="flex-shrink-0 xl:flex-shrink w-auto xl:w-full text-left px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center text-xs sm:text-sm whitespace-nowrap xl:whitespace-normal">
+            <span>4. About Us</span>
+            <i class="ph ph-caret-right hidden xl:block"></i>
         </button>
-        <button id="tab-footer" type="button" onclick="showEditor('footer')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center">
-            <span>5. Footer & Contact Links</span>
-            <i class="ph ph-caret-right"></i>
+        <button id="tab-footer" type="button" onclick="showEditor('footer')" class="flex-shrink-0 xl:flex-shrink w-auto xl:w-full text-left px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex justify-between items-center text-xs sm:text-sm whitespace-nowrap xl:whitespace-normal">
+            <span>5. Footer & Links</span>
+            <i class="ph ph-caret-right hidden xl:block"></i>
         </button>
     </div>
 

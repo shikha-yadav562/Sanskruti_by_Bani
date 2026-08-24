@@ -4,16 +4,14 @@
 {% block content %}
 <div id="view-dashboard" class="view-section">
     <!-- Welcome Section -->
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-1">Welcome back, Owner! 👋
-            </h1>
-            <p class="text-slate-500 dark:text-slate-400">Here's what's happening with your store today.
-            </p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">Welcome back, Owner! 👋</h1>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Here's what's happening with your store today.</p>
         </div>
         {% url 'adm_user:products' as products_url %}
         <button
-            class="flex items-center gap-2 bg-brand-maroon hover:bg-brand-maroonLight text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-brand-maroon/30"
+            class="w-full sm:w-auto justify-center flex items-center gap-2 bg-brand-maroon hover:bg-brand-maroonLight text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-brand-maroon/30 text-sm"
             onclick="window.location.href='{{ products_url }}'">
             <i class="ph ph-plus-circle text-xl"></i>
             Add New Product
@@ -21,7 +19,7 @@
     </div>
 
     <!-- KPI CARDS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <!-- Card 1 -->
         <div
             class="bg-white dark:bg-dark-panel rounded-2xl p-6 border border-slate-100 dark:border-dark-border shadow-sm hover:shadow-md transition-shadow">

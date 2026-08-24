@@ -1053,6 +1053,144 @@ MOBILE NAVBAR
    left: 0;
  }
 
+ /* Mobile Drawer Search Box */
+ .mobile-drawer-search-wrap {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   margin-top: 24px;
+   margin-bottom: 12px;
+   background: rgba(255, 255, 255, 0.12);
+   border: 1px solid rgba(231, 194, 122, 0.4);
+   border-radius: 30px;
+   padding: 8px 14px;
+   backdrop-filter: blur(8px);
+   position: relative;
+ }
+
+ .mobile-drawer-search-wrap:focus-within {
+   background: rgba(255, 255, 255, 0.18);
+   border-color: var(--gold);
+ }
+
+ .mobile-drawer-search-wrap .search-icon {
+   font-size: 20px;
+   color: var(--gold);
+ }
+
+ .mobile-drawer-search-wrap input {
+   flex: 1;
+   border: none;
+   background: transparent;
+   outline: none;
+   font-size: 13.5px;
+   color: #fff;
+   font-family: 'Poppins', sans-serif;
+ }
+
+ .mobile-drawer-search-wrap input::placeholder {
+   color: rgba(247, 230, 191, 0.65);
+ }
+
+ /* Mobile Header Actions & Slide-Down Search */
+ .mobile-header-actions {
+   display: none;
+   align-items: center;
+   gap: 6px;
+ }
+
+ .mobile-search-toggle-btn,
+ .mobile-auth-btn {
+   width: 38px;
+   height: 38px;
+   border-radius: 50%;
+   border: none;
+   background: transparent;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   color: var(--brand);
+   cursor: pointer;
+   text-decoration: none;
+ }
+
+ .mobile-search-toggle-btn span,
+ .mobile-auth-btn span {
+   font-size: 24px;
+ }
+
+ .mobile-nav-search {
+   display: none;
+   width: 100%;
+   padding: 10px 16px 14px;
+   background: #fff8f4;
+   border-bottom: 1px solid rgba(231, 194, 122, 0.35);
+   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+ }
+
+ .mobile-nav-search.active {
+   display: block;
+   animation: slideDownSearch 0.3s ease-out;
+ }
+
+ @keyframes slideDownSearch {
+   from {
+     opacity: 0;
+     transform: translateY(-8px);
+   }
+   to {
+     opacity: 1;
+     transform: translateY(0);
+   }
+ }
+
+ .mobile-nav-search-inner {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   background: #fff;
+   border: 1.5px solid rgba(196, 69, 62, 0.25);
+   border-radius: 30px;
+   padding: 6px 14px;
+ }
+
+ .mobile-nav-search-inner:focus-within {
+   border-color: #810820;
+   box-shadow: 0 0 0 3px rgba(129, 8, 32, 0.12);
+ }
+
+ .mobile-nav-search-inner .search-icon {
+   font-size: 20px;
+   color: #810820;
+ }
+
+ .mobile-nav-search-inner input {
+   flex: 1;
+   border: none;
+   background: transparent;
+   outline: none;
+   font-size: 14px;
+   font-family: 'Poppins', sans-serif;
+   color: #4a0c16;
+ }
+
+ .mobile-nav-search-inner .close-search-btn {
+   border: none;
+   background: none;
+   color: #999;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 4px;
+ }
+
+ @media (max-width: 900px) {
+   .mobile-header-actions {
+     display: flex;
+   }
+ }
+
  .close-menu {
    width: 42px;
    height: 42px;

@@ -188,44 +188,72 @@
 
             <!-- TOP HEADER -->
             <header
-                class="h-16 bg-white/80 dark:bg-dark-panel/80 backdrop-blur-md border-b border-slate-200 dark:border-dark-border flex items-center justify-between px-8 z-10 sticky top-0">
+                class="h-16 bg-white/80 dark:bg-dark-panel/80 backdrop-blur-md border-b border-slate-200 dark:border-dark-border flex items-center justify-between px-4 sm:px-8 z-10 sticky top-0 relative">
 
-                <div class="flex items-center gap-4">
-                    <button id="mobile-menu-btn" class="md:hidden text-slate-500 hover:text-brand-maroon">
+                <!-- Mobile Search Bar Overlay (Slides open when search icon is clicked on mobile) -->
+                <div id="mobile-search-overlay" class="hidden md:hidden absolute inset-0 bg-white dark:bg-dark-panel px-4 flex items-center gap-3 z-30 shadow-md">
+                    <button id="mobile-search-submit-btn" type="button" onclick="submitAdminMobileSearch()" class="text-brand-maroon dark:text-brand-gold text-xl p-1 cursor-pointer" title="Submit Search">
+                        <i class="ph ph-magnifying-glass"></i>
+                    </button>
+                    <input type="text" id="mobile-admin-search-input" placeholder="Search products, categories..." autocomplete="off"
+                        class="flex-1 py-2 bg-transparent text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none">
+                    <button id="close-mobile-search" type="button" onclick="closeMobileAdminSearch()" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer" title="Close Search">
+                        <i class="ph ph-x text-lg"></i>
+                    </button>
+
+                    <!-- Mobile Live Search Suggestions Dropdown -->
+                    <div id="adminMobileSearchSuggestions" class="hidden absolute top-full left-0 right-0 bg-white dark:bg-dark-panel border-b border-x border-slate-200 dark:border-dark-border shadow-2xl max-h-[70vh] overflow-y-auto z-40 rounded-b-2xl">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <button id="mobile-menu-btn" class="md:hidden text-slate-500 hover:text-brand-maroon p-1 cursor-pointer">
                         <i class="ph ph-list text-2xl"></i>
                     </button>
-                    <h2 class="text-xl font-semibold text-slate-800 dark:text-slate-100" id="page-title">
+                    <h2 class="text-lg sm:text-xl font-semibold text-slate-800 dark:text-slate-100 truncate max-w-[170px] sm:max-w-none" id="page-title">
                         {% block page_title %}Dashboard Home{% endblock %}
                     </h2>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <!-- Search -->
-                    {% comment %} <div class="hidden md:flex relative group">
-                        <i
-                            class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-maroon"></i>
-                        <input type="text" placeholder="Search orders, products..."
-                            class="pl-10 pr-4 py-2 w-64 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon transition-all">
-                        <div class="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <!-- Mobile Search Trigger -->
+                    <button id="mobile-search-toggle" type="button" onclick="openMobileAdminSearch()"
+                        class="md:hidden w-9 h-9 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-maroon transition-colors cursor-pointer"
+                        title="Search">
+                        <i class="ph ph-magnifying-glass text-lg"></i>
+                    </button>
+
+                    <!-- Desktop Search -->
+                    <div class="hidden md:flex relative group" id="adminDesktopSearchWrap">
+                        <button id="desktop-search-submit-btn" type="button" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-maroon transition-colors cursor-pointer" title="Search">
+                            <i class="ph ph-magnifying-glass text-lg"></i>
+                        </button>
+                        <input type="text" id="desktop-admin-search-input" placeholder="Search products, categories..." autocomplete="off"
+                            class="pl-10 pr-16 py-2 w-72 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon transition-all text-slate-800 dark:text-white">
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1 pointer-events-none">
                             <kbd
                                 class="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-500 font-mono">Ctrl</kbd>
                             <kbd
                                 class="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-500 font-mono">K</kbd>
                         </div>
-                    </div> {% endcomment %}
+
+                        <!-- Desktop Live Search Suggestions Dropdown -->
+                        <div id="adminDesktopSearchSuggestions" class="hidden absolute top-full left-0 right-0 mt-2 bg-white dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-xl shadow-2xl max-h-[420px] overflow-y-auto z-50 min-w-[320px]">
+                        </div>
+                    </div>
 
                     <!-- Dark Mode Toggle -->
                     <button id="theme-toggle"
-                        class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-maroon transition-colors"
+                        class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-maroon transition-colors"
                         title="Toggle Dark Mode">
-                        <i class="ph ph-moon text-xl dark:hidden"></i>
-                        <i class="ph ph-sun text-xl hidden dark:block"></i>
+                        <i class="ph ph-moon text-lg sm:text-xl dark:hidden"></i>
+                        <i class="ph ph-sun text-lg sm:text-xl hidden dark:block"></i>
                     </button>
 
                     <!-- Notifications -->
                     <button
-                        class="relative w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-maroon transition-colors">
-                        <i class="ph ph-bell text-xl"></i>
+                        class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-maroon transition-colors">
+                        <i class="ph ph-bell text-lg sm:text-xl"></i>
                         <span
                             class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
                     </button>
@@ -233,7 +261,7 @@
             </header>
 
             <!-- SCROLLABLE PAGE CONTENT -->
-            <div id="app-content" class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+            <div id="app-content" class="flex-1 overflow-y-auto p-3 sm:p-5 md:p-8 custom-scrollbar">
 
                 {% block content %}{% endblock %}
 
@@ -244,7 +272,49 @@
 
     {% block modals %}{% endblock %}
 
-    <script src="{% static 'adm_user/js/admin_core.js' %}"></script>
+    <script>
+        function openMobileAdminSearch() {
+            var overlay = document.getElementById('mobile-search-overlay');
+            var input = document.getElementById('mobile-admin-search-input');
+            var sugg = document.getElementById('adminMobileSearchSuggestions');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                overlay.style.display = 'flex';
+                if (input) {
+                    input.focus();
+                    if (typeof showQuickNav === 'function' && sugg) {
+                        showQuickNav(sugg, '');
+                    }
+                }
+            }
+        }
+
+        function closeMobileAdminSearch() {
+            var overlay = document.getElementById('mobile-search-overlay');
+            var sugg = document.getElementById('adminMobileSearchSuggestions');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                overlay.style.display = 'none';
+                if (sugg) {
+                    sugg.classList.add('hidden');
+                    sugg.style.display = 'none';
+                }
+            }
+        }
+
+        function submitAdminMobileSearch() {
+            var input = document.getElementById('mobile-admin-search-input');
+            if (input) {
+                var query = input.value.trim();
+                if (query) {
+                    window.location.href = '/adm/products/?search=' + encodeURIComponent(query);
+                } else {
+                    input.focus();
+                }
+            }
+        }
+    </script>
+    <script src="{% static 'adm_user/js/admin_core.js' %}?v={% now 'U' %}"></script>
     {% block extra_scripts %}{% endblock %}
 </body>
 

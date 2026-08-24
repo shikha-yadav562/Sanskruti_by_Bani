@@ -14,16 +14,16 @@
             </p>
         </div>
 
-        <!-- Filters -->
-        <div class="flex items-center gap-2 bg-white dark:bg-dark-panel p-1.5 rounded-xl border border-slate-200 dark:border-dark-border shadow-sm">
-            <a href="?status=all" class="px-4 py-2 text-xs font-semibold rounded-lg transition-colors {% if status_filter == 'all' %}bg-brand-maroon text-white shadow-sm{% else %}text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800{% endif %}">
+        <!-- Filters (Scrollable on mobile) -->
+        <div class="flex items-center gap-1.5 sm:gap-2 bg-white dark:bg-dark-panel p-1 sm:p-1.5 rounded-xl border border-slate-200 dark:border-dark-border shadow-sm overflow-x-auto w-full sm:w-auto">
+            <a href="?status=all" class="flex-1 sm:flex-none text-center px-3 sm:px-4 py-2 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap {% if status_filter == 'all' %}bg-brand-maroon text-white shadow-sm{% else %}text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800{% endif %}">
                 All Reviews
             </a>
-            <a href="?status=approved" class="px-4 py-2 text-xs font-semibold rounded-lg transition-colors {% if status_filter == 'approved' %}bg-emerald-600 text-white shadow-sm{% else %}text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800{% endif %}">
+            <a href="?status=approved" class="flex-1 sm:flex-none text-center px-3 sm:px-4 py-2 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap {% if status_filter == 'approved' %}bg-emerald-600 text-white shadow-sm{% else %}text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800{% endif %}">
                 Approved
             </a>
-            <a href="?status=pending" class="px-4 py-2 text-xs font-semibold rounded-lg transition-colors {% if status_filter == 'pending' %}bg-amber-600 text-white shadow-sm{% else %}text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800{% endif %}">
-                Pending Approval
+            <a href="?status=pending" class="flex-1 sm:flex-none text-center px-3 sm:px-4 py-2 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap {% if status_filter == 'pending' %}bg-amber-600 text-white shadow-sm{% else %}text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800{% endif %}">
+                Pending
             </a>
         </div>
     </div>
@@ -31,7 +31,7 @@
     <!-- Reviews Table -->
     <div class="bg-white dark:bg-dark-panel rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-sm">
+            <table class="w-full text-left border-collapse text-sm min-w-[640px]">
                 <thead>
                     <tr class="border-b border-slate-100 dark:border-dark-border bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-semibold text-xs uppercase tracking-wider">
                         <th class="py-4 px-6">Customer & Product</th>
@@ -93,13 +93,15 @@
                             </span>
                         </td>
 
-                        <td class="py-4 px-6 text-right space-x-2">
-                            <button onclick="toggleApprove({{ rev.id }}, this)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg text-xs font-bold transition">
-                                Toggle Status
-                            </button>
-                            <button onclick="deleteReview({{ rev.id }}, this)" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition">
-                                Delete
-                            </button>
+                        <td class="py-4 px-6 text-right">
+                            <div class="flex items-center justify-end gap-1.5">
+                                <button onclick="toggleApprove({{ rev.id }}, this)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg text-xs font-bold transition whitespace-nowrap">
+                                    Toggle Status
+                                </button>
+                                <button onclick="deleteReview({{ rev.id }}, this)" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition whitespace-nowrap">
+                                    Delete
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}

@@ -19,22 +19,22 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
 
     <!-- HOMEPAGE 5 SIGNATURE SAREE CATEGORIES MANAGEMENT HUB -->
     <div class="bg-white dark:bg-dark-panel p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm space-y-6">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-100 dark:border-dark-border pb-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-dark-border pb-4">
             <div>
                 <div class="flex items-center gap-2 text-brand-maroon dark:text-brand-gold font-bold text-xs uppercase tracking-wider">
                     <i class="ph ph-crown text-base"></i>
                     <span>Homepage 5 Signature Saree Categories</span>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 dark:text-white">5 Signature Saree Showcase Management</h3>
-                <p class="text-sm text-slate-500">Manage the 5 signature saree categories displayed on the main homepage (Images, titles, badges, WhatsApp links).</p>
+                <h3 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white">5 Signature Saree Showcase Management</h3>
+                <p class="text-xs sm:text-sm text-slate-500">Manage the 5 signature saree categories displayed on the main homepage (Images, titles, badges, WhatsApp links).</p>
             </div>
-            <button type="button" onclick="resetSigCatForm()" class="px-4 py-2 rounded-xl font-bold bg-brand-maroon hover:bg-brand-maroonLight text-white text-xs shadow-sm transition-all flex items-center gap-2">
+            <button type="button" onclick="resetSigCatForm()" class="w-full sm:w-auto justify-center px-4 py-2.5 rounded-xl font-bold bg-brand-maroon hover:bg-brand-maroonLight text-white text-xs shadow-sm transition-all flex items-center gap-2">
                 <i class="ph ph-plus"></i> Add Signature Category
             </button>
         </div>
 
         <!-- CATEGORIES GRID -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {% for cat in signature_categories %}
             <div class="bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col justify-between space-y-3" id="sig-cat-card-{{ cat.id }}">
                 <div class="relative h-36 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white">
@@ -50,10 +50,10 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                     <p class="text-xs text-brand-maroon dark:text-brand-gold truncate">{{ cat.origin_craft|default:"Pure Silk" }}</p>
                 </div>
                 <div class="flex items-center gap-1.5 pt-2 border-t border-slate-200 dark:border-slate-700">
-                    <button type="button" onclick="editSigCategory({{ cat.id }}, '{{ cat.name|escapejs }}', '{{ cat.badge_text|escapejs }}', '{{ cat.origin_craft|escapejs }}', '{{ cat.whatsapp_link|escapejs }}')" class="flex-1 text-xs py-1.5 px-2 rounded-lg bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 transition-colors text-center">
+                    <button type="button" onclick="editSigCategory({{ cat.id }}, '{{ cat.name|escapejs }}', '{{ cat.badge_text|escapejs }}', '{{ cat.origin_craft|escapejs }}', '{{ cat.whatsapp_link|escapejs }}')" class="flex-1 text-xs py-2 px-2 rounded-lg bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 transition-colors text-center">
                         Edit
                     </button>
-                    <button type="button" onclick="deleteSigCategory({{ cat.id }})" class="text-xs py-1.5 px-2 rounded-lg bg-red-50 text-red-600 font-bold hover:bg-red-100 transition-colors">
+                    <button type="button" onclick="deleteSigCategory({{ cat.id }})" class="text-xs py-2 px-2.5 rounded-lg bg-red-50 text-red-600 font-bold hover:bg-red-100 transition-colors">
                         Delete
                     </button>
                 </div>
@@ -67,7 +67,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
             <form id="sigCatForm" enctype="multipart/form-data" class="space-y-4">
                 {% csrf_token %}
                 <input type="hidden" id="sigCatId" name="cat_id" value="">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Category Name</label>
                         <input type="text" id="sigCatName" name="name" required placeholder="e.g. Paithani Sarees" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:border-brand-maroon">
@@ -76,12 +76,12 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                         <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Badge Tag</label>
                         <input type="text" id="sigCatBadge" name="badge_text" placeholder="e.g. Signature Silk" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:border-brand-maroon">
                     </div>
-                    <div>
+                    <div class="sm:col-span-2 md:col-span-1">
                         <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Craft / Origin Tag</label>
                         <input type="text" id="sigCatCraft" name="origin_craft" placeholder="e.g. Pure Silk · Nashik" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:border-brand-maroon">
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">WhatsApp Enquiry Link</label>
                         <input type="text" id="sigCatWa" name="whatsapp_link" placeholder="https://wa.me/919372471363?text=..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:border-brand-maroon">
@@ -91,11 +91,11 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                         <input type="file" id="sigCatImg" name="image" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-maroon/10 file:text-brand-maroon hover:file:bg-brand-maroon/20">
                     </div>
                 </div>
-                <div class="flex items-center gap-3 pt-1">
-                    <button type="button" onclick="saveSignatureCategory()" class="bg-brand-maroon text-white font-bold px-5 py-2 rounded-xl hover:bg-brand-maroon/90 text-xs shadow-xs transition-colors">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 pt-1">
+                    <button type="button" onclick="saveSignatureCategory()" class="w-full sm:w-auto justify-center bg-brand-maroon text-white font-bold px-5 py-2.5 rounded-xl hover:bg-brand-maroon/90 text-xs shadow-xs transition-colors flex items-center gap-1.5">
                         Save Signature Category
                     </button>
-                    <button type="button" onclick="resetSigCatForm()" class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium px-4 py-2 rounded-xl hover:bg-slate-200 text-xs transition-colors">
+                    <button type="button" onclick="resetSigCatForm()" class="w-full sm:w-auto justify-center bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium px-4 py-2.5 rounded-xl hover:bg-slate-200 text-xs transition-colors">
                         Clear
                     </button>
                 </div>

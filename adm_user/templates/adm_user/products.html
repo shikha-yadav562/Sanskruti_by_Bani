@@ -50,46 +50,45 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
 {% endif %}
 <div id="view-products" class="view-section{% if product %} hidden{% endif %}">
 
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Products</h2>
-            <p class="text-slate-500 dark:text-slate-400">Manage your inventory, prices, and catalog.
-            </p>
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Products</h2>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Manage your inventory, prices, and catalog.</p>
         </div>
-        <div class="flex gap-3">
+        <div class="flex flex-col sm:flex-row gap-2.5 sm:gap-3 w-full sm:w-auto">
             <button
-                class="flex items-center gap-2 bg-white dark:bg-dark-panel border border-slate-200 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl font-medium transition-all" type="button" onclick="exportProducts()">
+                class="w-full sm:w-auto flex items-center justify-center gap-2 bg-white dark:bg-dark-panel border border-slate-200 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2.5 rounded-xl font-medium transition-all text-sm" type="button" onclick="exportProducts()">
                 <i class="ph ph-export"></i> Export
             </button>
             <button onclick="showAddProductPage()"
-                class="flex items-center gap-2 bg-brand-maroon hover:bg-brand-maroonLight text-white px-5 py-2 rounded-xl font-medium transition-all shadow-lg shadow-brand-maroon/20">
+                class="w-full sm:w-auto flex items-center justify-center gap-2 bg-brand-maroon hover:bg-brand-maroonLight text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-brand-maroon/20 text-sm">
                 <i class="ph ph-plus"></i> Add Product
             </button>
         </div>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-dark-panel rounded-t-2xl p-4 border-x border-t border-slate-100 dark:border-dark-border flex flex-wrap gap-4 items-center justify-between">
-        <div class="flex gap-2">
+    <div class="bg-white dark:bg-dark-panel rounded-t-2xl p-3.5 sm:p-4 border-x border-t border-slate-100 dark:border-dark-border flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div class="grid grid-cols-2 sm:flex gap-2">
             <select id="filterCategory" name="category"
-                class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-3 py-2">
+                class="w-full sm:w-auto bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-2.5 sm:px-3 py-2">
                 <option value="">All Categories</option>
                 {% for c in categories %}
                 <option value="{{ c.id }}">{{ c.name }}</option>
                 {% endfor %}
             </select>
             <select id="filterStock"
-                class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-3 py-2">
+                class="w-full sm:w-auto bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-2.5 sm:px-3 py-2">
                 <option value="">Stock Status</option>
                 <option value="in">In Stock</option>
                 <option value="low">Low Stock</option>
                 <option value="out">Out of Stock</option>
             </select>
         </div>
-        <div class="relative">
+        <div class="relative w-full sm:w-64">
             <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <input type="text" id="filterSearch" placeholder="Search by name or code..."
-                class="pl-9 pr-4 py-2 w-64 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon">
+                class="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon">
         </div>
     </div>
 
