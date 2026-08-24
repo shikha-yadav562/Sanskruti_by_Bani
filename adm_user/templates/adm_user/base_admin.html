@@ -19,6 +19,8 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'adm_user/css/admin.css' %}">
 
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
     <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
@@ -134,7 +136,7 @@
                     <span>Blog Manager</span>
                 </a> -->
 
-                <div class="px-3 mt-6 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">System</div>
+                {% comment %} <div class="px-3 mt-6 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">System</div> {% endcomment %}
 
                 <!-- <a href="coming-soon.html"
                     class="{% block nav_class_analytics %}nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors{% endblock %}">
@@ -154,12 +156,15 @@
                     <span>Settings</span>
                 </a> {% endcomment %}
                 
-                <a href="#" onclick="logoutUser(event)"
-    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-brand-maroon dark:hover:text-brand-gold font-medium transition-colors">
-    <i class="ph ph-sign-out text-xl"></i>
-    <span>Logout</span>
+  {% if request.user.is_authenticated %}
+<button class="icon-btn" onclick="logoutUser()" title="Logout">
+  <span class="material-symbols-outlined">logout</span>
+</button>
+{% else %}
+<a class="icon-btn" href="{% url 'user:login' %}?next={{ request.get_full_path|urlencode }}" title="Login">
+  <span class="material-symbols-outlined">account_circle</span>
 </a>
-
+{% endif %}
             </nav>
 
             <!-- Bottom Profile -->

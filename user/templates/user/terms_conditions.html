@@ -93,17 +93,34 @@
 
         <a href="{% url 'user:catalogue' %}">Bestsellers</a>
 
-        <div class="search-box">
-          <input type="text" placeholder="Search..." class="search-input">
-        </div>
+ <div class="search-box relative">
+  <input
+    type="text"
+    id="storeSearchInput"
+    name="q"
+    placeholder="Search sarees..."
+    class="search-input"
+    autocomplete="off"
+  >
+  <div id="searchSuggestions"
+       class="hidden absolute top-full left-0 right-0 mt-2 bg-white border border-[#e7c27a]/40 rounded-lg shadow-xl z-[60] max-h-[420px] overflow-y-auto">
+  </div>
+</div>
 
-        <a href="{% url 'user:profile' %}" class="icon-btn" title="Wishlist">
-          <span class="material-symbols-outlined">favorite</span>
-        </a>
+        {% if request.user.is_authenticated %}
+<button class="icon-btn" onclick="logoutUser()" title="Logout">
+  <span class="material-symbols-outlined">logout</span>
+</button>
+{% else %}
+<a class="icon-btn" href="{% url 'user:login' %}" title="Login">
+  <span class="material-symbols-outlined">account_circle</span>
+</a>
+{% endif %}
+ 
 
-        <a href="{% url 'user:product' %}" class="icon-btn" title="Cart">
+        {% comment %} <a href="{% url 'user:product' %}" class="icon-btn" title="Cart">
           <span class="material-symbols-outlined">shopping_bag</span>
-        </a>
+        </a>  {% endcomment %}
       </nav>
 
       <div class="nav-spacer"></div>
@@ -317,7 +334,7 @@
         <a href="{% url 'user:index' %}">Home</a>
         <a href="{% url 'user:catalogue' %}">New Arrivals</a>
         <a href="{% url 'user:catalogue' %}">Collections</a>
-        <a href="{% url 'user:product' %}">Best Sellers</a>
+        {% comment %} <a href="{% url 'user:product' %}">Best Sellers</a> {% endcomment %}
       </div>
 
       <div class="footer-col">
@@ -367,5 +384,90 @@
   </footer>
 
   <script src="{% static 'user/js/script.js' %}"></script>
+
+  <script>
+(function () {
+  const input = document.getElementById('storeSearchInput');
+  const dropdown = document.getElementById('searchSuggestions');
+  const SUGGEST_URL = "{% url 'user:search_suggest' %}";
+  const CATALOGUE_URL = "{% url 'user:catalogue' %}";
+ 
+  let debounceTimer = null;
+  let currentController = null;  // cancels an in-flight request if a newer keystroke arrives
+ 
+  function renderSuggestions(results, query) {
+    if (results.length === 0) {
+      dropdown.innerHTML = `<div class="p-4 text-center text-xs text-gray-400">No results for "${query}"</div>`;
+      dropdown.classList.remove('hidden');
+      return;
+    }
+ 
+    const items = results.map(p => `
+      <a href="/product/${p.slug}/" class="flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] hover:bg-[#fff8f4] transition-colors">
+        ${p.thumbnail
+          ? `<img src="${p.thumbnail}" alt="${p.name}" class="w-10 h-13 object-cover rounded bg-gray-100 shrink-0">`
+          : `<div class="w-10 h-13 rounded bg-gray-100 shrink-0"></div>`}
+        <div class="min-w-0">
+          <div class="text-[13px] font-semibold truncate">${p.name}</div>
+          <div class="text-[11px] text-[#810820]/70">${p.category}</div>
+        </div>
+        <div class="ml-auto text-xs font-bold text-[#810820] whitespace-nowrap">₹${Math.round(p.price).toLocaleString('en-IN')}</div>
+      </a>
+    `).join('');
+ 
+    const viewAll = `
+      <a href="${CATALOGUE_URL}?q=${encodeURIComponent(query)}"
+         class="block text-center py-2.5 text-xs font-bold text-[#810820] border-t border-[#e7c27a]/30 hover:bg-[#fff8f4] transition-colors">
+        View all results for "${query}"
+      </a>`;
+ 
+    dropdown.innerHTML = items + viewAll;
+    dropdown.classList.remove('hidden');
+  }
+ 
+  input.addEventListener('input', function () {
+    const query = this.value.trim();
+    clearTimeout(debounceTimer);
+ 
+    if (query.length < 2) {
+      dropdown.classList.add('hidden');
+      return;
+    }
+ 
+    // Cancel the previous request so a slow older response can't
+    // overwrite a newer one that already came back (race condition
+    // guard -- important once results start streaming from typing fast).
+    if (currentController) currentController.abort();
+ 
+    debounceTimer = setTimeout(async () => {
+      currentController = new AbortController();
+      try {
+        const res = await fetch(`${SUGGEST_URL}?q=${encodeURIComponent(query)}`, {
+          signal: currentController.signal,
+        });
+        const data = await res.json();
+        renderSuggestions(data.results, query);
+      } catch (err) {
+        if (err.name !== 'AbortError') console.error(err);
+      }
+    }, 300);  // wait 300ms after the user stops typing
+  });
+ 
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      const query = this.value.trim();
+      if (query) window.location.href = `${CATALOGUE_URL}?q=${encodeURIComponent(query)}`;
+    }
+  });
+ 
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function (e) {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+})();
+</script>
+ 
 </body>
 </html>

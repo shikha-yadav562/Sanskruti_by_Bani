@@ -13,7 +13,7 @@ from django.views.decorators.http import require_http_methods
 from django.core.validators import get_available_image_extensions
 
 from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage, HeroSlideMain, HeroSlideImageOnly, HeroSlideOffer, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, OfferBarItem, HeaderSettings, FooterSettings, AboutUsSection,SignatureCategoryItem
-
+from decimal import Decimal, InvalidOperation
 # Create your views here.
 def index(request):
     return render(request, 'adm_user/index.html')
@@ -521,15 +521,21 @@ def _save_product_fields(product, request):
     product.print_type = get_object_or_404(Print, pk=print_id, is_active=True) if print_id else None
 
     try:
-        product.base_price = post.get("base_price") or 0
-        product.discount_price = post.get("discount_price") or None
-        product.stock_quantity = post.get("stock_quantity") or 0
-    except (TypeError, ValueError):
-        raise ValueError("Price and stock fields must be numbers.")
+        base_price = Decimal(post.get("base_price") or "0")
+        discount_price_raw = post.get("discount_price")
+        discount_price = Decimal(discount_price_raw) if discount_price_raw else None
+        stock_quantity = int(post.get("stock_quantity") or 0)
+    except (InvalidOperation, TypeError, ValueError):
+        raise ValueError("Price and stock fields must be valid numbers.")
 
-    if product.discount_price is not None and product.discount_price >= product.base_price:
+    if discount_price is not None and discount_price >= base_price:
         raise ValueError("Discount price must be less than the base price.")
 
+    product.base_price = base_price
+    product.discount_price = discount_price
+    product.stock_quantity = stock_quantity
+    
+    
     product.saree_length = post.get("saree_length", "").strip()
     product.blouse_included = _parse_bool(post.get("blouse_included", "Yes"))
     product.blouse_type = post.get("blouse_type", "").strip()

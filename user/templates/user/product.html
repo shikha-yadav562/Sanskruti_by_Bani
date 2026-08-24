@@ -143,9 +143,15 @@
   </div>
 </div>
         <!-- ICONS -->
-         <button class="icon-btn" onclick="logoutUser()">
-          <span class="material-symbols-outlined">logout</span>
-        </button>
+  {% if request.user.is_authenticated %}
+<button class="icon-btn" onclick="logoutUser()" title="Logout">
+  <span class="material-symbols-outlined">logout</span>
+</button>
+{% else %}
+<a class="icon-btn" href="{% url 'user:login' %}?next={{ request.get_full_path|urlencode }}" title="Login">
+  <span class="material-symbols-outlined">account_circle</span>
+</a>
+{% endif %}
 
         {% comment %} <button class="icon-btn">
           <span class="material-symbols-outlined">favorite</span>
@@ -293,8 +299,9 @@
             {% if not default_variant.price and product.discount_price %}
             <span class="text-lg text-gray-500 line-through" id="originalPrice">₹{{ product.base_price|floatformat:0 }}</span>
             <span id="saveBadge"
-              class="bg-[#810820] text-[#fff8f4] text-[10px] font-bold px-2 py-1 uppercase tracking-widest rounded-sm">Save
-              {% widthratio product.discount_price 1 100 %}%</span>
+  class="bg-[#810820] text-[#fff8f4] text-[10px] font-bold px-2 py-1 uppercase tracking-widest rounded-sm">Save
+  {{ discount_percent }}%
+</span>
             {% else %}
             <span class="text-lg text-gray-500 line-through hidden" id="originalPrice">₹0</span>
             <span id="saveBadge"
@@ -970,6 +977,33 @@ LUXURY FOOTER SECTION
   SCRIPTS
   ===================================== -->
   <script src="{% static 'user/js/script.js' %}"></script>
+
+  
+<script>
+async function logoutUser() {
+    try {
+        const response = await fetch("/api/auth/logout/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            credentials: "same-origin"
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            window.location.href = data.redirect_url;
+        } else {
+            alert(data.error || "Logout failed.");
+        }
+    } catch (error) {
+        console.error("Logout error:", error);
+    }
+}
+</script>
+
   <script>
     // Thumbnail Swapping Logic
     function changeMainImg(src, clickedThumb) {

@@ -236,9 +236,17 @@
 </div>
 
         <!-- ICONS -->
-        <button class="icon-btn" onclick="logoutUser()">
-          <span class="material-symbols-outlined">logout</span>
-        </button>
+        {% if request.user.is_authenticated %}
+<button class="icon-btn" onclick="logoutUser()" title="Logout">
+  <span class="material-symbols-outlined">logout</span>
+</button>
+{% else %}
+<a class="icon-btn" href="{% url 'user:login' %}" title="Login">
+  <span class="material-symbols-outlined">account_circle</span>
+</a>
+{% endif %}
+ 
+
 
         {% comment %} <button class="icon-btn" title="Cart">
           <span class="material-symbols-outlined">shopping_bag</span>

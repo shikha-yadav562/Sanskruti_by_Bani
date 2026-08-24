@@ -107,6 +107,9 @@ def product(request, slug):
     else:
         gallery_images = default_images
         display_price = product.final_price
+    discount_percent = None
+    if product.discount_price and product.base_price:
+        discount_percent = round((1 - (product.discount_price / product.base_price)) * 100)
 
     # Serialized for the color-swatch JS — swaps images/price/stock
     # client-side without a reload.
@@ -169,6 +172,7 @@ def product(request, slug):
         "default_variant": default_variant,
         "gallery_images": gallery_images,
         "display_price": display_price,
+        "discount_percent": discount_percent,
         "variants_json": json.dumps(variants_json, cls=DjangoJSONEncoder),
         "reviews": reviews,
         "total_reviews": total_reviews,
