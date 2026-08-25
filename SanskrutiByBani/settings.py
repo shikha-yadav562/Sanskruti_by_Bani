@@ -157,8 +157,8 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-b(_m2q5+5bo0@i5$!q&*gzj*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', default=True)
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
-
+# ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost',])
+ALLOWED_HOSTS = ['*']
 # Application definition
 INSTALLED_APPS = [
     # 'django.contrib.admin', # Disabled per spec: "I am NOT using Django's built-in Admin"
