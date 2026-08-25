@@ -34,7 +34,7 @@
         }
     </script>
 </head>
-<body class="h-screen overflow-hidden font-sans antialiased text-slate-900 bg-[#2a0109] relative flex items-center justify-center p-4 sm:p-6 md:p-8 selection:bg-[#D4AF37] selection:text-[#540112]">
+<body class="h-[100dvh] lg:h-screen overflow-hidden font-sans antialiased text-slate-900 bg-[#2a0109] relative flex items-center justify-center p-4 sm:p-6 md:p-8 selection:bg-[#D4AF37] selection:text-[#540112]">
 
     <!-- Velvet Maroon, Gold & Soft White Glowing Ambient Glass Blur Orbs Background -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
@@ -49,22 +49,22 @@
     <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
 
     <!-- CENTERED HIGHLY BLURRED GLASS CONTAINER -->
-    <div class="relative z-10 w-full max-w-3xl bg-white/10 backdrop-blur-3xl border border-[#D4AF37]/30 rounded-3xl shadow-2xl shadow-black/80 overflow-hidden flex flex-col lg:flex-row max-h-[92vh] my-auto">
+    <div class="relative z-10 w-full max-w-3xl bg-white/10 backdrop-blur-3xl border border-[#D4AF37]/30 rounded-3xl shadow-2xl shadow-black/80 overflow-hidden flex flex-col lg:flex-row max-h-[93dvh] lg:max-h-[92vh]">
 
         <!-- LEFT SECTION (MAROON BG #540112 MATCHING LOGO) -->
-        <div class="lg:w-1/2 bg-[#540112] backdrop-blur-3xl p-6 sm:p-8 flex items-center justify-center relative border-b lg:border-b-0 lg:border-r border-[#D4AF37]/20 overflow-hidden">
+        <div class="lg:w-1/2 min-h-[215px] bg-[#540112] backdrop-blur-3xl p-2 sm:p-8 flex items-center justify-center relative border-b lg:border-b-0 lg:border-r border-[#D4AF37]/20 overflow-hidden">
             <!-- Brand Logo Graphic Image (ONLY SANSKRUTI BY BANI ARTWORK) -->
             <div class="relative z-10 w-full h-full flex items-center justify-center p-2">
-                <img src="{% static 'user/assets/brand-logo-full.jpg' %}" class="w-full h-auto max-h-[380px] object-contain rounded-2xl shadow-2xl border border-white/20 transition-transform duration-700 hover:scale-105" alt="Sanskruti By Bani Logo">
+                <img src="{% static 'user/assets/brand-logo-full.jpg' %}" class="w-full h-auto max-h-[180px] sm:max-h-[240px] md:max-h-[380px] object-contain rounded-2xl shadow-2xl border border-white/20 transition-transform duration-700 hover:scale-105" alt="Sanskruti By Bani Logo">
             </div>
         </div>
 
         <!-- RIGHT SECTION (SIGNUP FORM CONTAINER) -->
-        <div class="lg:w-1/2 bg-white backdrop-blur-xl p-6 sm:p-8 flex flex-col justify-center overflow-y-auto custom-scrollbar">
+        <div class="lg:w-1/2 bg-white backdrop-blur-xl p-6 sm:p-8 flex flex-col justify-start lg:justify-center overflow-y-auto custom-scrollbar">
             
             <!-- Card Header -->
             <div class="mb-5 text-center lg:text-left">
-                <h2 class="font-serif text-3xl font-bold text-[#540112] tracking-wide" style="font-family: 'Cinzel', serif;">Create Account</h2>
+                <h2 class="font-serif text-2xl lg:text-[2rem] font-bold text-[#540112] tracking-wide" style="font-family: 'Cinzel', serif;">Create Account</h2>
                 <p class="text-xs text-slate-500 mt-1">Register to start your luxury saree shopping.</p>
             </div>
 
@@ -79,7 +79,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#540112] transition-colors">
                                 <i class="ph ph-user text-base"></i>
                             </div>
-                            <input type="text" id="full_name" name="full_name" required placeholder="Sharmila Halde" class="w-full pl-10 pr-3 py-2.5 bg-slate-50/80 border border-[#D4AF37]/30 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-[#540112]/20 focus:border-[#540112] transition-all outline-none font-medium text-slate-900">
+                            <input type="text" id="full_name" name="full_name" required placeholder="Sharmila Halde" class="w-full pl-10 pr-3 py-2 bg-slate-50/80 border border-[#D4AF37]/30 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-[#540112]/20 focus:border-[#540112] transition-all outline-none font-medium text-slate-900">
                         </div>
                     </div>
                     <div>
@@ -88,7 +88,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#540112] transition-colors">
                                 <i class="ph ph-at text-base"></i>
                             </div>
-                            <input type="text" id="username" name="username" required placeholder="sharmila.halde" class="w-full pl-10 pr-3 py-2.5 bg-slate-50/80 border border-[#D4AF37]/30 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-[#540112]/20 focus:border-[#540112] transition-all outline-none font-medium text-slate-900">
+                            <input type="text" id="username" name="username" required placeholder="sharmila.halde" class="w-full pl-10 pr-3 py-2 bg-slate-50/80 border border-[#D4AF37]/30 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-[#540112]/20 focus:border-[#540112] transition-all outline-none font-medium text-slate-900">
                         </div>
                     </div>
                 </div>
@@ -99,7 +99,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#540112] transition-colors">
                             <i class="ph ph-envelope text-base"></i>
                         </div>
-                        <input type="email" id="email" name="email" required placeholder="you@gmail.com" class="w-full pl-10 pr-3 py-2.5 bg-slate-50/80 border border-[#D4AF37]/30 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-[#540112]/20 focus:border-[#540112] transition-all outline-none font-medium text-slate-900">
+                        <input type="email" id="email" name="email" required placeholder="you@gmail.com" class="w-full pl-10 pr-3 py-2 bg-slate-50/80 border border-[#D4AF37]/30 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-[#540112]/20 focus:border-[#540112] transition-all outline-none font-medium text-slate-900">
                     </div>
                 </div>
 
@@ -110,7 +110,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#540112] transition-colors">
                                 <i class="ph ph-lock-key text-base"></i>
                             </div>
-                            <input type="password" id="password" name="password" required placeholder="••••••••" class="w-full pl-10 pr-9 py-2.5 bg-slate-50/80 border border-[#D4AF37]/30 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-[#540112]/20 focus:border-[#540112] transition-all outline-none font-medium text-slate-900">
+                            <input type="password" id="password" name="password" required placeholder="••••••••" class="w-full pl-10 pr-9 py-2 bg-slate-50/80 border border-[#D4AF37]/30 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-[#540112]/20 focus:border-[#540112] transition-all outline-none font-medium text-slate-900">
                             <button type="button" onclick="togglePassword('password')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
                                 <i class="ph ph-eye text-base"></i>
                             </button>
@@ -126,7 +126,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#540112] transition-colors">
                                 <i class="ph ph-check-circle text-base"></i>
                             </div>
-                            <input type="password" id="confirm_password" required placeholder="••••••••" class="w-full pl-10 pr-9 py-2.5 bg-slate-50/80 border border-[#D4AF37]/30 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-[#540112]/20 focus:border-[#540112] transition-all outline-none font-medium text-slate-900">
+                            <input type="password" id="confirm_password" required placeholder="••••••••" class="w-full pl-10 pr-9 py-2 bg-slate-50/80 border border-[#D4AF37]/30 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-[#540112]/20 focus:border-[#540112] transition-all outline-none font-medium text-slate-900">
                             <button type="button" onclick="togglePassword('confirm_password')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
                                 <i class="ph ph-eye text-base"></i>
                             </button>
@@ -147,7 +147,7 @@
             <form id="otp-form" class="hidden space-y-3 transition-all duration-500 opacity-0 transform translate-y-4">
                 <div class="text-center p-3 bg-slate-50 border border-[#D4AF37]/30 rounded-xl mb-3">
                     <i class="ph ph-envelope-open text-2xl text-[#540112] mb-1"></i>
-                    <p class="text-[11px] font-medium text-slate-700">Enter the 6-digit code sent to</p>
+                    <p class="text-[10px] font-medium text-slate-700">Enter the 6-digit code sent to</p>
                     <p id="display-email" class="text-xs font-bold text-[#540112]"></p>
                 </div>
                 

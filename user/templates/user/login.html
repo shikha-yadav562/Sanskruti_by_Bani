@@ -140,10 +140,10 @@
     <div class="relative z-10 w-full max-w-3xl bg-white/10 backdrop-blur-3xl border border-[#D4AF37]/30 rounded-3xl shadow-2xl shadow-black/80 overflow-hidden flex flex-col lg:flex-row my-auto">
 
         <!-- LEFT SECTION (MAROON BG #540112 MATCHING LOGO) -->
-        <div class="lg:w-1/2 bg-[#540112] backdrop-blur-3xl p-6 sm:p-8 flex items-center justify-center relative border-b lg:border-b-0 lg:border-r border-[#D4AF37]/20 overflow-hidden">
+        <div class="lg:w-1/2 bg-[#540112] backdrop-blur-3xl p-2 sm:p-8 flex items-center justify-center relative border-b lg:border-b-0 lg:border-r border-[#D4AF37]/20 overflow-hidden">
             <!-- Brand Logo Graphic Image (ONLY SANSKRUTI BY BANI ARTWORK) -->
             <div class="relative z-10 w-full h-full flex items-center justify-center p-2">
-                <img src="{% static 'user/assets/brand-logo-full.jpg' %}" class="w-full h-auto max-h-[380px] object-contain rounded-2xl shadow-2xl border border-white/20 transition-transform duration-700 hover:scale-105" alt="Sanskruti By Bani Logo">
+                <img src="{% static 'user/assets/brand-logo-full.jpg' %}" class="w-full h-auto max-h-[180px] sm:max-h-[240px] md:max-h-[380px] object-contain rounded-2xl shadow-2xl border border-white/20 transition-transform duration-700 hover:scale-105" alt="Sanskruti By Bani Logo">
             </div>
         </div>
 
@@ -152,7 +152,7 @@
             
             <!-- Card Header -->
             <div class="mb-6 text-center lg:text-left">
-                <h2 class="font-serif text-3xl font-bold text-[#540112] tracking-wide" style="font-family: 'Cinzel', serif;">Welcome Back</h2>
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-[#540112] tracking-wide" style="font-family: 'Cinzel', serif;">Welcome Back</h2>
                 <p class="text-xs text-slate-500 mt-1">Please enter your account details to sign in.</p>
             </div>
 
@@ -171,7 +171,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-xs font-bold uppercase tracking-wider text-[#540112]">Email or Username</label>
-                        <button type="button" onclick="openModal('forgot-username-modal')" class="text-[11px] font-bold text-[#540112] hover:text-[#D4AF37] transition-colors">Forgot Username?</button>
+                        {% comment %} <button type="button" onclick="openModal('forgot-username-modal')" class="text-[11px] font-bold text-[#540112] hover:text-[#D4AF37] transition-colors">Forgot Username?</button> {% endcomment %}
                     </div>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#540112] transition-colors">
@@ -207,7 +207,7 @@
                     </label>
                 </div>
 
-                <div class="pt-2">
+                <div class="pt-1">
                     <button type="submit" id="btn-login" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#540112] via-[#6d0318] to-[#38000b] hover:from-[#38000b] hover:to-[#540112] text-[#D4AF37] px-4 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all shadow-lg border border-[#D4AF37]/40">
                         <span>Sign In</span>
                         <i id="login-icon" class="ph ph-arrow-right font-bold"></i>
@@ -219,7 +219,7 @@
             <div class="mt-6 text-center pt-3 border-t border-slate-200">
                 <p class="text-xs text-slate-500">
                     Don't have an account? 
-                <a href="{% url 'user:signup' %}" class="font-bold text-[#540112] hover:text-[#D4AF37] transition-colors underline uppercase tracking-wider ml-1">Create Account</a>
+                <a href="{% url 'user:signup' %}" class="font-bold text-[0.7rem] sm:text-sm text-[#540112] hover:text-[#D4AF37] transition-colors underline uppercase tracking-wider ml-1">Create Account</a>
                 </p>
             </div>
 
