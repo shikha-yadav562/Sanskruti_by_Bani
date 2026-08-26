@@ -405,10 +405,12 @@
       <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8 sm:gap-x-8 sm:gap-y-12 transition-all duration-500">
         {% for product in products %}
         <div class="group relative bg-[#ffffff] flex flex-col justify-between transition-all duration-500 hover:shadow-xl pb-2 border border-[#f5deb3]/30">
-          <div class="relative overflow-hidden aspect-[3/4]">
-            <img src="{% if product.thumb %}{{ product.thumb.image_url }}{% else %}{% static 'user/assets/placeholder.jpg' %}{% endif %}"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            alt="{% if product.thumb %}{{ product.thumb.alt_text|default:product.name }}{% else %}{{ product.name }}{% endif %}">
+                    <div class="relative overflow-hidden aspect-[3/4]">
+            <a href="{% url 'user:product' product.slug %}" class="block w-full h-full">
+              <img src="{% if product.thumb %}{{ product.thumb.image_url }}{% else %}{% static 'user/assets/placeholder.jpg' %}{% endif %}"
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              alt="{% if product.thumb %}{{ product.thumb.alt_text|default:product.name }}{% else %}{{ product.name }}{% endif %}">
+            </a>
 
             {% if product.tags.all %}
             <div class="absolute top-2 left-2 flex flex-col gap-1 z-10">
@@ -420,7 +422,7 @@
             </div>
             {% endif %}
 
-            <div class="absolute inset-0 bg-[#71041a]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+            <div class="absolute inset-0 bg-[#71041a]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden lg:flex items-center justify-center">
               <a href="{% url 'user:product' product.slug %}"
               class="bg-[#fff8f4] text-[#810820] px-6 py-2 uppercase tracking-widest text-[10px] font-semibold transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-[#810820] hover:text-[#fff8f4] border border-[#810820]">
                 Quick View
