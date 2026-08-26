@@ -3675,6 +3675,7 @@ REPLACE DETAILS LINK WITH BUY NOW BUTTON
  .saree-image-link {
    display: block;
    position: relative;
+    z-index: 2;
    text-decoration: none;
  }
 

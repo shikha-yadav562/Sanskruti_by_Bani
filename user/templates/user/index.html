@@ -10,6 +10,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Sanskruti by Bani</title>
+
+  <style>
+@media (max-width: 767px) {
+  .saree-quickview-wrap {
+    display: none !important;
+  }
+}
+</style>
   {% load static %}
   <!-- =====================================
   GOOGLE FONTS
@@ -30,7 +38,7 @@
 
   <!-- MAIN CSS -->
   <link rel="stylesheet" href="{% static 'user/css/style.css' %}?v={% now 'U' %}">
-
+   
 </head>
 
 <body>
