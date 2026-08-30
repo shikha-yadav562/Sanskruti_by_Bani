@@ -1,18 +1,18 @@
-/* splash screen */
-window.addEventListener("load", function () {
-
-  setTimeout(function () {
-
+/* splash screen - 5 seconds duration */
+(function () {
+  function dismissSplash() {
     const splash = document.getElementById("splash");
+    if (!splash || splash.classList.contains("hide")) return;
     splash.classList.add("hide");
 
     setTimeout(function () {
       splash.style.display = "none";
-    }, 1000);
+    }, 800);
+  }
 
-  }, 5200);   /* longer for movie intro */
-
-});
+  // 5 seconds splash screen duration
+  setTimeout(dismissSplash, 5000);
+})();
 document.addEventListener("DOMContentLoaded", function () {
 
   /* =========================

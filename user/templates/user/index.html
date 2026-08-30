@@ -1095,7 +1095,7 @@ LUXURY FOOTER SECTION
   SCRIPT
   ===================================== -->
 
-  <script src="{% static 'user/js/script.js' %}"></script>
+  <script src="{% static 'user/js/script.js' %}?v={% now 'U' %}"></script>
 
 <script>
 async function logoutUser() {
