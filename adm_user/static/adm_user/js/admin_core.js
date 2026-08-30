@@ -253,8 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Website Builder', url: '/adm/website-builder/', icon: 'ph-paint-brush', desc: 'Hero banners & memories' },
         { name: 'Filters & Colors', url: '/adm/filters/', icon: 'ph-faders', desc: 'Colors, fabrics, prints, tags' },
         { name: 'Customer Reviews', url: '/adm/reviews/', icon: 'ph-star', desc: 'Approve & moderate reviews' },
-        { name: 'Registered Customers', url: '/adm/customers/', icon: 'ph-users', desc: 'Customer accounts & stats' },
-        { name: 'Dashboard Overview', url: '/adm/dashboard/', icon: 'ph-chart-line-up', desc: 'Store performance metrics' },
     ];
 
     function showQuickNav(container, query) {
@@ -322,9 +320,9 @@ document.addEventListener('DOMContentLoaded', () => {
             results.forEach(p => {
                 html += `
                     <a href="/adm/products/?search=${encodeURIComponent(p.name)}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-brand-maroon/5 dark:hover:bg-slate-800 transition-colors">
-                        ${p.thumbnail 
-                            ? `<img src="${p.thumbnail}" alt="${p.name}" class="w-10 h-10 object-cover rounded-lg bg-slate-100 shrink-0 border border-slate-200 dark:border-slate-700">`
-                            : `<div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0 flex items-center justify-center text-slate-400"><i class="ph ph-image"></i></div>`}
+                        ${p.thumbnail
+                        ? `<img src="${p.thumbnail}" alt="${p.name}" class="w-10 h-10 object-cover rounded-lg bg-slate-100 shrink-0 border border-slate-200 dark:border-slate-700">`
+                        : `<div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0 flex items-center justify-center text-slate-400"><i class="ph ph-image"></i></div>`}
                         <div class="min-w-0 flex-1">
                             <div class="text-xs font-bold text-slate-800 dark:text-white truncate">${p.name}</div>
                             <div class="text-[10px] text-slate-400">${p.category || 'Product'}</div>

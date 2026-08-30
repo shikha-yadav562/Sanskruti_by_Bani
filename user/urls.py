@@ -6,15 +6,11 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('product/<slug:slug>/', views.product, name='product'),
     path('catalogue/', views.catalogue, name='catalogue'),
-    path('profile/', views.profile_view, name='profile'),
     path('terms-conditions/', views.terms_conditions, name='terms_conditions'),
     path('return-refund-policy/', views.return_refund_policy, name='return_refund_policy'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
-    # path('login/', views.login_view, name='login'),
-    # path('signup/', views.signup_view, name='signup'),
-    # path('logout/', views.logout_view, name='logout'),
     path('review/submit/', views.submit_review, name='submit_review'),
-    path('review/helpful/<int:review_id>/', views.toggle_review_helpful, name='toggle_review_helpful'),
+    path('review/helpful/<int:review_id>/', views.mark_review_helpful, name='mark_review_helpful'),
 
     
     
@@ -36,7 +32,7 @@ urlpatterns = [
     path('api/profile/delete/', views.api_delete_account, name='api_delete_account'),
     
     #----------------SEARCH BAR-----------------------------------------------
-      path("search/suggest/", views.search_suggest, name="search_suggest"),
+    path("search/suggest/", views.search_suggest, name="search_suggest"),
       
     #----------------WHATSAPP--------------------------------------------------
     path('product/<slug:slug>/buy/', views.buy_now, name='buy_now'),

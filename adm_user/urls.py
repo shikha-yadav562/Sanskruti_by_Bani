@@ -2,9 +2,7 @@ from django.urls import path
 from . import views
 app_name="adm_user"
 urlpatterns = [
-    # path('', views.index, name='index'),
     path('', views.dashboard, name='dashboard'),
-    
 
     # URLs for Categories
     path('categories/', views.categories, name='categories'),
@@ -45,17 +43,13 @@ urlpatterns = [
     path('products/export/', views.products_export, name='products_export'),
     path('products/<slug:slug>/stock/', views.product_stock_update, name='product_stock_update'),
 
-    path('img_manager/', views.img_manager, name='img_manager'),
     path('website-builder/', views.website_builder, name='website_builder'),
-    path('coming_soon/', views.coming_soon, name='coming_soon'),
     
     #------------ testing-------------
     path("products/image/<str:image_id>/delete/", views.product_image_delete, name="product_image_delete"),
     path("products/variant/<str:variant_id>/delete/", views.product_variant_delete, name="product_variant_delete"),
     
     #------ Website Builder -------
-    
-
  
     # Singleton section saves — one per sidebar tab
      path("website-builder/", views.website_builder, name="website_builder"),

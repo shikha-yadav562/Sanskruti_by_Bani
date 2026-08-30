@@ -66,7 +66,11 @@
 
                         <td class="py-4 px-6 max-w-xs">
                             <div class="font-bold text-slate-800 dark:text-white text-xs mb-0.5">{{ rev.title }}</div>
-                            <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">{{ rev.comment }}</p>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 cursor-pointer hover:text-slate-800 dark:hover:text-slate-200 transition"
+                            onclick="toggleReviewText(this)">{{ rev.comment }}</p>
+                            <button class="text-[10px] font-semibold text-brand-maroon mt-0.5 hover:underline" onclick="toggleReviewText(this.previousElementSibling)">
+                                Read more
+                            </button>
                             <span class="text-[10px] text-slate-400 mt-1 block">{{ rev.created_at|date:"M d, Y, h:i A" }}</span>
                         </td>
 
@@ -144,18 +148,31 @@ function toggleApprove(id, btn) {
 }
 
 function deleteReview(id, btn) {
-    if (confirm('Are you sure you want to delete this customer review?')) {
-        fetch('/adm/reviews/delete/' + id + '/', {
-            method: 'POST',
-            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.deleted) {
-                btn.closest('tr').remove();
-            }
-        });
-    }
+    if (!confirm('Are you sure you want to delete this customer review?')) return;
+
+    btn.disabled = true;
+
+    fetch('/adm/reviews/delete/' + id + '/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+    })
+    .then(r => {
+        if (!r.ok) throw new Error('Request failed: ' + r.status);
+        return r.json();
+    })
+    .then(data => {
+        if (data.deleted) {
+            btn.closest('tr').remove();
+        } else {
+            btn.disabled = false;
+            alert('Delete failed. Please try again.');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        btn.disabled = false;
+        alert('Something went wrong deleting this review.');
+    });
 }
 
 function openAdminPhotoModal(src) {
@@ -165,6 +182,9 @@ function openAdminPhotoModal(src) {
 
 function closeAdminPhotoModal() {
     document.getElementById('adminPhotoModal').classList.add('hidden');
+}
+function toggleReviewText(p) {
+    p.classList.toggle('line-clamp-2');
 }
 </script>
 {% endblock %}

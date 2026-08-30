@@ -1,22 +1,41 @@
 
 import json
 import uuid
+import csv
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
-from django.db import IntegrityError, transaction
-from django.db.models import ProtectedError
-from django.http import JsonResponse
+from django.core.paginator import Paginator
+from django.core.validators import get_available_image_extensions
+
+from django.db import models, IntegrityError, transaction
+from django.db.models import ProtectedError, Q, Case, When
+
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.text import get_valid_filename
 from django.views.decorators.http import require_http_methods
-from django.core.validators import get_available_image_extensions
 
 from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage, HeroSlideMain, HeroSlideImageOnly, HeroSlideOffer, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, OfferBarItem, HeaderSettings, FooterSettings, AboutUsSection,SignatureCategoryItem
 from decimal import Decimal, InvalidOperation
-# Create your views here.
-def index(request):
-    return render(request, 'adm_user/index.html')
+
+from PIL import Image
+from user.models import ProductReview
+from urllib.parse import urlparse
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+FORM_TEMPLATE = "adm_user/products.html"
+
+ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
+MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
+
+# WEBSITE BUILDER
+MAX_IMAGE_SIZE_MB = 25  # Relaxed size limit to support high-res banners
+MAX_MEMORY_IMAGES = 20  # sane production cap so the slider can't grow unbounded
 
 def dashboard(request):
     return render(request, 'adm_user/dashboard.html')
@@ -24,7 +43,6 @@ def dashboard(request):
 
 # Views For CATEGORY
 def categories(request):
-    from .models import SignatureCategoryItem
     context = {
         "signature_categories": SignatureCategoryItem.objects.all(),
     }
@@ -123,8 +141,9 @@ def filters(request):
 @require_http_methods(["GET", "POST"])
 def color_list_create(request):
     if request.method == "GET":
-        colors = Color.objects.filter(is_active=True).order_by("created_at")
-        data = [{"id": c.id, "name": c.name, "hex_code": c.hex_code, "slug": c.slug} for c in colors]
+        data = list(
+            Color.objects.filter(is_active=True).order_by("created_at").values("id", "name", "hex_code", "slug")
+    )
         return JsonResponse({"colors": data})
     
     try:
@@ -172,7 +191,8 @@ def color_update(request, pk):
     if name != color.name:
         color.name = name
         color.slug = ""  # forces the mixin to regenerate it on save()
-    color.hex_code = hex_code
+    if "hex_code" in payload:
+        color.hex_code = (payload.get("hex_code") or "").strip()
 
     try:
         color.full_clean()
@@ -189,7 +209,7 @@ def color_update(request, pk):
 @require_http_methods(["DELETE"])
 def color_delete(request, pk):
     try:
-        color = Color.objects.get(pk=pk)
+        color = Color.objects.get(pk=pk, is_active=True)
     except Color.DoesNotExist:
         return JsonResponse({"error": "Color not found."}, status=404)
 
@@ -209,9 +229,10 @@ def color_delete(request, pk):
 @require_http_methods(["GET", "POST"])
 def fabric_list_create(request):
     if request.method == "GET":
-        fabrics = Fabric.objects.filter(is_active=True).order_by("created_at")
-        data = [{"id": f.id, "name": f.name, "slug": f.slug} for f in fabrics]
-        return JsonResponse({"fabrics": data})
+        fabrics = list(
+            Fabric.objects.filter(is_active=True).order_by("created_at").values("id", "name", "slug")
+        )
+        return JsonResponse({"fabrics": fabrics})
 
     # POST — create a new fabric
     try:
@@ -271,7 +292,7 @@ def fabric_update(request, pk):
 @require_http_methods(["DELETE"])
 def fabric_delete(request, pk):
     try:
-        fabric = Fabric.objects.get(pk=pk)
+        fabric = Fabric.objects.get(pk=pk, is_active=True)
     except Fabric.DoesNotExist:
         return JsonResponse({"error": "Fabric not found."}, status=404)
 
@@ -291,8 +312,9 @@ def fabric_delete(request, pk):
 @require_http_methods(["GET", "POST"])
 def print_list_create(request):
     if request.method == "GET":
-        prints = Print.objects.filter(is_active=True).order_by("created_at")
-        data = [{"id": p.id, "name": p.name, "slug": p.slug} for p in prints]
+        data = list(
+            Print.objects.filter(is_active=True).order_by("created_at").values("id", "name", "slug")
+        )
         return JsonResponse({"prints": data})
 
     # POST — create a new print
@@ -353,7 +375,7 @@ def print_update(request, pk):
 @require_http_methods(["DELETE"])
 def print_delete(request, pk):
     try:
-        print_obj = Print.objects.get(pk=pk)
+        print_obj = Print.objects.get(pk=pk, is_active=True)
     except Print.DoesNotExist:
         return JsonResponse({"error": "Print not found."}, status=404)
 
@@ -374,8 +396,9 @@ def print_delete(request, pk):
 @require_http_methods(["GET", "POST"])
 def tag_list_create(request):
     if request.method == "GET":
-        tags = Tag.objects.all().order_by("created_at")
-        data = [{"id": t.id, "name": t.name, "slug": t.slug} for t in tags]
+        data = list(
+            Tag.objects.filter().order_by("created_at").values("id", "name", "slug")
+        )
         return JsonResponse({"tags": data})
 
     # POST — create a new tag
@@ -440,16 +463,32 @@ def tag_delete(request, pk):
     except Tag.DoesNotExist:
         return JsonResponse({"error": "Tag not found."}, status=404)
 
-    tag.delete()
+    try:
+        tag.delete()
+    except ProtectedError:
+        return JsonResponse(
+            {"error": "This tag is linked to existing products and can't be deleted."},
+            status=409,
+        )
     return JsonResponse({"deleted": True})
 
 # ==========================================
 # PRODUCTS
 # ==========================================
 
+def _delete_stored_image(image_url):
+    """Delete the actual file from storage, given the full URL saved on ProductImage."""
+    if not image_url:
+        return
+    relative_path = urlparse(image_url).path  # e.g. "/media/products/abc123_photo.jpeg"
+    if relative_path.startswith(settings.MEDIA_URL):
+        relative_path = relative_path[len(settings.MEDIA_URL):]  # -> "products/abc123_photo.jpeg"
+    default_storage.delete(relative_path)
+
 @require_http_methods(["POST"])
 def product_image_delete(request, image_id):
     image = get_object_or_404(ProductImage, pk=image_id)
+    _delete_stored_image(image.image_url)
     image.delete()
     return JsonResponse({"ok": True, "id": image.id})
 
@@ -458,7 +497,9 @@ def product_variant_delete(request, variant_id):
     variant = get_object_or_404(ProductVariant, pk=variant_id)
     variant.is_active = False
     variant.save(update_fields=["is_active"])
-    variant.images.all().delete()   # NEW — clear its images so re-adding this color starts fresh
+    for url in variant.images.values_list("image_url", flat=True):
+        _delete_stored_image(url)
+    variant.images.all().delete()
     return JsonResponse({"ok": True, "id": variant.id})
 
 @require_http_methods(["GET"])
@@ -468,9 +509,12 @@ def products(request):
     return render(request, FORM_TEMPLATE, context)
 
 
-FORM_TEMPLATE = "adm_user/products.html"
-
 def _save_uploaded_image(request, file_obj):
+    if file_obj.content_type not in ALLOWED_IMAGE_TYPES:
+        raise ValueError("Only JPEG, PNG, or WEBP images are allowed.")
+    if file_obj.size > MAX_IMAGE_SIZE:
+        raise ValueError("Image files must be under 5MB.")
+
     safe_name = get_valid_filename(file_obj.name)
     path = default_storage.save(f"products/{uuid.uuid4().hex}_{safe_name}", file_obj)
     return request.build_absolute_uri(default_storage.url(path))
@@ -535,7 +579,6 @@ def _save_product_fields(product, request):
     product.discount_price = discount_price
     product.stock_quantity = stock_quantity
     
-    
     product.saree_length = post.get("saree_length", "").strip()
     product.blouse_included = _parse_bool(post.get("blouse_included", "Yes"))
     product.blouse_type = post.get("blouse_type", "").strip()
@@ -556,15 +599,18 @@ def _save_variants_and_images(product, request):
             continue
         color = get_object_or_404(Color, pk=color_id, is_active=True)
 
-        variant, _created = ProductVariant.objects.update_or_create(
-            product=product,
-            color=color,
-            defaults={
-                "stock_quantity": stock or 0,
-                "price": price or None,
-                "is_active": True,
-            },
-        )
+        try:
+            variant_price = Decimal(price) if price else None
+        except InvalidOperation:
+            raise ValueError(f"Invalid price for variant color {color.name}.")
+
+        variant, _ = ProductVariant.objects.get_or_create(product=product, color=color)
+        variant.stock_quantity = stock or 0
+        variant.price = variant_price
+        variant.is_active = True
+        variant.full_clean()
+        variant.save()
+
         kept_variant_ids.append(variant.id)
 
         for image_file in request.FILES.getlist(f"variant_images_{color_id}"):
@@ -600,7 +646,6 @@ def _handle_save_errors(request, exc, product=None):
     if product is not None:
         context["product"] = product
     return render(request, FORM_TEMPLATE, context)
-
 
 @require_http_methods(["GET"])
 def product_detail(request, slug):
@@ -667,6 +712,7 @@ def product_delete(request, slug):
     product = get_object_or_404(Product, slug=slug)
     product_id = product.id
     product_name = product.name
+    image_urls = list(ProductImage.objects.filter(product=product).values_list("image_url", flat=True))
 
     try:
         with transaction.atomic():
@@ -678,11 +724,24 @@ def product_delete(request, slug):
         messages.error(request, error)
         return redirect("adm_user:products")
 
-    messages.success(request, f'"{product_name}" was permanently deleted.')
+    for url in image_urls:
+        _delete_stored_image(url)
 
+    messages.success(request, f'"{product_name}" was permanently deleted.')
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return JsonResponse({"ok": True, "id": product_id})
     return redirect("adm_user:products")
+
+
+# ==========================================
+# EXPORT
+# ==========================================
+
+def _csv_safe(value):
+    value = str(value)
+    if value and value[0] in ("=", "+", "-", "@"):
+        return "'" + value
+    return value
 
 @require_http_methods(["GET"])
 def products_export(request):
@@ -691,9 +750,6 @@ def products_export(request):
     Honours the same filters as the on-page table (category, stock, search)
     when they're passed as query params, e.g. ?category=3&stock=low&search=silk
     """
-    import csv
-    from django.http import HttpResponse
-    from django.db.models import Q
 
     qs = Product.objects.filter(is_active=True).select_related("category", "fabric", "print_type")
 
@@ -730,8 +786,8 @@ def products_export(request):
             stock_status = "In Stock"
 
         writer.writerow([
-            p.name,
-            p.product_code or "",
+            _csv_safe(p.name),
+            _csv_safe(p.product_code or ""),
             p.category.name if p.category else "",
             p.fabric.name if p.fabric else "",
             p.print_type.name if p.print_type else "",
@@ -743,6 +799,10 @@ def products_export(request):
         ])
 
     return response
+
+# ==========================================
+# STOCK UPDATE
+# ==========================================
 
 @require_http_methods(["POST"])
 def product_stock_update(request, slug):
@@ -783,29 +843,9 @@ def product_stock_update(request, slug):
     })
 
 
-
-def img_manager(request):
-    return render(request, 'adm_user/image_manager.html')
-
-# def website_builder(request):
-#     return render(request, 'adm_user/website_builder.html')
-
-def coming_soon(request):
-    return render(request, 'adm_user/coming-soon.html')
-
-def login(request):
-    return render(request, 'adm_user/login.html')
-
-def signup(request):
-    return render(request, 'adm_user/signup.html')
-
-
 # ==========================================
 # WEBSITE BUILDER
 # ==========================================
- 
-MAX_IMAGE_SIZE_MB = 25  # Relaxed size limit to support high-res banners
-MAX_MEMORY_IMAGES = 20  # sane production cap so the slider can't grow unbounded
  
  
 def _validate_image_file(f):
@@ -821,7 +861,7 @@ def _validate_image_file(f):
         )
     
     try:
-        from PIL import Image
+        
         img = Image.open(f)
         img.verify()
         f.seek(0)
@@ -840,7 +880,7 @@ def _validate_image_file(f):
  
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 def website_builder(request):
-    from .models import SignatureCategoryItem
+    
     context = {
         "hero_main": HeroSlideMain.load(),
         "hero_image_only": HeroSlideImageOnly.load(),
@@ -863,40 +903,35 @@ def website_builder(request):
 # ---------------------------------------------------------------------
  
 def _save_singleton_text_fields(instance, data, fields):
-    """
-    Only overwrite fields present in `data` — a partial update. Keeps
-    image fields untouched here entirely; images are handled by the
-    dedicated _save_singleton_image() below so a text-only save can
-    never accidentally wipe out an existing photo.
-    """
-    for field in fields:
-        if field in data:
-            setattr(instance, field, data[field])
-    from django.db import models
+    changed_fields = [field for field in fields if field in data]
+    for field in changed_fields:
+        setattr(instance, field, data[field])
+
     instance.full_clean(exclude=[f.name for f in instance._meta.fields if isinstance(f, models.ImageField)])
-    instance.save()
- 
- 
+    instance.save(update_fields=changed_fields or None)
+
+
 def _save_singleton_image(instance, files, field_name):
-    """
-    Only replaces the image if a new file was actually uploaded —
-    re-submitting the form without picking a new file must NOT clear
-    the existing image (ImageField's blank/empty submission behavior
-    would otherwise do exactly that).
-    """
     f = files.get(field_name)
     if not f:
         return
     _validate_image_file(f)
 
     old_file = getattr(instance, field_name)
-    if old_file:
-        old_file.delete(save=False)   # remove old file from media/ so a new one doesn't get suffixed
 
     setattr(instance, field_name, f)
-    instance.save()
- 
+    instance.full_clean(exclude=[fld.name for fld in instance._meta.fields if isinstance(fld, models.ImageField)])
+    instance.save(update_fields=[field_name])
+
+    if old_file and old_file.name != getattr(instance, field_name).name:
+        old_file.delete(save=False)
+
+# ==========================================
+# WEBSITE BUILDER - HERO BANNER
+# ==========================================
+
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+
 @require_http_methods(["POST"])
 def save_hero_main(request):
     try:
@@ -914,8 +949,9 @@ def save_hero_main(request):
             _save_singleton_image(hero, request.FILES, "mobile_image")
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
-    except Exception as e:
-        return JsonResponse({"error": f"Error saving Main Hero Slide: {str(e)}"}, status=400)
+    except Exception:
+        logger.exception("Error saving Main Hero Slide")
+        return JsonResponse({"error": "Something went wrong saving the Main Hero Slide."}, status=500)
     return JsonResponse({"saved": True})
  
  
@@ -930,7 +966,9 @@ def save_hero_image_only(request):
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
     except Exception as e:
-        return JsonResponse({"error": f"Error saving Image Only Slide: {str(e)}"}, status=400)
+        logger.exception("Error saving Main Hero Slide 2")
+        return JsonResponse({"error": f"Error saving Image Only Slide: {str(e)}"}, status=500)
+        
     return JsonResponse({"saved": True})
  
  
@@ -945,10 +983,15 @@ def save_hero_offer(request):
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
     except Exception as e:
-        return JsonResponse({"error": f"Error saving Hero Offer Banner: {str(e)}"}, status=400)
+        logger.exception("Error saving Main Hero Slide 3")
+        return JsonResponse({"error": f"Error saving Hero Offer Banner: {str(e)}"}, status=500)
     return JsonResponse({"saved": True})
  
- 
+
+# ==========================================
+# WEBSITE BUILDER - SWEET MEMORIES
+# ==========================================
+
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["POST"])
 def save_memories_section(request):
@@ -1000,8 +1043,95 @@ def save_memories_slide3(request):
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
     return JsonResponse({"saved": True})
+
+
+# ---------------------------------------------------------------------
+# SWEET MEMORIES GALLERY (dynamic list — "Add Photos" / drag to reorder)
+# ---------------------------------------------------------------------
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["GET", "POST"])
+def memory_images(request):
+    if request.method == "GET":
+        images = SweetMemoryImage.objects.order_by("display_order")
+        return JsonResponse(
+            {"images": [{"id": i.id, "url": i.image.url, "display_order": i.display_order} for i in images]}
+        )
+
+    uploaded = request.FILES.getlist("images")
+    if not uploaded:
+        return JsonResponse({"error": "No images provided."}, status=400)
+
+    created = []
+    try:
+        with transaction.atomic():
+            # lock existing rows so a concurrent upload can't read a stale count
+            current_count = SweetMemoryImage.objects.select_for_update().count()
+
+            if current_count + len(uploaded) > MAX_MEMORY_IMAGES:
+                return JsonResponse(
+                    {"error": f"Maximum {MAX_MEMORY_IMAGES} memory images allowed."}, status=400
+                )
+
+            next_order = current_count
+            for f in uploaded:
+                _validate_image_file(f)
+                img = SweetMemoryImage(image=f, display_order=next_order)
+                img.full_clean()
+                img.save()
+                created.append({"id": img.id, "url": img.image.url})
+                next_order += 1
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+
+    return JsonResponse({"created": created}, status=201)
  
  
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+@require_http_methods(["DELETE"])
+def memory_image_delete(request, pk):
+    image = get_object_or_404(SweetMemoryImage, pk=pk)
+    image.image.delete(save=False) 
+    image.delete()
+    return JsonResponse({"deleted": True})
+ 
+ 
+# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
+
+
+@require_http_methods(["POST"])
+def memory_images_reorder(request):
+    """
+    Body: {"order": [id1, id2, id3, ...]} — the new left-to-right order
+    from the "Drag to reorder" UI.
+    """
+    try:
+        payload = json.loads(request.body)
+        ordered_ids = payload["order"]
+    except (json.JSONDecodeError, KeyError):
+        return JsonResponse({"error": "Invalid request."}, status=400)
+
+    if not isinstance(ordered_ids, list) or not ordered_ids:
+        return JsonResponse({"error": "Invalid request."}, status=400)
+
+    case = Case(
+        *[When(pk=image_id, then=position) for position, image_id in enumerate(ordered_ids)]
+    )
+
+    with transaction.atomic():
+        updated = SweetMemoryImage.objects.filter(pk__in=ordered_ids).update(display_order=case)
+
+    if updated != len(ordered_ids):
+        return JsonResponse({"error": "Some images could not be found."}, status=400)
+
+    return JsonResponse({"reordered": True})
+
+ 
+
+# ==========================================
+# WEBSITE BUILDER - HEADER AND NAV
+# ==========================================
+
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["POST"])
 def save_header_settings(request):
@@ -1012,52 +1142,9 @@ def save_header_settings(request):
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
     return JsonResponse({"saved": True})
- 
- 
-# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
-@require_http_methods(["POST"])
-def save_footer_settings(request):
-    try:
-        with transaction.atomic():
-            footer = FooterSettings.load()
-            _save_singleton_text_fields(
-                footer,
-                request.POST,
-                [
-                    "brand_name", "brand_description", "store_address",
-                    "phone_number", "email", "instagram_link", "whatsapp_number",
-                ],
-            )
-    except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
-    return JsonResponse({"saved": True})
- 
- 
-# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
-@require_http_methods(["POST"])
-def save_about_section(request):
-    try:
-        with transaction.atomic():
-            about = AboutUsSection.load()
-            _save_singleton_text_fields(
-                about,
-                request.POST,
-                [
-                    "small_title", "main_heading", "highlight_quote",
-                    "main_paragraph", "ending_signoff",
-                    "floating_top_text", "floating_bottom_text",
-                ],
-            )
-            _save_singleton_image(about, request.FILES, "about_image")
-    except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
-    return JsonResponse({"saved": True})
- 
- 
-# ---------------------------------------------------------------------
+
 # OFFER BAR ITEMS (dynamic list — "Add Another Offer")
-# ---------------------------------------------------------------------
- 
+
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["GET", "POST"])
 def offer_items(request):
@@ -1085,6 +1172,9 @@ def offer_items(request):
     if not text:
         return JsonResponse({"error": "Offer text is required."}, status=400)
 
+    if item_id is not None and not isinstance(item_id, int):
+        return JsonResponse({"error": "Invalid item id."}, status=400)
+
     # UPDATE
     if item_id:
         try:
@@ -1093,6 +1183,7 @@ def offer_items(request):
             return JsonResponse({"error": "Item not found."}, status=404)
 
         item.text = text
+        update_fields = ["text"]
 
     # CREATE
     else:
@@ -1107,11 +1198,12 @@ def offer_items(request):
             text=text,
             display_order=last_order + 1
         )
+        update_fields = None
 
     try:
-        item.full_clean()
         with transaction.atomic():
-            item.save()
+            item.full_clean()
+            item.save(update_fields=update_fields)
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
 
@@ -1128,71 +1220,52 @@ def offer_item_delete(request, pk):
     return JsonResponse({"deleted": True})
  
  
-# ---------------------------------------------------------------------
-# SWEET MEMORIES GALLERY (dynamic list — "Add Photos" / drag to reorder)
-# ---------------------------------------------------------------------
- 
+# ==========================================
+# WEBSITE BUILDER - FOOTER
+# ==========================================
+
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
-@require_http_methods(["GET", "POST"])
-def memory_images(request):
-    if request.method == "GET":
-        images = SweetMemoryImage.objects.all()
-        return JsonResponse(
-            {"images": [{"id": i.id, "url": i.image.url, "display_order": i.display_order} for i in images]}
-        )
- 
-    current_count = SweetMemoryImage.objects.count()
-    uploaded = request.FILES.getlist("images")
-    if not uploaded:
-        return JsonResponse({"error": "No images provided."}, status=400)
-    if current_count + len(uploaded) > MAX_MEMORY_IMAGES:
-        return JsonResponse(
-            {"error": f"Maximum {MAX_MEMORY_IMAGES} memory images allowed."}, status=400
-        )
- 
-    created = []
+@require_http_methods(["POST"])
+def save_footer_settings(request):
     try:
         with transaction.atomic():
-            next_order = current_count
-            for f in uploaded:
-                _validate_image_file(f)
-                img = SweetMemoryImage(image=f, display_order=next_order)
-                img.full_clean()
-                img.save()
-                created.append({"id": img.id, "url": img.image.url})
-                next_order += 1
+            footer = FooterSettings.load()
+            _save_singleton_text_fields(
+                footer,
+                request.POST,
+                [
+                    "brand_name", "brand_description", "store_address",
+                    "phone_number", "email", "instagram_link", "whatsapp_number",
+                ],
+            )
     except ValidationError as e:
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    return JsonResponse({"saved": True})
  
-    return JsonResponse({"created": created}, status=201)
- 
- 
-# TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
-@require_http_methods(["DELETE"])
-def memory_image_delete(request, pk):
-    image = get_object_or_404(SweetMemoryImage, pk=pk)
-    image.delete()
-    return JsonResponse({"deleted": True})
- 
+# ==========================================
+# WEBSITE BUILDER - ABOUT US SECTION
+# ==========================================
  
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["POST"])
-def memory_images_reorder(request):
-    """
-    Body: {"order": [id1, id2, id3, ...]} — the new left-to-right order
-    from the "Drag to reorder" UI.
-    """
+def save_about_section(request):
     try:
-        payload = json.loads(request.body)
-        ordered_ids = payload["order"]
-    except (json.JSONDecodeError, KeyError):
-        return JsonResponse({"error": "Invalid request."}, status=400)
- 
-    with transaction.atomic():
-        for position, image_id in enumerate(ordered_ids):
-            SweetMemoryImage.objects.filter(pk=image_id).update(display_order=position)
+        with transaction.atomic():
+            about = AboutUsSection.load()
+            _save_singleton_text_fields(
+                about,
+                request.POST,
+                [
+                    "small_title", "main_heading", "highlight_quote",
+                    "main_paragraph", "ending_signoff",
+                    "floating_top_text", "floating_bottom_text",
+                ],
+            )
+            _save_singleton_image(about, request.FILES, "about_image")
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    return JsonResponse({"saved": True})
 
-    return JsonResponse({"reordered": True})
 
 
 # ---------------------------------------------------------------------
@@ -1200,17 +1273,19 @@ def memory_images_reorder(request):
 # ---------------------------------------------------------------------
 
 def reviews_management(request):
-    from user.models import ProductReview
     status_filter = request.GET.get('status', 'all')
-    reviews = ProductReview.objects.all()
+    reviews = ProductReview.objects.select_related('user')
 
     if status_filter == 'pending':
         reviews = reviews.filter(is_approved=False)
     elif status_filter == 'approved':
         reviews = reviews.filter(is_approved=True)
 
+    paginator = Paginator(reviews, 25)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
     context = {
-        "reviews": reviews,
+        "reviews": page_obj,
         "status_filter": status_filter,
     }
     return render(request, "adm_user/reviews_management.html", context)
@@ -1218,16 +1293,15 @@ def reviews_management(request):
 
 @require_http_methods(["POST"])
 def approve_review(request, pk):
-    from user.models import ProductReview
     review = get_object_or_404(ProductReview, pk=pk)
     review.is_approved = not review.is_approved
-    review.save()
+    review.save(update_fields=['is_approved'])
     return JsonResponse({"is_approved": review.is_approved})
 
 
 @require_http_methods(["POST", "DELETE"])
 def delete_review(request, pk):
-    from user.models import ProductReview
+    
     review = get_object_or_404(ProductReview, pk=pk)
     review.delete()
     return JsonResponse({"deleted": True})
@@ -1239,7 +1313,6 @@ def delete_review(request, pk):
 
 @require_http_methods(["GET", "POST"])
 def signature_categories_api(request):
-    from .models import SignatureCategoryItem
     if request.method == "POST":
         name = request.POST.get("name", "").strip()
         badge_text = request.POST.get("badge_text", "").strip()
@@ -1286,7 +1359,6 @@ def signature_categories_api(request):
 
 @require_http_methods(["POST"])
 def signature_category_edit(request, pk):
-    from .models import SignatureCategoryItem
     item = get_object_or_404(SignatureCategoryItem, pk=pk)
 
     if "name" in request.POST:
@@ -1315,7 +1387,6 @@ def signature_category_edit(request, pk):
 
 @require_http_methods(["POST", "DELETE"])
 def signature_category_delete(request, pk):
-    from .models import SignatureCategoryItem
     item = get_object_or_404(SignatureCategoryItem, pk=pk)
     item.delete()
     return JsonResponse({"deleted": True})

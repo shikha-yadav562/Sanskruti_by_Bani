@@ -1,24 +1,31 @@
+from .models import ProductReview, ReviewHelpful, LoginHistory
+from . import services
 
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from adm_user.models import (AboutUsSection, HeroSlideOffer, HeroSlideMain, HeroSlideImageOnly, HeaderSettings, OfferBarItem, FooterSettings, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, SignatureCategoryItem, Product, ProductImage, SignatureCategoryItem, Color, Fabric, Print,Tag)
+
+from django.conf import settings
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash, get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .forms import SignupForm, LoginForm
-from adm_user.models import AboutUsSection, HeroSlideOffer, HeroSlideMain, HeroSlideImageOnly, HeaderSettings, OfferBarItem, FooterSettings, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, SignatureCategoryItem
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.password_validation import validate_password
 
 from django.core.paginator import Paginator
-from django.db.models import Prefetch, Q
-from django.shortcuts import render, get_object_or_404,  redirect
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.exceptions import ValidationError
 
-from adm_user.models import (
-    Product, ProductImage, SignatureCategoryItem, Color, Fabric, Print,Tag
-)
+from django.db import transaction
+from django.db.models import Prefetch, Count, Q, Case, When, Value, IntegerField, Avg
 
-# Create your views here.
-from django.db.models import Avg, Count
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from .models import Address, ProductReview, ReviewHelpful
+from django.http import JsonResponse, HttpRequest, HttpResponse
+from urllib.parse import quote
+from django.shortcuts import render, get_object_or_404,  redirect
+from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.urls import reverse
+
+from django.views.decorators.http import require_POST, require_GET
+import json
+from PIL import Image, UnidentifiedImageError
 
 PRICE_BRACKETS = {
     "under-5000": (None, 5000),
@@ -51,17 +58,31 @@ def index(request):
         .prefetch_related(
             Prefetch(
                 "images",
+                queryset=ProductImage.objects.filter(variant__isnull=True).order_by("display_order", "created_at"),
+                to_attr="default_images",
+            ),
+            Prefetch(
+                "images",
                 queryset=ProductImage.objects.order_by("display_order", "created_at"),
-                to_attr="all_images",
-            )
+                to_attr="any_images",
+            ),
         )
         .distinct()
         .order_by("-created_at")
     )
-    bestseller_limit = 5 if bestseller_qs.count() < 10 else 10
-    bestseller_products = bestseller_qs[:bestseller_limit]
+
+    
+    bestseller_products = list(bestseller_qs[:10])
+    if len(bestseller_products) < 10:
+        bestseller_products = bestseller_products[:5]
+
     for product in bestseller_products:
-        product.thumb = product.all_images[0] if product.all_images else None
+        if product.default_images:
+            product.thumb = product.default_images[0]
+        elif product.any_images:
+            product.thumb = product.any_images[0]
+        else:
+            product.thumb = None
 
     context = {
         "hero_offer": HeroSlideOffer.load(),
@@ -89,24 +110,22 @@ def product(request, slug):
         is_active=True,
     )
 
-    variants = (
+    variants = list(
         product.variants
         .filter(is_active=True)
         .select_related('color')
         .prefetch_related('images')
         .order_by('display_order')
     )
-
     default_images = product.images.filter(variant__isnull=True).order_by('display_order')
-
-    # First active variant is the default selection on page load.
-    default_variant = variants.first()
+    default_variant = variants[0] if variants else None
     if default_variant:
-        gallery_images = default_variant.images.all() or default_images
+        gallery_images = list(default_variant.images.all()) or default_images
         display_price = default_variant.price or product.final_price
     else:
         gallery_images = default_images
         display_price = product.final_price
+
     discount_percent = None
     if product.discount_price and product.base_price:
         discount_percent = round((1 - (product.discount_price / product.base_price)) * 100)
@@ -126,14 +145,22 @@ def product(request, slug):
     ]
 
     reviews = ProductReview.objects.filter(product_slug=product.slug, is_approved=True)
-    total_reviews = reviews.count()
-    avg_rating = reviews.aggregate(Avg('rating'))['rating__avg'] or 5.0
-    avg_rating_formatted = round(avg_rating, 1)
 
+    stats = reviews.aggregate(
+        total=Count('id'),
+        avg_rating=Avg('rating'),
+        r5=Count('id', filter=Q(rating=5)),
+        r4=Count('id', filter=Q(rating=4)),
+        r3=Count('id', filter=Q(rating=3)),
+        r2=Count('id', filter=Q(rating=2)),
+        r1=Count('id', filter=Q(rating=1)),
+    )
+    total_reviews = stats['total']
+    avg_rating_formatted = round(stats['avg_rating'] or 5.0, 1)
     full_stars = int(avg_rating_formatted)
     has_half_star = (avg_rating_formatted - full_stars) >= 0.5
 
-    star_counts = {n: reviews.filter(rating=n).count() for n in range(5, 0, -1)}
+    star_counts = {5: stats['r5'], 4: stats['r4'], 3: stats['r3'], 2: stats['r2'], 1: stats['r1']}
     star_percents = {
         n: round((c / total_reviews * 100)) if total_reviews > 0 else 0
         for n, c in star_counts.items()
@@ -188,110 +215,6 @@ def product(request, slug):
     }
     return render(request, 'user/product.html', context)
 
-
-def catalogue(request):
-    products = (
-        Product.objects.filter(is_active=True)
-        .select_related("category", "fabric", "print_type")
-        .prefetch_related(
-            Prefetch(
-                "images",
-                queryset=ProductImage.objects.select_related("variant__color").order_by("display_order", "created_at"),
-                to_attr="all_images",
-            ),
-            "variants__color",
-        )
-    )
-
-    category_slugs = request.GET.getlist("category")
-    fabric_slugs = request.GET.getlist("fabric")
-    print_slugs = request.GET.getlist("print")
-    color_slugs = request.GET.getlist("color")
-    price_keys = request.GET.getlist("price")
-    tag_slugs = request.GET.getlist("tag")
-
-    if category_slugs:
-        products = products.filter(category__slug__in=category_slugs)
-    if fabric_slugs:
-        products = products.filter(fabric__slug__in=fabric_slugs)
-    if print_slugs:
-        products = products.filter(print_type__slug__in=print_slugs)
-    if color_slugs:
-        products = products.filter(variants__color__slug__in=color_slugs).distinct()
-    if tag_slugs:
-        products = products.filter(tags__slug__in=tag_slugs).distinct()
-
-    if price_keys:
-        price_q = Q()
-        for key in price_keys:
-            lo, hi = PRICE_BRACKETS.get(key, (None, None))
-            bracket = Q()
-            if lo is not None:
-                bracket &= Q(base_price__gte=lo)
-            if hi is not None:
-                bracket &= Q(base_price__lt=hi)
-            price_q |= bracket
-        products = products.filter(price_q)
-
-    sort_key = request.GET.get("sort", "featured")
-    if sort_key in SORT_MAP:
-        products = products.order_by(SORT_MAP[sort_key])
-    # "featured" keeps Product.Meta's default ordering (-created_at)
-
-    paginator = Paginator(products, 5)
-    page_obj = paginator.get_page(request.GET.get("page", 1))
-
-    querydict = request.GET.copy()
-    querydict.pop("page", None)
-    base_qs = querydict.urlencode()
-
-    for product in page_obj.object_list:
-        thumb = None
-        if color_slugs:
-            thumb = next(
-                (img for img in product.all_images
-                 if img.variant_id and img.variant.color.slug in color_slugs),
-                None
-            )
-        if thumb is None:
-            thumb = next((img for img in product.all_images if img.variant_id is None), None)
-        if thumb is None and product.all_images:
-            thumb = product.all_images[0]
-        product.thumb = thumb
-
-    context = {
-        "page_obj": page_obj,
-        "products": page_obj.object_list,
-        "total_count": paginator.count,
-        "price_choices": price_choices,
-
-        "categories": SignatureCategoryItem.objects.filter(is_active=True),
-        "colors": Color.objects.filter(is_active=True),
-        "fabrics": Fabric.objects.filter(is_active=True),
-        "prints": Print.objects.filter(is_active=True),
-        "tags": Tag.objects.filter(),
-        "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
-        "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
-
-        "selected_categories": category_slugs,
-        "selected_fabrics": fabric_slugs,
-        "selected_prints": print_slugs,
-        "selected_colors": color_slugs,
-        "selected_prices": price_keys,
-        "selected_tags": tag_slugs,
-        "current_sort": sort_key,
-        "base_qs": base_qs,
-    }
-    return render(request, "user/catalogue.html", context)
-
-def profile_view(request):
-    context = {
-        "header_settings": HeaderSettings.load(),
-        "offer_items": OfferBarItem.objects.all(),
-        "footer_settings": FooterSettings.load(),
-    }
-    return render(request, 'user/profile.html', context)
-
 def terms_conditions(request):
     context = {
         "header_settings": HeaderSettings.load(),
@@ -324,61 +247,9 @@ def privacy_policy(request):
     }
     return render(request, 'user/privacy_policy.html', context)
 
-
-# def signup_view(request):
-#     if request.method == 'POST':
-#         form = SignupForm(request.POST)
-#         if form.is_valid():
-#             user = form.save(commit=False)
-#             user.email = form.cleaned_data['email']
-#             user.save()
-#             auth_login(request, user)
-#             return redirect('user:index')
-#     else:
-#         form = SignupForm()
-#     return render(request, 'user/signup.html', {'form': form})
-
-
-# def login_view(request):
-#     if request.method == 'POST':
-#         email = request.POST.get('username')
-#         password = request.POST.get('password')
-#         user = authenticate(request, username=email, password=password)
-
-#         if user is not None:
-#             auth_login(request, user)
-#             if user.is_staff or user.is_superuser:
-#                 return redirect('adm_user:dashboard')
-#             return redirect('user:index')
-#         else:
-#             messages.error(request, 'Invalid email or password.')
-
-#     return render(request, 'user/login.html')
-
-
-# @login_required
-# def logout_view(request):
-#     auth_logout(request)
-#     return redirect('user:login')
-
-#====================================================================================
-#-------------------------LOGIN AND SIGNUP------------------------------------------
-#====================================================================================
-
-import json
-from django.shortcuts import render, redirect
-from django.http import JsonResponse, HttpRequest, HttpResponse
-from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
-from django.utils import timezone
-from django.db import transaction
-from django.db.models import Q
-from . import services
-from .models import LoginHistory
-from django.utils.http import url_has_allowed_host_and_scheme
+#===============================================================================
+#-------------------------LOGIN AND SIGNUP-------------------------
+#===============================================================================
 
 Account = get_user_model()
 
@@ -653,24 +524,56 @@ def api_delete_account(request: HttpRequest) -> JsonResponse:
     account.delete()
     return JsonResponse({"success": True, "redirect_url": "/login/"})
 
-#====================================================================================
-#-------------------------END OF LOGIN AND SIGNUP------------------------------------------
-#====================================================================================
+#====================================================================
+#----------------END OF LOGIN AND SIGNUP-----------------
+#====================================================================
 
 @login_required(login_url='user:login')
 @require_POST
 def submit_review(request):
-    try:
-        title = request.POST.get('title')
-        comment = request.POST.get('comment')
-        rating = int(request.POST.get('rating', 5))
-        product_slug = request.POST.get('product_slug', 'anuradha-paithani-saree')
-        product_name = request.POST.get('product_name', 'Anuradha Paithani Soft Peacock Design Saree')
+    product_slug = request.POST.get('product_slug', '').strip()
+    title = request.POST.get('title', '').strip()
+    comment = request.POST.get('comment', '').strip()
 
-        review = ProductReview.objects.create(
+    if not product_slug:
+        return JsonResponse({'success': False, 'error': 'Missing product.'}, status=400)
+    if not title or not comment:
+        return JsonResponse({'success': False, 'error': 'Title and comment are required.'}, status=400)
+
+    try:
+        rating = int(request.POST.get('rating', 5))
+    except (TypeError, ValueError):
+        return JsonResponse({'success': False, 'error': 'Invalid rating.'}, status=400)
+    if not 1 <= rating <= 5:
+        return JsonResponse({'success': False, 'error': 'Rating must be between 1 and 5.'}, status=400)
+
+    product = Product.objects.filter(slug=product_slug, is_active=True).first()
+    if not product:
+        return JsonResponse({'success': False, 'error': 'Product not found.'}, status=404)
+
+    for field in ('image_1', 'image_2', 'image_3'):
+        f = request.FILES.get(field)
+        if f:
+            if f.content_type not in ('image/jpeg', 'image/png', 'image/webp'):
+                return JsonResponse({'success': False, 'error': f'{field} must be a JPEG, PNG, or WebP image.'}, status=400)
+            if f.size > 5 * 1024 * 1024:  # 5MB
+                return JsonResponse({'success': False, 'error': f'{field} must be under 5MB.'}, status=400)
+
+            # content_type is client-supplied and can be spoofed — actually open
+            # the file bytes to confirm it's a real, undamaged image.
+            try:
+                f.seek(0)
+                Image.open(f).verify()
+            except (UnidentifiedImageError, OSError):
+                return JsonResponse({'success': False, 'error': f'{field} is not a valid image file.'}, status=400)
+            finally:
+                f.seek(0)  # reset pointer so it can be read again when .create() saves it
+
+    try:
+        ProductReview.objects.create(
             user=request.user,
             product_slug=product_slug,
-            product_name=product_name,
+            product_name=product.name,
             title=title,
             comment=comment,
             rating=rating,
@@ -678,67 +581,58 @@ def submit_review(request):
             image_2=request.FILES.get('image_2'),
             image_3=request.FILES.get('image_3'),
             is_approved=False,
-            is_verified_buyer=True
+            is_verified_buyer=False,
         )
-        return JsonResponse({'success': True, 'message': 'Review submitted successfully!'})
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    except Exception:
+        return JsonResponse({'success': False, 'error': 'Could not save review.'}, status=500)
 
+    return JsonResponse({'success': True, 'message': 'Review submitted successfully!'})
+
+from django.db.models import F
 
 @require_POST
-def toggle_review_helpful(request, review_id):
+def mark_review_helpful(request, review_id):
     try:
         review = ProductReview.objects.get(id=review_id)
-        user = request.user if request.user.is_authenticated else None
-        session_key = request.session.session_key or 'guest'
-
-        if user:
-            created = ReviewHelpful.objects.get_or_create(review=review, user=user)[1]
-        else:
-            created = ReviewHelpful.objects.get_or_create(review=review, session_key=session_key)[1]
-
-        if created:
-            review.helpful_count += 1
-            review.save()
-
-        return JsonResponse({'success': True, 'helpful_count': review.helpful_count})
     except ProductReview.DoesNotExist:
         return JsonResponse({'error': 'Review not found'}, status=404)
-    
 
-#----------------------------SEARCH BAR----------------------------------------------------
+    if request.user.is_authenticated:
+        obj, created = ReviewHelpful.objects.get_or_create(review=review, user=request.user)
+    else:
+        if not request.session.session_key:
+            request.session.create()
+        obj, created = ReviewHelpful.objects.get_or_create(
+            review=review, session_key=request.session.session_key
+        )
 
-from django.core.paginator import Paginator
-from django.db.models import Q, Prefetch
-from django.http import JsonResponse
-from django.shortcuts import render
+    if created:
+        review.helpful_count = F('helpful_count') + 1
+        review.save(update_fields=['helpful_count'])
+        review.refresh_from_db(fields=['helpful_count'])
 
-from adm_user.models import (
-    Product,
-    ProductImage,
-    SignatureCategoryItem,
-    Category,
-    Color,
-    Fabric,
-    Print,
-    Tag,
-)
+    return JsonResponse({'success': True, 'helpful_count': review.helpful_count, 'already_marked': not created})
 
+#------------SEARCH BAR-----------------
 
+@require_GET
 def search_suggest(request):
     q = request.GET.get("q", "").strip()
 
-    # Don't search for very short queries
     if len(q) < 2:
         return JsonResponse({"results": []})
 
     products = (
         Product.objects
         .filter(is_active=True)
-        .filter(
-            Q(name__icontains=q)
-            | Q(product_code__icontains=q)
-            | Q(category__name__icontains=q)
+        .filter(Q(name__icontains=q) | Q(product_code__icontains=q) | Q(category__name__icontains=q))
+        .annotate(
+            match_rank=Case(
+                When(name__istartswith=q, then=Value(0)),
+                When(name__icontains=q, then=Value(1)),
+                default=Value(2),
+                output_field=IntegerField(),
+            )
         )
         .select_related("category")
         .prefetch_related(
@@ -749,54 +643,30 @@ def search_suggest(request):
                 .order_by("display_order", "created_at"),
                 to_attr="suggestion_images",
             )
-        )[:6]
+        )
+        .order_by("match_rank", "-created_at")[:6]
     )
 
     results = []
-
     for product in products:
-        # Prefer the main/default product image
         thumb = next(
-            (
-                img
-                for img in product.suggestion_images
-                if img.variant_id is None
-            ),
+            (img for img in product.suggestion_images if img.variant_id is None),
             None,
         )
-
-        # Fallback to first available image
         if thumb is None and product.suggestion_images:
             thumb = product.suggestion_images[0]
 
-        results.append(
-            {
-                "name": product.name,
-                "slug": product.slug,
-                "category": (
-                    product.category.name
-                    if product.category
-                    else ""
-                ),
-                "price": float(
-                    product.discount_price
-                    if product.discount_price is not None
-                    else product.base_price
-                ),
-                "thumbnail": (
-                    thumb.image_url
-                    if thumb
-                    else None
-                ),
-            }
-        )
+        results.append({
+            "name": product.name,
+            "slug": product.slug,
+            "category": product.category.name if product.category else "",
+            "price": float(
+                product.discount_price if product.discount_price is not None else product.base_price
+            ),
+            "thumbnail": thumb.image_url if thumb else None,
+        })
 
-    return JsonResponse(
-        {
-            "results": results,
-            "query": q,
-        }
-    )
+    return JsonResponse({"results": results, "query": q})
 
 
 def catalogue(request):
@@ -1006,31 +876,34 @@ def catalogue(request):
         context
     )
     
-    #--------------------------WHATSAPP REDIRECT BUY--------------------------------------
+    #----------------WHATSAPP REDIRECT BUY--------------------------
     
-from django.contrib.auth.decorators import login_required
-from django.urls import reverse
-from urllib.parse import quote
 @login_required(login_url='user:login')
 def buy_now(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
 
     display_price = product.final_price
     variant_id = request.GET.get('variant')
+    variant = None
     if variant_id:
-        variant = (
-            product.variants
-            .filter(id=variant_id, is_active=True)
-            .select_related('color')
-            .first()
-        )
-        if variant and variant.price:
+        try:
+            variant = (
+                product.variants
+                .filter(id=variant_id, is_active=True)
+                .select_related('color')
+                .first()
+            )
+        except (ValueError, ValidationError):
+            variant = None
+        if variant and variant.price is not None:
             display_price = variant.price
 
     product_url = f"{request.scheme}://{request.get_host()}{reverse('user:product', args=[product.slug])}"
-    message = (
-        f"Hi, I am interested in {product.name}. "
-        f"Price: ₹{int(display_price)}. "
-        f"Product Link: {product_url}"
-    )
-    return redirect(f"https://wa.me/7900152351?text={quote(message)}")
+
+    message = f"Hi, I am interested in {product.name}"
+    if variant:
+        message += f" ({variant.color.name})"
+    message += f". Price: ₹{int(display_price)}. Product Link: {product_url}"
+
+    whatsapp_number = getattr(settings, 'WHATSAPP_BUSINESS_NUMBER', '919372471363')
+    return redirect(f"https://wa.me/{whatsapp_number}?text={quote(message)}")
