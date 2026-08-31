@@ -6,9 +6,9 @@ urlpatterns = [
 
     # URLs for Categories
     path('categories/', views.categories, name='categories'),
-    path("api/categories/", views.category_list_create, name="api_categories_list_create"),
-    path('api/categories/<int:pk>/update/', views.category_update, name='api_categories_update'),
-    path('api/categories/<int:pk>/delete/', views.category_delete, name='api_categories_delete'),
+    # path("api/categories/", views.category_list_create, name="api_categories_list_create"),
+    # path('api/categories/<int:pk>/update/', views.category_update, name='api_categories_update'),
+    # path('api/categories/<int:pk>/delete/', views.category_delete, name='api_categories_delete'),
 
     # URLs for Filter
     path('filters/', views.filters, name='filters'),

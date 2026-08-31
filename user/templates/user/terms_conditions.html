@@ -613,7 +613,7 @@ async function logoutUser() {
       }
 
       const items = results.map(p => `
-        <a href="/product/${p.slug}/" class="flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] hover:bg-[#fff8f4] transition-colors border-b border-gray-100 last:border-0">
+  <a href="/product/${p.slug}/${p.variant_id ? '?variant=' + p.variant_id : ''}" class="flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] hover:bg-[#fff8f4] transition-colors border-b border-gray-100 last:border-0">
           ${p.thumbnail
             ? `<img src="${p.thumbnail}" alt="${p.name}" class="w-10 h-12 object-cover rounded bg-gray-100 shrink-0">`
             : `<div class="w-10 h-12 rounded bg-gray-100 shrink-0"></div>`}

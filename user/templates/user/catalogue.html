@@ -406,7 +406,7 @@
         {% for product in products %}
         <div class="group relative bg-[#ffffff] flex flex-col justify-between transition-all duration-500 hover:shadow-xl pb-2 border border-[#f5deb3]/30">
                     <div class="relative overflow-hidden aspect-[3/4]">
-            <a href="{% url 'user:product' product.slug %}" class="block w-full h-full">
+                        <a href="{% url 'user:product' product.slug %}{% if product.thumb_variant_id %}?variant={{ product.thumb_variant_id }}{% endif %}" class="block w-full h-full">
               <img src="{% if product.thumb %}{{ product.thumb.image_url }}{% else %}{% static 'user/assets/placeholder.jpg' %}{% endif %}"
               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               alt="{% if product.thumb %}{{ product.thumb.alt_text|default:product.name }}{% else %}{{ product.name }}{% endif %}">
@@ -423,7 +423,7 @@
             {% endif %}
 
             <div class="absolute inset-0 bg-[#71041a]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden lg:flex items-center justify-center">
-              <a href="{% url 'user:product' product.slug %}"
+              <a href="{% url 'user:product' product.slug %}{% if product.thumb_variant_id %}?variant={{ product.thumb_variant_id }}{% endif %}"
               class="bg-[#fff8f4] text-[#810820] px-6 py-2 uppercase tracking-widest text-[10px] font-semibold transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-[#810820] hover:text-[#fff8f4] border border-[#810820]">
                 Quick View
               </a>
@@ -694,8 +694,8 @@ async function logoutUser() {
         return;
       }
 
-      const items = results.map(p => `
-        <a href="/product/${p.slug}/" class="flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] hover:bg-[#fff8f4] transition-colors border-b border-gray-100 last:border-0">
+     const items = results.map(p => `
+  <a href="/product/${p.slug}/${p.variant_id ? '?variant=' + p.variant_id : ''}" class="flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] hover:bg-[#fff8f4] transition-colors border-b border-gray-100 last:border-0">
           ${p.thumbnail
             ? `<img src="${p.thumbnail}" alt="${p.name}" class="w-10 h-12 object-cover rounded bg-gray-100 shrink-0">`
             : `<div class="w-10 h-12 rounded bg-gray-100 shrink-0"></div>`}

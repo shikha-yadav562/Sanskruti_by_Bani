@@ -118,7 +118,19 @@ def product(request, slug):
         .order_by('display_order')
     )
     default_images = product.images.filter(variant__isnull=True).order_by('display_order')
-    default_variant = variants[0] if variants else None
+
+    requested_variant_id = request.GET.get('variant')
+    default_variant = None
+    if requested_variant_id:
+        try:
+            req_id = int(requested_variant_id)
+            default_variant = next((v for v in variants if v.id == req_id), None)
+        except (ValueError, TypeError):
+            default_variant = None
+
+    if default_variant is None and variants:
+        default_variant = variants[0]
+
     if default_variant:
         gallery_images = list(default_variant.images.all()) or default_images
         display_price = default_variant.price or product.final_price
@@ -130,8 +142,7 @@ def product(request, slug):
     if product.discount_price and product.base_price:
         discount_percent = round((1 - (product.discount_price / product.base_price)) * 100)
 
-    # Serialized for the color-swatch JS — swaps images/price/stock
-    # client-side without a reload.
+    # Serialized for the color-swatch JS — swaps images/price/stock client-side
     variants_json = [
         {
             "variant_id": v.id,
@@ -649,10 +660,19 @@ def search_suggest(request):
 
     results = []
     for product in products:
-        thumb = next(
-            (img for img in product.suggestion_images if img.variant_id is None),
-            None,
-        )
+        has_variant_images = any(img.variant_id for img in product.suggestion_images)
+
+        thumb = None
+        if not has_variant_images:
+            thumb = next(
+                (img for img in product.suggestion_images if img.variant_id is None),
+                None,
+            )
+        if thumb is None:
+            thumb = next(
+                (img for img in product.suggestion_images if img.variant_id),
+                None,
+            )
         if thumb is None and product.suggestion_images:
             thumb = product.suggestion_images[0]
 
@@ -664,6 +684,7 @@ def search_suggest(request):
                 product.discount_price if product.discount_price is not None else product.base_price
             ),
             "thumbnail": thumb.image_url if thumb else None,
+            "variant_id": thumb.variant_id if thumb else None,
         })
 
     return JsonResponse({"results": results, "query": q})
@@ -791,6 +812,7 @@ def catalogue(request):
     # ---------------------------------------------------------
     for product in page_obj.object_list:
         thumb = None
+        has_variant_images = any(img.variant_id for img in product.all_images)
 
         if color_slugs:
             thumb = next(
@@ -803,7 +825,7 @@ def catalogue(request):
                 None,
             )
 
-        if thumb is None:
+        if thumb is None and not has_variant_images:
             thumb = next(
                 (
                     img
@@ -813,11 +835,17 @@ def catalogue(request):
                 None,
             )
 
+        if thumb is None:
+            thumb = next(
+                (img for img in product.all_images if img.variant_id),
+                None,
+            )
+
         if thumb is None and product.all_images:
             thumb = product.all_images[0]
 
         product.thumb = thumb
-
+        product.thumb_variant_id = thumb.variant_id if thumb else None
     # ---------------------------------------------------------
     # CONTEXT
     # ---------------------------------------------------------
@@ -907,3 +935,4 @@ def buy_now(request, slug):
 
     whatsapp_number = getattr(settings, 'WHATSAPP_BUSINESS_NUMBER', '919372471363')
     return redirect(f"https://wa.me/{whatsapp_number}?text={quote(message)}")
+##############################

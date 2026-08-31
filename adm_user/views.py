@@ -49,83 +49,83 @@ def categories(request):
     return render(request, 'adm_user/categories.html', context)
 
 
-@require_http_methods(["GET", "POST"])
-def category_list_create(request):
-    if request.method == "GET":
-        categories = Category.objects.filter(is_active=True).order_by("created_at")
-        data = [{"id": c.id, "name": c.name, "slug": c.slug} for c in categories]
-        return JsonResponse({"categories": data})
+# @require_http_methods(["GET", "POST"])
+# def category_list_create(request):
+#     if request.method == "GET":
+#         categories = Category.objects.filter(is_active=True).order_by("created_at")
+#         data = [{"id": c.id, "name": c.name, "slug": c.slug} for c in categories]
+#         return JsonResponse({"categories": data})
 
-    # POST — create a new category
-    try:
-        payload = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid request."}, status=400)
+#     # POST — create a new category
+#     try:
+#         payload = json.loads(request.body)
+#     except json.JSONDecodeError:
+#         return JsonResponse({"error": "Invalid request."}, status=400)
 
-    name = (payload.get("name") or "").strip()
-    if not name:
-        return JsonResponse({"error": "Category name is required."}, status=400)
+#     name = (payload.get("name") or "").strip()
+#     if not name:
+#         return JsonResponse({"error": "Category name is required."}, status=400)
 
-    category = Category(name=name)
-    try:
-        category.full_clean()
-        with transaction.atomic():
-            category.save()
-    except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
-    except IntegrityError:
-        return JsonResponse({"error": "This category already exists."}, status=409)
+#     category = Category(name=name)
+#     try:
+#         category.full_clean()
+#         with transaction.atomic():
+#             category.save()
+#     except ValidationError as e:
+#         return JsonResponse({"error": " ".join(e.messages)}, status=400)
+#     except IntegrityError:
+#         return JsonResponse({"error": "This category already exists."}, status=409)
 
-    return JsonResponse(
-        {"id": category.id, "name": category.name, "slug": category.slug}, status=201
-    )
+#     return JsonResponse(
+#         {"id": category.id, "name": category.name, "slug": category.slug}, status=201
+#     )
 
-@require_http_methods(["PUT"])
-def category_update(request, pk):
-    try:
-        category = Category.objects.get(pk=pk, is_active=True)
-    except Category.DoesNotExist:
-        return JsonResponse({"error": "Category not found."}, status=404)
+# @require_http_methods(["PUT"])
+# def category_update(request, pk):
+#     try:
+#         category = Category.objects.get(pk=pk, is_active=True)
+#     except Category.DoesNotExist:
+#         return JsonResponse({"error": "Category not found."}, status=404)
 
-    try:
-        payload = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid request."}, status=400)
+#     try:
+#         payload = json.loads(request.body)
+#     except json.JSONDecodeError:
+#         return JsonResponse({"error": "Invalid request."}, status=400)
 
-    name = (payload.get("name") or "").strip()
-    if not name:
-        return JsonResponse({"error": "Category name is required."}, status=400)
+#     name = (payload.get("name") or "").strip()
+#     if not name:
+#         return JsonResponse({"error": "Category name is required."}, status=400)
 
-    if name != category.name:
-        category.name = name
-        category.slug = ""  # forces the mixin to regenerate it on save()
+#     if name != category.name:
+#         category.name = name
+#         category.slug = ""  # forces the mixin to regenerate it on save()
 
-    try:
-        category.full_clean()
-        with transaction.atomic():
-            category.save()
-    except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
-    except IntegrityError:
-        return JsonResponse({"error": "Another category already has this name."}, status=409)
+#     try:
+#         category.full_clean()
+#         with transaction.atomic():
+#             category.save()
+#     except ValidationError as e:
+#         return JsonResponse({"error": " ".join(e.messages)}, status=400)
+#     except IntegrityError:
+#         return JsonResponse({"error": "Another category already has this name."}, status=409)
 
-    return JsonResponse({"id": category.id, "name": category.name, "slug": category.slug})
+#     return JsonResponse({"id": category.id, "name": category.name, "slug": category.slug})
 
-@require_http_methods(["DELETE"])
-def category_delete(request, pk):
-    try:
-        category = Category.objects.get(pk=pk)
-    except Category.DoesNotExist:
-        return JsonResponse({"error": "Category not found."}, status=404)
+# @require_http_methods(["DELETE"])
+# def category_delete(request, pk):
+#     try:
+#         category = Category.objects.get(pk=pk)
+#     except Category.DoesNotExist:
+#         return JsonResponse({"error": "Category not found."}, status=404)
 
-    try:
-        category.delete()
-    except IntegrityError:
-        return JsonResponse(
-            {"error": "This category is linked to existing products and can't be deleted."},
-            status=409,
-        )
-    return JsonResponse({"deleted": True})
+#     try:
+#         category.delete()
+#     except IntegrityError:
+#         return JsonResponse(
+#             {"error": "This category is linked to existing products and can't be deleted."},
+#             status=409,
+#         )
+#     return JsonResponse({"deleted": True})
 
 
 # ----------------- Views for FILTERS -----------------
@@ -504,8 +504,43 @@ def product_variant_delete(request, variant_id):
 
 @require_http_methods(["GET"])
 def products(request):
-    context = {"products": Product.objects.filter(is_active=True).select_related("category")}
-    context.update(_product_form_context())   # adds categories, fabrics, prints, colors, tags
+    qs = Product.objects.filter(is_active=True).select_related("category").order_by("-created_at")
+
+    category_id = request.GET.get("category", "").strip()
+    stock = request.GET.get("stock", "").strip()
+    search = request.GET.get("search", "").strip()
+
+    if category_id:
+        qs = qs.filter(category_id=category_id)
+    if stock == "out":
+        qs = qs.filter(stock_quantity=0)
+    elif stock == "low":
+        qs = qs.filter(stock_quantity__gt=0, stock_quantity__lt=5)
+    elif stock == "in":
+        qs = qs.filter(stock_quantity__gte=5)
+    if search:
+        qs = qs.filter(Q(name__icontains=search) | Q(product_code__icontains=search))
+
+    paginator = Paginator(qs, 10)
+    page_obj = paginator.get_page(request.GET.get("page"))
+
+    querydict = request.GET.copy()
+    querydict.pop("page", None)
+    base_qs = querydict.urlencode()
+
+    context = {
+        "products": page_obj,
+        "page_obj": page_obj,
+        "selected_category": category_id,
+        "selected_stock": stock,
+        "search_query": search,
+        "base_qs": base_qs,
+    }
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return render(request, "adm_user/product_table.html", context)
+
+    context.update(_product_form_context())
     return render(request, FORM_TEMPLATE, context)
 
 
@@ -1281,7 +1316,7 @@ def reviews_management(request):
     elif status_filter == 'approved':
         reviews = reviews.filter(is_approved=True)
 
-    paginator = Paginator(reviews, 25)
+    paginator = Paginator(reviews, 2)
     page_obj = paginator.get_page(request.GET.get('page'))
 
     context = {
@@ -1317,7 +1352,6 @@ def signature_categories_api(request):
         name = request.POST.get("name", "").strip()
         badge_text = request.POST.get("badge_text", "").strip()
         origin_craft = request.POST.get("origin_craft", "").strip()
-        whatsapp_link = request.POST.get("whatsapp_link", "").strip()
         display_order = request.POST.get("display_order", 0)
 
         if not name:
@@ -1327,7 +1361,6 @@ def signature_categories_api(request):
             name=name,
             badge_text=badge_text,
             origin_craft=origin_craft,
-            whatsapp_link=whatsapp_link,
             display_order=int(display_order or 0),
         )
 
@@ -1340,7 +1373,7 @@ def signature_categories_api(request):
             "name": item.name,
             "badge_text": item.badge_text,
             "origin_craft": item.origin_craft,
-            "whatsapp_link": item.whatsapp_link,
+            
             "image_url": item.image.url if item.image else "",
         })
 
@@ -1350,7 +1383,6 @@ def signature_categories_api(request):
         "name": c.name,
         "badge_text": c.badge_text,
         "origin_craft": c.origin_craft,
-        "whatsapp_link": c.whatsapp_link,
         "image_url": c.image.url if c.image else "",
         "display_order": c.display_order,
     } for c in categories]
@@ -1367,8 +1399,6 @@ def signature_category_edit(request, pk):
         item.badge_text = request.POST.get("badge_text", "").strip()
     if "origin_craft" in request.POST:
         item.origin_craft = request.POST.get("origin_craft", "").strip()
-    if "whatsapp_link" in request.POST:
-        item.whatsapp_link = request.POST.get("whatsapp_link", "").strip()
     if "display_order" in request.POST:
         item.display_order = int(request.POST.get("display_order", 0) or 0)
     if "image" in request.FILES:
@@ -1380,7 +1410,6 @@ def signature_category_edit(request, pk):
         "name": item.name,
         "badge_text": item.badge_text,
         "origin_craft": item.origin_craft,
-        "whatsapp_link": item.whatsapp_link,
         "image_url": item.image.url if item.image else "",
     })
 

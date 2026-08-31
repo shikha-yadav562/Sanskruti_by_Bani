@@ -82,10 +82,10 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div>
+                    {% comment %} <div>
                         <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">WhatsApp Enquiry Link</label>
                         <input type="text" id="sigCatWa" name="whatsapp_link" placeholder="https://wa.me/919372471363?text=..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:border-brand-maroon">
-                    </div>
+                    </div> {% endcomment %}
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Category Image Upload</label>
                         <input type="file" id="sigCatImg" name="image" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-maroon/10 file:text-brand-maroon hover:file:bg-brand-maroon/20">
@@ -119,7 +119,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
     }
     const CSRF_TOKEN = getCookie('csrftoken');
 
-    const CATEGORY_LIST_URL = "{% url 'adm_user:api_categories_list_create' %}";
+    {% comment %} const CATEGORY_LIST_URL = "{% url 'adm_user:api_categories_list_create' %}";
     const categoryUpdateUrl = (id) => "{% url 'adm_user:api_categories_update' 999999 %}".replace('999999', id);
     const categoryDeleteUrl = (id) => "{% url 'adm_user:api_categories_delete' 999999 %}".replace('999999', id);
 
@@ -252,7 +252,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         document.getElementById("scFormTitle").textContent = "Create New Category";
         document.getElementById("scSubmitBtn").innerHTML = '<i class="ph ph-plus"></i> Add Category';
         document.getElementById("scCancelBtn").classList.add("hidden");
-    };
+    }; {% endcomment %}
 
     const SIG_CAT_API = '/adm/website-builder/signature-categories/';
 
@@ -261,7 +261,6 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         document.getElementById('sigCatName').value = name;
         document.getElementById('sigCatBadge').value = badgeText;
         document.getElementById('sigCatCraft').value = originCraft;
-        document.getElementById('sigCatWa').value = whatsappLink;
         document.getElementById('sigCatFormTitle').textContent = 'Edit Signature Category #' + id;
         document.getElementById('sigCatForm').scrollIntoView({ behavior: 'smooth' });
     };

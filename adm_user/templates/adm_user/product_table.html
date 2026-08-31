@@ -1,0 +1,93 @@
+<table class="w-full text-left border-collapse">
+    <thead>
+        <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 dark:border-dark-border">
+            <th class="p-4 font-semibold">Product</th>
+            <th class="p-4 font-semibold">Product Code</th>
+            <th class="p-4 font-semibold">Category</th>
+            <th class="p-4 font-semibold">Price</th>
+            <th class="p-4 font-semibold">Stock</th>
+            <th class="p-4 font-semibold text-right">Actions</th>
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100 dark:divide-dark-border">
+        {% for p in products %}
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
+            <td class="p-4">
+                <div class="flex items-center gap-3">
+                    {% with p.images.first as thumb %}
+                    {% if thumb %}
+                    <div class="w-12 h-16 rounded bg-slate-100 overflow-hidden">
+                        <img src="{{ thumb.image_url }}" class="w-full h-full object-cover" alt="{{ p.name }}">
+                    </div>
+                    {% else %}
+                    <div class="w-12 h-16 rounded bg-slate-100 overflow-hidden flex items-center justify-center text-slate-300">
+                        <i class="ph ph-image text-2xl"></i>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                    <div>
+                        <a href="{% url 'adm_user:detail' p.slug %}" class="text-sm font-semibold text-slate-800 dark:text-white hover:text-brand-maroon transition-colors cursor-pointer">
+                            {{ p.name }}
+                        </a>
+                        <p class="text-xs text-slate-500">{{ p.fabric.name|default:"" }}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="p-4 text-sm text-slate-600 dark:text-slate-300">{{ p.product_code|default:"—" }}</td>
+            <td class="p-4 text-sm text-slate-600 dark:text-slate-300"><span class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">{{ p.category.name }}</span></td>
+            <td class="p-4 text-sm font-medium text-slate-800 dark:text-white">₹{{ p.base_price|floatformat:0 }}</td>
+            <td class="p-4">
+                <div class="stock-cell" data-slug="{{ p.slug }}" data-qty="{{ p.stock_quantity }}">
+                <span class="stock-badge cursor-pointer" onclick="startStockEdit(this)" title="Click to edit stock">
+                {% if p.stock_quantity == 0 %}
+                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border border-red-200 dark:border-red-800">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Out of stock
+                </span>
+                {% elif p.stock_quantity < 5 %}
+                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> {{ p.stock_quantity }} in stock
+                </span>
+                {% else %}
+                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {{ p.stock_quantity }} in stock
+                </span>
+                {% endif %}
+                </span>
+            </div>
+            </td>
+            <td class="p-4 text-right">
+                <a href="{% url 'adm_user:update' p.slug %}" class="text-slate-400 hover:text-brand-maroon p-1 inline-block"><i class="ph ph-pencil-simple text-lg"></i></a>
+                <form method="post" action="{% url 'adm_user:delete' p.slug %}" class="inline" onsubmit="return confirm('Remove {{ p.name }} from the catalog?');">
+                    {% csrf_token %}
+                    <button type="submit" class="text-slate-400 hover:text-red-500 p-1"><i class="ph ph-trash text-lg"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="p-8 text-center text-sm text-slate-500">No products found matching your filters.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="px-4 py-3 border-t border-slate-100 dark:border-dark-border flex items-center justify-between bg-slate-50 dark:bg-slate-800/30">
+    <p class="text-xs text-slate-500">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} products</p>
+    <div class="flex gap-1">
+        {% if page_obj.has_previous %}
+        <a href="?{% if base_qs %}{{ base_qs }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-link px-3 py-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-dark-panel text-slate-600 hover:bg-slate-50">Prev</a>
+        {% else %}
+        <span class="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-dark-panel text-slate-400 cursor-not-allowed">Prev</span>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+        <a href="?{% if base_qs %}{{ base_qs }}&{% endif %}page={{ num }}" class="page-link px-3 py-1 rounded border {% if num == page_obj.number %}border-brand-maroon bg-brand-maroon text-white{% else %}border-slate-200 dark:border-slate-700 bg-white dark:bg-dark-panel text-slate-600 hover:bg-slate-50{% endif %}">{{ num }}</a>
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <a href="?{% if base_qs %}{{ base_qs }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-link px-3 py-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-dark-panel text-slate-600 hover:bg-slate-50">Next</a>
+        {% else %}
+        <span class="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-dark-panel text-slate-400 cursor-not-allowed">Next</span>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

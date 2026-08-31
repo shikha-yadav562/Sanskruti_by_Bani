@@ -125,7 +125,6 @@ class SignatureCategoryItem(SlugMixin, TimeStampedModel):
     badge_text = models.CharField(max_length=100, blank=True)
     origin_craft = models.CharField(max_length=100, blank=True)
     image = models.ImageField(upload_to="website/signature/", blank=True)
-    whatsapp_link = models.CharField(max_length=500, blank=True)
     display_order = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
 

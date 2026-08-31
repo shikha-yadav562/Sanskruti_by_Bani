@@ -522,8 +522,7 @@ LUXURY EDITORIAL COLLECTIONS
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
 
       {% for cat in signature_categories %}
-      <a href="{% if cat.whatsapp_link %}{{ cat.whatsapp_link }}{% else %}https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20explore%20your%20{{ cat.name|urlencode }}%20collection{% endif %}" target="_blank" class="luxury-card sig-lux-frame relative group block overflow-hidden rounded-2xl">
-        {% if cat.badge_text %}
+<a href="{% url 'user:catalogue' %}?category={{ cat.slug }}" class="luxury-card sig-lux-frame relative group block overflow-hidden rounded-2xl">{% if cat.badge_text %}
         <span class="sig-lux-badge z-20">{{ cat.badge_text }}</span>
         {% endif %}
 
@@ -802,11 +801,11 @@ SPECIALITY = PAITHANI
               ₹{{ product.base_price|floatformat:0 }}
             </div>
 
-            <a href="https://wa.me/919372471363?text=Hi%20Sanskruti%20By%20Bani,%20I%20want%20to%20buy%20{{ product.name|urlencode }}"
-              target="_blank" class="saree-link">
-              <i class="fa-brands fa-whatsapp"></i>
-              BUY NOW
-            </a>
+           <a href="{% url 'user:buy_now' product.slug %}"
+  target="_blank" rel="noopener" class="saree-link">
+  <i class="fa-brands fa-whatsapp"></i>
+  BUY NOW
+</a>
 
           </div>
 
@@ -1162,8 +1161,8 @@ async function logoutUser() {
         return;
       }
 
-      const items = results.map(p => `
-        <a href="/product/${p.slug}/" class="flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] hover:bg-[#fff8f4] transition-colors border-b border-gray-100 last:border-0">
+ const items = results.map(p => `
+  <a href="/product/${p.slug}/${p.variant_id ? '?variant=' + p.variant_id : ''}" class="flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] hover:bg-[#fff8f4] transition-colors border-b border-gray-100 last:border-0">
           ${p.thumbnail
             ? `<img src="${p.thumbnail}" alt="${p.name}" class="w-10 h-12 object-cover rounded bg-gray-100 shrink-0">`
             : `<div class="w-10 h-12 rounded bg-gray-100 shrink-0"></div>`}
@@ -1174,7 +1173,6 @@ async function logoutUser() {
           <div class="ml-auto text-xs font-bold text-[#810820] whitespace-nowrap">₹${Math.round(p.price).toLocaleString('en-IN')}</div>
         </a>
       `).join('');
-
       const viewAll = `
         <a href="${CATALOGUE_URL}?q=${encodeURIComponent(query)}"
            class="block text-center py-2.5 text-xs font-bold text-[#810820] border-t border-[#e7c27a]/30 hover:bg-[#fff8f4] transition-colors">
