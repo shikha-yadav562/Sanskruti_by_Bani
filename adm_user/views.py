@@ -10,7 +10,7 @@ from django.core.paginator import Paginator
 from django.core.validators import get_available_image_extensions
 
 from django.db import models, IntegrityError, transaction
-from django.db.models import ProtectedError, Q, Case, When
+from django.db.models import ProtectedError, Q, Case, When, Prefetch
 
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -20,7 +20,7 @@ from django.views.decorators.http import require_http_methods
 from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage, HeroSlideMain, HeroSlideImageOnly, HeroSlideOffer, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, OfferBarItem, HeaderSettings, FooterSettings, AboutUsSection,SignatureCategoryItem
 from decimal import Decimal, InvalidOperation
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from user.models import ProductReview
 from urllib.parse import urlparse
 import logging
@@ -32,10 +32,11 @@ FORM_TEMPLATE = "adm_user/products.html"
 
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
 MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
+ALLOWED_IMAGE_FORMATS = {"JPEG", "PNG", "WEBP"}
 
 # WEBSITE BUILDER
-MAX_IMAGE_SIZE_MB = 25  # Relaxed size limit to support high-res banners
-MAX_MEMORY_IMAGES = 20  # sane production cap so the slider can't grow unbounded
+MAX_IMAGE_SIZE_MB = 25  
+MAX_MEMORY_IMAGES = 20  
 
 def dashboard(request):
     return render(request, 'adm_user/dashboard.html')
@@ -482,7 +483,7 @@ def _delete_stored_image(image_url):
         return
     relative_path = urlparse(image_url).path  # e.g. "/media/products/abc123_photo.jpeg"
     if relative_path.startswith(settings.MEDIA_URL):
-        relative_path = relative_path[len(settings.MEDIA_URL):]  # -> "products/abc123_photo.jpeg"
+        relative_path = relative_path[len(settings.MEDIA_URL):] 
     default_storage.delete(relative_path)
 
 @require_http_methods(["POST"])
@@ -504,7 +505,18 @@ def product_variant_delete(request, variant_id):
 
 @require_http_methods(["GET"])
 def products(request):
-    qs = Product.objects.filter(is_active=True).select_related("category").order_by("-created_at")
+    qs = (
+        Product.objects.filter(is_active=True)
+        .select_related("category", "fabric")
+        .prefetch_related(
+            Prefetch(
+                "images",
+                queryset=ProductImage.objects.filter(variant__isnull=True).order_by("display_order"),
+                to_attr="default_images",
+            )
+        )
+        .order_by("-created_at")
+    )
 
     category_id = request.GET.get("category", "").strip()
     stock = request.GET.get("stock", "").strip()
@@ -543,16 +555,35 @@ def products(request):
     context.update(_product_form_context())
     return render(request, FORM_TEMPLATE, context)
 
-
-def _save_uploaded_image(request, file_obj):
+def _validate_image(file_obj):
+    """Pure validation, no storage writes. Raises ValueError on bad input."""
     if file_obj.content_type not in ALLOWED_IMAGE_TYPES:
         raise ValueError("Only JPEG, PNG, or WEBP images are allowed.")
     if file_obj.size > MAX_IMAGE_SIZE:
         raise ValueError("Image files must be under 5MB.")
 
+    try:
+        img = Image.open(file_obj)
+        img.verify()
+    except (UnidentifiedImageError, OSError):
+        raise ValueError("Only JPEG, PNG, or WEBP images are allowed.")
+
+    file_obj.seek(0)
+    img = Image.open(file_obj)
+    if img.format not in ALLOWED_IMAGE_FORMATS:
+        raise ValueError("Only JPEG, PNG, or WEBP images are allowed.")
+
+    file_obj.seek(0)
+
+
+def _store_image(file_obj, request=None):
     safe_name = get_valid_filename(file_obj.name)
     path = default_storage.save(f"products/{uuid.uuid4().hex}_{safe_name}", file_obj)
-    return request.build_absolute_uri(default_storage.url(path))
+    url = default_storage.url(path)
+    if request is not None and url.startswith("/"):
+        url = request.build_absolute_uri(url)
+    return url
+
 
 def _product_form_context(product=None):
     context = {
@@ -589,15 +620,27 @@ def _save_product_fields(product, request):
     category_id = post.get("category")
     if not category_id:
         raise ValueError("Category is required.")
-    product.category = get_object_or_404(SignatureCategoryItem, pk=category_id, is_active=True)
+    try:
+        product.category = SignatureCategoryItem.objects.get(pk=category_id, is_active=True)
+    except (SignatureCategoryItem.DoesNotExist, ValueError, TypeError):
+        raise ValueError("Selected category is invalid or no longer active.")
 
     fabric_id = post.get("fabric")
     if not fabric_id:
         raise ValueError("Fabric is required.")
-    product.fabric = get_object_or_404(Fabric, pk=fabric_id, is_active=True)
+    try:
+        product.fabric = Fabric.objects.get(pk=fabric_id, is_active=True)
+    except (Fabric.DoesNotExist, ValueError, TypeError):
+        raise ValueError("Selected fabric is invalid or no longer active.")
 
     print_id = post.get("print_type")
-    product.print_type = get_object_or_404(Print, pk=print_id, is_active=True) if print_id else None
+    if print_id:
+        try:
+            product.print_type = Print.objects.get(pk=print_id, is_active=True)
+        except (Print.DoesNotExist, ValueError, TypeError):
+            raise ValueError("Selected print type is invalid or no longer active.")
+    else:
+        product.print_type = None
 
     try:
         base_price = Decimal(post.get("base_price") or "0")
@@ -613,7 +656,7 @@ def _save_product_fields(product, request):
     product.base_price = base_price
     product.discount_price = discount_price
     product.stock_quantity = stock_quantity
-    
+
     product.saree_length = post.get("saree_length", "").strip()
     product.blouse_included = _parse_bool(post.get("blouse_included", "Yes"))
     product.blouse_type = post.get("blouse_type", "").strip()
@@ -626,21 +669,46 @@ def _save_variants_and_images(product, request):
     color_ids = request.POST.getlist("variant_color_id")
     stocks = request.POST.getlist("variant_stock")
     prices = request.POST.getlist("variant_price")
+    default_image_files = request.FILES.getlist("default_images")
 
-    kept_variant_ids = []
+    requested_color_ids = [cid for cid in color_ids if cid]
+    colors_by_id = {
+        str(c.id): c
+        for c in Color.objects.filter(id__in=requested_color_ids, is_active=True)
+    }
 
+    # ---- PHASE 1: validate everything, write nothing to storage yet ----
+    planned_variants = []  # (color, stock, price, [image_files])
     for color_id, stock, price in zip(color_ids, stocks, prices):
         if not color_id:
             continue
-        color = get_object_or_404(Color, pk=color_id, is_active=True)
+        color = colors_by_id.get(color_id)
+        if color is None:
+            raise ValueError("Invalid or inactive color selected.")
 
         try:
             variant_price = Decimal(price) if price else None
         except InvalidOperation:
             raise ValueError(f"Invalid price for variant color {color.name}.")
+        try:
+            variant_stock = int(stock) if stock else 0
+        except ValueError:
+            raise ValueError(f"Invalid stock quantity for variant color {color.name}.")
 
+        image_files = request.FILES.getlist(f"variant_images_{color_id}")
+        for f in image_files:
+            _validate_image(f)
+
+        planned_variants.append((color, variant_stock, variant_price, image_files))
+
+    for f in default_image_files:
+        _validate_image(f)
+
+    # ---- PHASE 2: everything validated — safe to save DB rows + write files ----
+    kept_variant_ids = []
+    for color, variant_stock, variant_price, image_files in planned_variants:
         variant, _ = ProductVariant.objects.get_or_create(product=product, color=color)
-        variant.stock_quantity = stock or 0
+        variant.stock_quantity = variant_stock
         variant.price = variant_price
         variant.is_active = True
         variant.full_clean()
@@ -648,25 +716,34 @@ def _save_variants_and_images(product, request):
 
         kept_variant_ids.append(variant.id)
 
-        for image_file in request.FILES.getlist(f"variant_images_{color_id}"):
-            url = _save_uploaded_image(request, image_file)
+        next_order = variant.images.count()
+        for image_file in image_files:
+            url = _store_image(image_file, request)
             ProductImage.objects.create(
                 product=product,
                 variant=variant,
                 image_url=url,
-                display_order=variant.images.count(),
+                display_order=next_order,
             )
+            next_order += 1
 
-    product.variants.exclude(id__in=kept_variant_ids).update(is_active=False)
+    dropped_variants = product.variants.exclude(id__in=kept_variant_ids)
+    for variant in dropped_variants:
+        for url in variant.images.values_list("image_url", flat=True):
+            _delete_stored_image(url)
+        variant.images.all().delete()
+    dropped_variants.update(is_active=False)
 
-    for image_file in request.FILES.getlist("default_images"):
-        url = _save_uploaded_image(request, image_file)
+    next_order = product.images.filter(variant__isnull=True).count()
+    for image_file in default_image_files:
+        url = _store_image(image_file, request)
         ProductImage.objects.create(
             product=product,
             variant=None,
             image_url=url,
-            display_order=product.images.filter(variant__isnull=True).count(),
+            display_order=next_order,
         )
+        next_order += 1
 
 def _handle_save_errors(request, exc, product=None):
     if isinstance(exc, IntegrityError):
@@ -713,7 +790,7 @@ def product_create(request):
                 product.tags.set(_get_selected_tags(request))
                 _save_variants_and_images(product, request)
         except (IntegrityError, ValueError, ValidationError) as exc:
-            return _handle_save_errors(request, exc)
+            return _handle_save_errors(request, exc, product=product)
 
         messages.success(request, f'"{product.name}" was added to the catalog.')
         return redirect("adm_user:products")
@@ -849,7 +926,10 @@ def product_stock_update(request, slug):
 
     try:
         payload = json.loads(request.body)
-        new_stock = int(payload.get("stock_quantity"))
+        raw_stock = payload.get("stock_quantity")
+        new_stock = int(raw_stock)
+        if float(raw_stock) != new_stock:
+            raise ValueError("Stock quantity must be a whole number.")
     except (json.JSONDecodeError, TypeError, ValueError):
         return JsonResponse({"ok": False, "error": "Enter a valid stock quantity."}, status=400)
 
@@ -858,7 +938,10 @@ def product_stock_update(request, slug):
 
     product.stock_quantity = new_stock
     try:
-        product.full_clean(validate_unique=False)
+        product.full_clean(
+            validate_unique=False, 
+            exclude=[ f.name for f in product._meta.fields if f.name != "stock_quantity"]
+        )
         product.save(update_fields=["stock_quantity"])
     except ValidationError as e:
         return JsonResponse({"ok": False, "error": " ".join(e.messages)}, status=400)
@@ -1309,14 +1392,17 @@ def save_about_section(request):
 
 def reviews_management(request):
     status_filter = request.GET.get('status', 'all')
-    reviews = ProductReview.objects.select_related('user')
+    if status_filter not in ('all', 'pending', 'approved'):
+        status_filter = 'all'
+
+    reviews = ProductReview.objects.select_related('user').order_by('-created_at')
 
     if status_filter == 'pending':
         reviews = reviews.filter(is_approved=False)
     elif status_filter == 'approved':
         reviews = reviews.filter(is_approved=True)
 
-    paginator = Paginator(reviews, 2)
+    paginator = Paginator(reviews, 20)
     page_obj = paginator.get_page(request.GET.get('page'))
 
     context = {
@@ -1336,8 +1422,12 @@ def approve_review(request, pk):
 
 @require_http_methods(["POST", "DELETE"])
 def delete_review(request, pk):
-    
     review = get_object_or_404(ProductReview, pk=pk)
+
+    for f in (review.image_1, review.image_2, review.image_3):
+        if f:
+            f.delete(save=False)
+
     review.delete()
     return JsonResponse({"deleted": True})
 
@@ -1346,47 +1436,78 @@ def delete_review(request, pk):
 # SIGNATURE CATEGORIES MANAGEMENT (5 SIGNATURE SAREE CATEGORIES)
 # ---------------------------------------------------------------------
 
+ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
+MAX_SIG_IMAGE_SIZE_MB = 5
+
+def validate_image_file(file):
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        return "Please upload a JPG, PNG or WEBP image."
+    if file.size > MAX_SIG_IMAGE_SIZE_MB * 1024 * 1024:
+        return f"Image is {file.size / (1024*1024):.1f}MB — max allowed is {MAX_SIG_IMAGE_SIZE_MB}MB."
+    return None
+
+def parse_display_order(raw_value):
+    try:
+        return int(raw_value or 0), None
+    except (TypeError, ValueError):
+        return None, "Invalid display order."
+
 @require_http_methods(["GET", "POST"])
 def signature_categories_api(request):
-    if request.method == "POST":
-        name = request.POST.get("name", "").strip()
-        badge_text = request.POST.get("badge_text", "").strip()
-        origin_craft = request.POST.get("origin_craft", "").strip()
-        display_order = request.POST.get("display_order", 0)
+    if request.method == "GET":
+        categories = SignatureCategoryItem.objects.all().order_by("display_order")
+        data = [{
+            "id": c.id,
+            "name": c.name,
+            "badge_text": c.badge_text,
+            "origin_craft": c.origin_craft,
+            "image_url": c.image.url if c.image else "",
+            "display_order": c.display_order,
+        } for c in categories]
+        return JsonResponse({"categories": data})
 
-        if not name:
-            return JsonResponse({"error": "Category name is required."}, status=400)
+    # POST — create
+    name = request.POST.get("name", "").strip()
+    badge_text = request.POST.get("badge_text", "").strip()
+    origin_craft = request.POST.get("origin_craft", "").strip()
 
-        item = SignatureCategoryItem.objects.create(
-            name=name,
-            badge_text=badge_text,
-            origin_craft=origin_craft,
-            display_order=int(display_order or 0),
-        )
+    if not name:
+        return JsonResponse({"error": "Category name is required."}, status=400)
 
-        if "image" in request.FILES:
-            item.image = request.FILES["image"]
+    display_order, error = parse_display_order(request.POST.get("display_order", 0))
+    if error:
+        return JsonResponse({"error": error}, status=400)
+
+    if "image" in request.FILES:
+        error = validate_image_file(request.FILES["image"])
+        if error:
+            return JsonResponse({"error": error}, status=400)
+
+    item = SignatureCategoryItem(
+        name=name,
+        badge_text=badge_text,
+        origin_craft=origin_craft,
+        display_order=display_order,
+    )
+    if "image" in request.FILES:
+        item.image = request.FILES["image"]
+
+    try:
+        item.full_clean()
+        with transaction.atomic():
             item.save()
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    except IntegrityError:
+        return JsonResponse({"error": "A category with this name already exists."}, status=409)
 
-        return JsonResponse({
-            "id": item.id,
-            "name": item.name,
-            "badge_text": item.badge_text,
-            "origin_craft": item.origin_craft,
-            
-            "image_url": item.image.url if item.image else "",
-        })
-
-    categories = SignatureCategoryItem.objects.all()
-    data = [{
-        "id": c.id,
-        "name": c.name,
-        "badge_text": c.badge_text,
-        "origin_craft": c.origin_craft,
-        "image_url": c.image.url if c.image else "",
-        "display_order": c.display_order,
-    } for c in categories]
-    return JsonResponse({"categories": data})
+    return JsonResponse({
+        "id": item.id,
+        "name": item.name,
+        "badge_text": item.badge_text,
+        "origin_craft": item.origin_craft,
+        "image_url": item.image.url if item.image else "",
+    }, status=201)
 
 
 @require_http_methods(["POST"])
@@ -1394,17 +1515,39 @@ def signature_category_edit(request, pk):
     item = get_object_or_404(SignatureCategoryItem, pk=pk)
 
     if "name" in request.POST:
-        item.name = request.POST.get("name", "").strip()
+        name = request.POST.get("name", "").strip()
+        if not name:
+            return JsonResponse({"error": "Category name is required."}, status=400)
+        item.name = name
     if "badge_text" in request.POST:
         item.badge_text = request.POST.get("badge_text", "").strip()
     if "origin_craft" in request.POST:
         item.origin_craft = request.POST.get("origin_craft", "").strip()
     if "display_order" in request.POST:
-        item.display_order = int(request.POST.get("display_order", 0) or 0)
-    if "image" in request.FILES:
-        item.image = request.FILES["image"]
+        display_order, error = parse_display_order(request.POST.get("display_order", 0))
+        if error:
+            return JsonResponse({"error": error}, status=400)
+        item.display_order = display_order
 
-    item.save()
+    old_image = None
+    if "image" in request.FILES:
+        error = validate_image_file(request.FILES["image"])
+        if error:
+            return JsonResponse({"error": error}, status=400)
+        old_image = item.image if item.image else None
+        item.image = request.FILES["image"]
+    try:
+        item.full_clean()
+        with transaction.atomic():
+            item.save()
+    except ValidationError as e:
+        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+    except IntegrityError:
+        return JsonResponse({"error": "Another category already has this name."}, status=409)
+
+    if old_image:
+        old_image.delete(save=False)
+    
     return JsonResponse({
         "id": item.id,
         "name": item.name,
@@ -1417,7 +1560,20 @@ def signature_category_edit(request, pk):
 @require_http_methods(["POST", "DELETE"])
 def signature_category_delete(request, pk):
     item = get_object_or_404(SignatureCategoryItem, pk=pk)
-    item.delete()
+    image_to_delete = item.image if item.image else None
+
+    try:
+        with transaction.atomic():
+            item.delete()
+    except ProtectedError:
+        return JsonResponse(
+            {"error": "This category is linked to existing data and can't be deleted."},
+            status=409,
+        )
+
+    if image_to_delete:
+        image_to_delete.delete(save=False)
+
     return JsonResponse({"deleted": True})
 
  

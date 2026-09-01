@@ -127,7 +127,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                     <div class="text-sm text-slate-600 dark:text-slate-300 sm:w-48 shrink-0">
                         <p>Stock: <span class="font-medium text-slate-800 dark:text-white">{{ v.stock_quantity }}</span></p>
                         <p>Price: <span class="font-medium text-slate-800 dark:text-white">
-                            ₹{{ v.price|default:product.base_price|floatformat:0 }}</span></p>
+                        ₹{{ v.price|default_if_none:product.base_price|floatformat:0 }}</span></p>
                     </div>
                     <div class="flex gap-2 flex-wrap">
                         {% for img in v.images.all %}

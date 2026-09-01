@@ -68,40 +68,38 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
     </div>
 
     <!-- Filters -->
-<!-- Filters -->
-<form method="get" action="{% url 'adm_user:products'  %} " id="productFilterForm"
-    class="bg-white dark:bg-dark-panel rounded-t-2xl p-3.5 sm:p-4 border-x border-t border-slate-100 dark:border-dark-border flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-    <div class="grid grid-cols-2 sm:flex gap-2">
-        <select id="filterCategory" name="category" onchange="this.form.submit()"
+    <form method="get" action="{% url 'adm_user:products'  %} " id="productFilterForm"
+        class="bg-white dark:bg-dark-panel rounded-t-2xl p-3.5 sm:p-4 border-x border-t border-slate-100 dark:border-dark-border flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div class="grid grid-cols-2 sm:flex gap-2">
+            <select id="filterCategory" name="category" onchange="this.form.submit()"
             class="w-full sm:w-auto bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-2.5 sm:px-3 py-2">
-            <option value="">All Categories</option>
-            {% for c in categories %}
-            <option value="{{ c.id }}" {% if selected_category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
-            {% endfor %}
-        </select>
-        <select id="filterStock" name="stock" onchange="this.form.submit()"
-            class="w-full sm:w-auto bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-2.5 sm:px-3 py-2">
-            <option value="">Stock Status</option>
-            <option value="in" {% if selected_stock == "in" %}selected{% endif %}>In Stock</option>
-            <option value="low" {% if selected_stock == "low" %}selected{% endif %}>Low Stock</option>
-            <option value="out" {% if selected_stock == "out" %}selected{% endif %}>Out of Stock</option>
-        </select>
-    </div>
-    <div class="relative w-full sm:w-64">
-        <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-        <input type="text" id="filterSearch" name="search" placeholder="Search by name or code..."
+                <option value="">All Categories</option>
+                {% for c in categories %}
+                <option value="{{ c.id }}" {% if selected_category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+            <select id="filterStock" name="stock" onchange="this.form.submit()"
+                class="w-full sm:w-auto bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm rounded-lg focus:ring-brand-maroon focus:border-brand-maroon px-2.5 sm:px-3 py-2">
+                <option value="">Stock Status</option>
+                <option value="in" {% if selected_stock == "in" %}selected{% endif %}>In Stock</option>
+                <option value="low" {% if selected_stock == "low" %}selected{% endif %}>Low Stock</option>
+                <option value="out" {% if selected_stock == "out" %}selected{% endif %}>Out of Stock</option>
+            </select>
+        </div>
+        <div class="relative w-full sm:w-64">
+            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="filterSearch" name="search" placeholder="Search by name or code..."
             value="{{ search_query }}"
             class="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon">
-    </div>
-</form>
+        </div>
+    </form>
 
     <!-- Table -->
-<!-- Table -->
-<div class="bg-white dark:bg-dark-panel rounded-b-2xl border border-slate-100 dark:border-dark-border overflow-hidden overflow-x-auto">
-    <div id="productsTableContainer">
-        {% include "adm_user/product_table.html" %}
+    <div class="bg-white dark:bg-dark-panel rounded-b-2xl border border-slate-100 dark:border-dark-border overflow-hidden overflow-x-auto">
+        <div id="productsTableContainer">
+            {% include "adm_user/product_table.html" %}
+        </div>
     </div>
-</div>
 
 </div>
 
@@ -562,24 +560,8 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
     });
 
     window.addEventListener('popstate', () => loadProducts(window.location.href, false));
-})();
-{% comment %} 
-    window.applyProductFilters = function () {
-        const category = document.getElementById('filterCategory').value;
-        const stock = document.getElementById('filterStock').value;
-        const search = document.getElementById('filterSearch').value.trim().toLowerCase();
+    })();
 
-        document.querySelectorAll('#view-products tbody tr[data-category]').forEach(row => {
-        const matchesCategory = !category || row.dataset.category === category;
-        const matchesStock = !stock || row.dataset.stock === stock;
-        const matchesSearch = !search || row.dataset.search.includes(search);
-        row.classList.toggle('hidden', !(matchesCategory && matchesStock && matchesSearch));
-        });
-    };
-
-    document.getElementById('filterCategory').addEventListener('change', applyProductFilters);
-    document.getElementById('filterStock').addEventListener('change', applyProductFilters);
-    document.getElementById('filterSearch').addEventListener('input', applyProductFilters); {% endcomment %}
 
 
     // ---- Inline stock editing ----
@@ -611,20 +593,23 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
 
         const cleanup = () => { wrap.remove(); badgeEl.classList.remove('hidden'); };
 
+        const saveBtn = wrap.querySelector('.stock-save-btn');
+        saveBtn.addEventListener('click', () => saveStock(cell, input.value, cleanup, saveBtn));
         wrap.querySelector('.stock-cancel-btn').addEventListener('click', cleanup);
-        wrap.querySelector('.stock-save-btn').addEventListener('click', () => saveStock(cell, input.value, cleanup));
         input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') saveStock(cell, input.value, cleanup);
+            if (e.key === 'Enter') saveStock(cell, input.value, cleanup, saveBtn);
             if (e.key === 'Escape') cleanup();
         });
     };
 
-    function saveStock(cell, value, cleanup) {
-        const qty = parseInt(value, 10);
-        if (isNaN(qty) || qty < 0) {
-            alert('Enter a valid stock quantity.');
+    function saveStock(cell, value, cleanup, saveBtn) {
+        if (saveBtn.disabled) return;
+        const qty = Number(value);
+        if (!Number.isInteger(qty) || qty < 0) {
+            alert('Enter a valid whole-number stock quantity.');
             return;
         }
+        saveBtn.disabled = true;
 
         const slug = cell.dataset.slug;
         const url = window.productStockUpdateUrlTemplate.replace('__SLUG__', slug);
@@ -680,17 +665,17 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
     // END CHANGED
 
 
-window.deleteExistingImage = function (imageId, wrapperId) {
-    const wrapper = document.getElementById(wrapperId);
-    const btn = wrapper.querySelector('button');
-    if (btn) btn.disabled = true;
+    window.deleteExistingImage = function (imageId, wrapperId) {
+        const wrapper = document.getElementById(wrapperId);
+        const btn = wrapper.querySelector('button');
+        if (btn) btn.disabled = true;
 
-    const csrfToken = document.querySelector('#addProductForm [name=csrfmiddlewaretoken]').value;
+        const csrfToken = document.querySelector('#addProductForm [name=csrfmiddlewaretoken]').value;
 
-    fetch(window.productImageDeleteUrlTemplate.replace('__ID__', imageId), {
-        method: 'POST',
-        headers: { 'X-CSRFToken': csrfToken },
-    })
+        fetch(window.productImageDeleteUrlTemplate.replace('__ID__', imageId), {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+        })
         .then(res => {
             if (!res.ok) throw new Error('Delete request failed');
             return res.json();
@@ -704,7 +689,7 @@ window.deleteExistingImage = function (imageId, wrapperId) {
             if (btn) btn.disabled = false;
             alert('Could not delete image. Please try again.');
         });
-}
+    }
 
 
     window.hideAddProductPage = function () {
@@ -795,10 +780,6 @@ window.deleteExistingImage = function (imageId, wrapperId) {
         select.value = '';
     }
 
-    // CHANGED (Bug 1 fix): deletion is now independent of the Save button. A variant that was
-    // never saved (added this session via addColorVariant, dbVariantId is null) is just removed
-    // from the DOM. A variant that exists in the DB (dbVariantId set) is deactivated immediately
-    // via AJAX, then removed from the DOM on success.
     window.removeColorVariant = function (variantId, colorId, dbVariantId) {
         const el = document.getElementById(variantId);
         const select = document.getElementById('newColorSelect');

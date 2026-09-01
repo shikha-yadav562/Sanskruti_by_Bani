@@ -14,16 +14,16 @@
         <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
             <td class="p-4">
                 <div class="flex items-center gap-3">
-                    {% with p.images.first as thumb %}
-                    {% if thumb %}
-                    <div class="w-12 h-16 rounded bg-slate-100 overflow-hidden">
-                        <img src="{{ thumb.image_url }}" class="w-full h-full object-cover" alt="{{ p.name }}">
-                    </div>
-                    {% else %}
-                    <div class="w-12 h-16 rounded bg-slate-100 overflow-hidden flex items-center justify-center text-slate-300">
-                        <i class="ph ph-image text-2xl"></i>
-                    </div>
-                    {% endif %}
+                    {% with p.default_images|first as thumb %}
+                        {% if thumb %}
+                        <div class="w-12 h-16 rounded bg-slate-100 overflow-hidden">
+                            <img src="{{ thumb.image_url }}" class="w-full h-full object-cover" alt="{{ p.name }}">
+                        </div>
+                        {% else %}
+                        <div class="w-12 h-16 rounded bg-slate-100 overflow-hidden flex items-center justify-center text-slate-300">
+                            <i class="ph ph-image text-2xl"></i>
+                        </div>
+                        {% endif %}
                     {% endwith %}
                     <div>
                         <a href="{% url 'adm_user:detail' p.slug %}" class="text-sm font-semibold text-slate-800 dark:text-white hover:text-brand-maroon transition-colors cursor-pointer">
