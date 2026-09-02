@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 
+from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.exceptions import ValidationError
@@ -46,62 +47,65 @@ SORT_MAP = {
     "price-high": "-base_price",
 }
 
-# Create your views here.
 def index(request):
-    bestseller_qs = (
-        Product.objects.filter(
-            is_active=True,
-            tags__slug="bestseller",
-            category__slug="paithani",
+    context = cache.get("homepage_context")
+
+    if context is None:
+        bestseller_qs = (
+            Product.objects.filter(
+                is_active=True,
+                tags__slug="bestseller",
+                category__slug="paithani",
+            )
+            .select_related("category")
+            .prefetch_related(
+                Prefetch(
+                    "images",
+                    queryset=ProductImage.objects.filter(variant__isnull=True).order_by("display_order", "created_at"),
+                    to_attr="default_images",
+                ),
+                Prefetch(
+                    "images",
+                    queryset=ProductImage.objects.order_by("display_order", "created_at"),
+                    to_attr="any_images",
+                ),
+            )
+            .distinct()
+            .order_by("-created_at")
         )
-        .select_related("category")
-        .prefetch_related(
-            Prefetch(
-                "images",
-                queryset=ProductImage.objects.filter(variant__isnull=True).order_by("display_order", "created_at"),
-                to_attr="default_images",
-            ),
-            Prefetch(
-                "images",
-                queryset=ProductImage.objects.order_by("display_order", "created_at"),
-                to_attr="any_images",
-            ),
-        )
-        .distinct()
-        .order_by("-created_at")
-    )
 
-    
-    bestseller_products = list(bestseller_qs[:10])
-    if len(bestseller_products) < 10:
-        bestseller_products = bestseller_products[:5]
+        bestseller_products = list(bestseller_qs[:10])
+        if len(bestseller_products) < 10:
+            bestseller_products = bestseller_products[:5]
 
-    for product in bestseller_products:
-        if product.default_images:
-            product.thumb = product.default_images[0]
-        elif product.any_images:
-            product.thumb = product.any_images[0]
-        else:
-            product.thumb = None
+        for product in bestseller_products:
+            if product.default_images:
+                product.thumb = product.default_images[0]
+            elif product.any_images:
+                product.thumb = product.any_images[0]
+            else:
+                product.thumb = None
 
-    context = {
-        "hero_offer": HeroSlideOffer.load(),
-        "hero_main": HeroSlideMain.load(),
-        "hero_image_only": HeroSlideImageOnly.load(),
-        "header_settings": HeaderSettings.load(),
-        "offer_items": OfferBarItem.objects.all(), 
-        "footer_settings": FooterSettings.load(), 
-        "about_section": AboutUsSection.load(),
-        "memories_section": SweetMemoriesSection.load(),
-        "memory_images": SweetMemoryImage.objects.all(),
-        "memories_offer_slide": MemoriesOfferSlide.load(),
-        "memories_slide3": MemoriesSlide3.load(),
-        "signature_categories": SignatureCategoryItem.objects.filter(is_active=True),
-        "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
-        "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
-        "bestseller_products": bestseller_products,
-    }
-    return render(request, 'user/index.html', context)
+        context = {
+            "hero_offer": HeroSlideOffer.load(),
+            "hero_main": HeroSlideMain.load(),
+            "hero_image_only": HeroSlideImageOnly.load(),
+            "header_settings": HeaderSettings.load(),
+            "offer_items": list(OfferBarItem.objects.all()),
+            "footer_settings": FooterSettings.load(),
+            "about_section": AboutUsSection.load(),
+            "memories_section": SweetMemoriesSection.load(),
+            "memory_images": list(SweetMemoryImage.objects.all()),
+            "memories_offer_slide": MemoriesOfferSlide.load(),
+            "memories_slide3": MemoriesSlide3.load(),
+            "signature_categories": list(SignatureCategoryItem.objects.filter(is_active=True)),
+            "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
+            "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
+            "bestseller_products": bestseller_products,
+        }
+        cache.set("homepage_context", context, 60 * 15)  # 15 min
+
+    return render(request, "user/index.html", context)
 
 def product(request, slug):
     product = get_object_or_404(

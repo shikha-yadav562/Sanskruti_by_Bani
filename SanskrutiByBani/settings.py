@@ -305,3 +305,6 @@ LOGIN_URL = 'user:login'
 LOGIN_REDIRECT_URL = 'user:profile'
 
 WHATSAPP_BUSINESS_NUMBER = "919372471363"
+
+# VERSIONS
+STATIC_VERSION = "1.0.3"  # bump this manually each time you change CSS/JS

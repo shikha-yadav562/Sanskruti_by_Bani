@@ -33,3 +33,6 @@ class UserConfig(AppConfig):
     
     def ready(self) -> None:
         post_migrate.connect(create_default_admin, sender=self)
+
+def ready(self):
+    import user.signals  # noqa: F401
