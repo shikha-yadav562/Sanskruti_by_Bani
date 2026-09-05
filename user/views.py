@@ -28,6 +28,18 @@ from django.views.decorators.http import require_POST, require_GET
 import json
 from PIL import Image, UnidentifiedImageError
 
+from django.db.models import (
+    Prefetch,
+    Count,
+    Q,
+    Case,
+    When,
+    Value,
+    IntegerField,
+    Avg,
+    F,
+    DecimalField,
+)
 PRICE_BRACKETS = {
     "under-5000": (None, 5000),
     "5000-10000": (5000, 10000),
@@ -43,70 +55,65 @@ price_choices = [
 
 SORT_MAP = {
     "newest": "-created_at",
-    "price-low": "base_price",
-    "price-high": "-base_price",
+    "price-low": "effective_price",
+    "price-high": "-effective_price",
 }
 
 def index(request):
-    context = cache.get("homepage_context")
-
-    if context is None:
-        bestseller_qs = (
-            Product.objects.filter(
-                is_active=True,
-                tags__slug="bestseller",
-                category__slug="paithani",
-            )
-            .select_related("category")
-            .prefetch_related(
-                Prefetch(
-                    "images",
-                    queryset=ProductImage.objects.filter(variant__isnull=True).order_by("display_order", "created_at"),
-                    to_attr="default_images",
-                ),
-                Prefetch(
-                    "images",
-                    queryset=ProductImage.objects.order_by("display_order", "created_at"),
-                    to_attr="any_images",
-                ),
-            )
-            .distinct()
-            .order_by("-created_at")
+    bestseller_qs = (
+        Product.objects.filter(
+            is_active=True,
+            tags__slug="bestseller",
+            category__slug="paithani",
         )
+        .select_related("category")
+        .prefetch_related(
+            Prefetch(
+                "images",
+                queryset=ProductImage.objects.filter(variant__isnull=True).order_by("display_order", "created_at"),
+                to_attr="default_images",
+            ),
+            Prefetch(
+                "images",
+                queryset=ProductImage.objects.order_by("display_order", "created_at"),
+                to_attr="any_images",
+            ),
+        )
+        .distinct()
+        .order_by("-created_at")
+    )
 
-        bestseller_products = list(bestseller_qs[:10])
-        if len(bestseller_products) < 10:
-            bestseller_products = bestseller_products[:5]
+    bestseller_products = list(bestseller_qs[:10])
+    if len(bestseller_products) < 10:
+        bestseller_products = bestseller_products[:5]
 
-        for product in bestseller_products:
-            if product.default_images:
-                product.thumb = product.default_images[0]
-            elif product.any_images:
-                product.thumb = product.any_images[0]
-            else:
-                product.thumb = None
+    for product in bestseller_products:
+        if product.default_images:
+            product.thumb = product.default_images[0]
+        elif product.any_images:
+            product.thumb = product.any_images[0]
+        else:
+            product.thumb = None
 
-        context = {
-            "hero_offer": HeroSlideOffer.load(),
-            "hero_main": HeroSlideMain.load(),
-            "hero_image_only": HeroSlideImageOnly.load(),
-            "header_settings": HeaderSettings.load(),
-            "offer_items": list(OfferBarItem.objects.all()),
-            "footer_settings": FooterSettings.load(),
-            "about_section": AboutUsSection.load(),
-            "memories_section": SweetMemoriesSection.load(),
-            "memory_images": list(SweetMemoryImage.objects.all()),
-            "memories_offer_slide": MemoriesOfferSlide.load(),
-            "memories_slide3": MemoriesSlide3.load(),
-            "signature_categories": list(SignatureCategoryItem.objects.filter(is_active=True)),
-            "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
-            "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
-            "bestseller_products": bestseller_products,
-        }
-        cache.set("homepage_context", context, 60 * 15)  # 15 min
+    context = {
+        "hero_offer": HeroSlideOffer.load(),
+        "hero_main": HeroSlideMain.load(),
+        "hero_image_only": HeroSlideImageOnly.load(),
+        "header_settings": HeaderSettings.load(),
+        "offer_items": list(OfferBarItem.objects.all()),
+        "footer_settings": FooterSettings.load(),
+        "about_section": AboutUsSection.load(),
+        "memories_section": SweetMemoriesSection.load(),
+        "memory_images": list(SweetMemoryImage.objects.all()),
+        "memories_offer_slide": MemoriesOfferSlide.load(),
+        "memories_slide3": MemoriesSlide3.load(),
+        "signature_categories": list(SignatureCategoryItem.objects.filter(is_active=True)),
+        "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
+        "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
+        "bestseller_products": bestseller_products,
+    }
 
     return render(request, "user/index.html", context)
-
 def product(request, slug):
     product = get_object_or_404(
         Product.objects.select_related('category', 'fabric', 'print_type'),
@@ -146,14 +153,14 @@ def product(request, slug):
     if product.discount_price and product.base_price:
         discount_percent = round((1 - (product.discount_price / product.base_price)) * 100)
 
-    # Serialized for the color-swatch JS — swaps images/price/stock client-side
+    # Serialized for the color-swatch JS — swaps images/price client-side.
+    # Stock is no longer per-variant; it lives on product.stock_quantity.
     variants_json = [
         {
             "variant_id": v.id,
             "color_name": v.color.name,
             "color_hex": v.color.hex_code,
             "price": str(v.price or product.final_price),
-            "stock_quantity": v.stock_quantity,
             "images": [img.image_url for img in v.images.all()] or [img.image_url for img in default_images],
         }
         for v in variants
@@ -696,7 +703,8 @@ def search_suggest(request):
 
 def catalogue(request):
     products = (
-        Product.objects.filter(is_active=True)
+        Product.objects
+        .filter(is_active=True)
         .select_related("category", "fabric", "print_type")
         .prefetch_related(
             Prefetch(
@@ -707,6 +715,19 @@ def catalogue(request):
                 to_attr="all_images",
             ),
             "variants__color",
+        )
+        .annotate(
+            effective_price=Case(
+                When(
+                    discount_price__isnull=False,
+                    then=F("discount_price"),
+                ),
+                default=F("base_price"),
+                output_field=DecimalField(
+                    max_digits=10,
+                    decimal_places=2,
+                ),
+            )
         )
     )
 
@@ -731,6 +752,7 @@ def catalogue(request):
     print_slugs = request.GET.getlist("print")
     color_slugs = request.GET.getlist("color")
     price_keys = request.GET.getlist("price")
+    print("PRICE KEYS:", price_keys)
     tag_slugs = request.GET.getlist("tag")
 
     if category_slugs:
@@ -765,23 +787,29 @@ def catalogue(request):
         price_q = Q()
 
         for key in price_keys:
-            lo, hi = PRICE_BRACKETS.get(
-                key,
-                (None, None)
-            )
+            lo, hi = PRICE_BRACKETS.get(key, (None, None))
 
             bracket = Q()
 
             if lo is not None:
-                bracket &= Q(base_price__gte=lo)
+                bracket &= Q(effective_price__gte=lo)
 
             if hi is not None:
-                bracket &= Q(base_price__lt=hi)
+                bracket &= Q(effective_price__lt=hi)
 
             price_q |= bracket
 
         products = products.filter(price_q)
 
+        print("AFTER PRICE FILTER:")
+        print("COUNT:", products.count())
+
+        for p in products:
+            print(
+                p.name,
+                "effective=",
+                p.effective_price
+            )
     # ---------------------------------------------------------
     # EXISTING SORTING 
     # ---------------------------------------------------------
@@ -914,9 +942,14 @@ def catalogue(request):
 def buy_now(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
 
+    # Server-side stock check — stock is maintained at product level
+    if product.stock_quantity <= 0:
+        return redirect('user:product', product.slug)
+
     display_price = product.final_price
     variant_id = request.GET.get('variant')
     variant = None
+
     if variant_id:
         try:
             variant = (
@@ -927,6 +960,7 @@ def buy_now(request, slug):
             )
         except (ValueError, ValidationError):
             variant = None
+
         if variant and variant.price is not None:
             display_price = variant.price
 

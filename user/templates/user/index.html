@@ -1134,33 +1134,110 @@ async function logoutUser() {
     let currentController = null;
 
     function renderSuggestions(results, query) {
-      if (results.length === 0) {
-        dropdown.innerHTML = `<div class="p-4 text-center text-xs text-gray-400">No results for "${query}"</div>`;
+    dropdown.replaceChildren();
+
+    if (!results.length) {
+        const empty = document.createElement('div');
+        empty.className = 'p-4 text-center text-xs text-gray-400';
+        empty.textContent = `No results for "${query}"`;
+
+        dropdown.appendChild(empty);
         dropdown.classList.remove('hidden');
         return;
-      }
-
- const items = results.map(p => `
-  <a href="/product/${p.slug}/${p.variant_id ? '?variant=' + p.variant_id : ''}" class="flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] hover:bg-[#fff8f4] transition-colors border-b border-gray-100 last:border-0">
-          ${p.thumbnail
-            ? `<img src="${p.thumbnail}" alt="${p.name}" class="w-10 h-12 object-cover rounded bg-gray-100 shrink-0">`
-            : `<div class="w-10 h-12 rounded bg-gray-100 shrink-0"></div>`}
-          <div class="min-w-0">
-            <div class="text-[13px] font-semibold truncate text-[#4a0c16]">${p.name}</div>
-            <div class="text-[11px] text-[#810820]/70">${p.category}</div>
-          </div>
-          <div class="ml-auto text-xs font-bold text-[#810820] whitespace-nowrap">₹${Math.round(p.price).toLocaleString('en-IN')}</div>
-        </a>
-      `).join('');
-      const viewAll = `
-        <a href="${CATALOGUE_URL}?q=${encodeURIComponent(query)}"
-           class="block text-center py-2.5 text-xs font-bold text-[#810820] border-t border-[#e7c27a]/30 hover:bg-[#fff8f4] transition-colors">
-          View all results for "${query}" →
-        </a>`;
-
-      dropdown.innerHTML = items + viewAll;
-      dropdown.classList.remove('hidden');
     }
+
+    results.forEach(p => {
+        const link = document.createElement('a');
+
+        link.className =
+            'flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] ' +
+            'hover:bg-[#fff8f4] transition-colors border-b ' +
+            'border-gray-100 last:border-0';
+
+        // Build URL from the known product route.
+        const slug = String(p.slug ?? '');
+        const variantId =
+            p.variant_id != null ? String(p.variant_id) : '';
+
+        link.href =
+            `/product/${encodeURIComponent(slug)}` +
+            (variantId
+                ? `?variant=${encodeURIComponent(variantId)}`
+                : '');
+
+        // Product image
+        if (p.thumbnail) {
+            const img = document.createElement('img');
+
+            img.src = String(p.thumbnail);
+            img.alt = String(p.name ?? '');
+            img.className =
+                'w-10 h-12 object-cover rounded bg-gray-100 shrink-0';
+            img.loading = 'lazy';
+
+            link.appendChild(img);
+        } else {
+            const placeholder = document.createElement('div');
+
+            placeholder.className =
+                'w-10 h-12 rounded bg-gray-100 shrink-0';
+
+            link.appendChild(placeholder);
+        }
+
+        // Product information
+        const info = document.createElement('div');
+        info.className = 'min-w-0';
+
+        const name = document.createElement('div');
+        name.className =
+            'text-[13px] font-semibold truncate text-[#4a0c16]';
+        name.textContent = String(p.name ?? '');
+
+        const category = document.createElement('div');
+        category.className =
+            'text-[11px] text-[#810820]/70';
+        category.textContent = String(p.category ?? '');
+
+        info.append(name, category);
+
+        // Price
+        const price = document.createElement('div');
+        price.className =
+            'ml-auto text-xs font-bold text-[#810820] whitespace-nowrap';
+
+        const numericPrice = Number(p.price);
+
+        price.textContent =
+            `₹${
+                Number.isFinite(numericPrice)
+                    ? Math.round(numericPrice).toLocaleString('en-IN')
+                    : '—'
+            }`;
+
+        link.append(info, price);
+
+        dropdown.appendChild(link);
+    });
+
+    // View all results
+    const viewAll = document.createElement('a');
+
+    viewAll.href =
+        `${CATALOGUE_URL}?q=${encodeURIComponent(query)}`;
+
+    viewAll.className =
+        'block text-center py-2.5 text-xs font-bold ' +
+        'text-[#810820] border-t border-[#e7c27a]/30 ' +
+        'hover:bg-[#fff8f4] transition-colors';
+
+    viewAll.textContent =
+        `View all results for "${query}" →`;
+
+    dropdown.appendChild(viewAll);
+
+    dropdown.classList.remove('hidden');
+}
 
     input.addEventListener('input', function () {
       const query = this.value.trim();
@@ -1201,12 +1278,12 @@ async function logoutUser() {
     });
   }
 
-  // Initialize Desktop, Mobile Header, and Mobile Drawer search widgets
   setupSearchWidget('storeSearchInput', 'searchSuggestions');
   setupSearchWidget('mobileHeaderSearchInput', 'mobileHeaderSearchSuggestions');
   setupSearchWidget('mobileDrawerSearchInput', 'mobileDrawerSearchSuggestions');
 })();
 </script>
+
 
 </body>
 

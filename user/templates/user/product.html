@@ -377,17 +377,17 @@
         <input type="hidden" id="selectedVariantId" value="{{ default_variant.id|default:'' }}">
         <div class="flex flex-col gap-3 mt-4">
           {% comment %} <button id="addToCartBtn"
-            class="w-full py-4 border-2 border-[#810820] text-[#810820] font-bold uppercase tracking-widest text-sm hover:bg-[#810820] hover:text-[#fff8f4] transition-colors{% if default_variant and default_variant.stock_quantity <= 0 %} opacity-50 cursor-not-allowed{% endif %}"
+            class="w-full py-4 border-2 border-[#810820] text-[#810820] font-bold uppercase tracking-widest text-sm hover:bg-[#810820] hover:text-[#fff8f4] transition-colors{% if product.stock_quantity <= 0 %} opacity-50 cursor-not-allowed{% endif %}"
             style="font-family: 'Inter', sans-serif;"
-            {% if default_variant and default_variant.stock_quantity <= 0 %}disabled{% endif %}>
-            {% if default_variant and default_variant.stock_quantity <= 0 %}Out Of Stock{% else %}Add To Cart{% endif %}
+            {% if product.stock_quantity <= 0 %}disabled{% endif %}>
+            {% if product.stock_quantity <= 0 %}Out Of Stock{% else %}Add To Cart{% endif %}
           </button> {% endcomment %}
           <a href="{% url 'user:buy_now' product.slug %}?variant={{ default_variant.id|default:'' }}"
           id="buyNowBtn" target="_blank" rel="noopener"
-          class="w-full py-4 bg-[#810820] border-2 border-[#810820] text-[#e7c27a] font-bold uppercase tracking-widest text-sm hover:bg-[#4a0c16] hover:border-[#4a0c16] transition-colors shadow-lg shadow-[#810820]/20 flex items-center justify-center gap-2 {% if default_variant and default_variant.stock_quantity <= 0 %} opacity-50 cursor-not-allowed {% endif %}"
-          style="font-family: 'Inter', sans-serif;" {% if default_variant and default_variant.stock_quantity <= 0 %}disabled{% endif %}>
+          class="w-full py-4 bg-[#810820] border-2 border-[#810820] text-[#e7c27a] font-bold uppercase tracking-widest text-sm hover:bg-[#4a0c16] hover:border-[#4a0c16] transition-colors shadow-lg shadow-[#810820]/20 flex items-center justify-center gap-2 {% if product.stock_quantity <= 0 %} opacity-50 cursor-not-allowed {% endif %}"
+          style="font-family: 'Inter', sans-serif;" {% if product.stock_quantity <= 0 %}disabled{% endif %}>
             <i class="fa-brands fa-whatsapp text-lg"></i>
-            {% if default_variant and default_variant.stock_quantity <= 0 %}
+            {% if product.stock_quantity <= 0 %}
               Out Of Stock
             {% else %}
               Buy It Now
@@ -808,8 +808,7 @@
                 reader.readAsDataURL(input.files[0]);
               }
             }
-
-            function showReviewAlert(message, type = "success") {
+function showReviewAlert(message, type = "success") {
   const box = document.getElementById("reviewAlertBox");
   if (!box) {
     console.error("reviewAlertBox not found in DOM");
@@ -822,7 +821,19 @@
   };
 
   box.className = "px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-2 " + (styles[type] || styles.error);
-  box.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ${message}`;
+
+  box.replaceChildren();
+
+  const icon = document.createElement("i");
+  icon.className = `fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}`;
+
+  const text = document.createElement("span");
+  text.textContent = String(message);
+
+  box.appendChild(icon);
+  box.appendChild(document.createTextNode(" "));
+  box.appendChild(text);
+
   box.classList.remove("hidden");
   box.scrollIntoView({ behavior: "smooth", block: "center" });
 
@@ -1043,7 +1054,7 @@ async function logoutUser() {
     }
 }
 </script>
-
+{{ variants_json|json_script:"product-variants-data" }}
   <script>
     // Thumbnail Swapping Logic
     function changeMainImg(src, clickedThumb) {
@@ -1059,10 +1070,23 @@ async function logoutUser() {
     }
 
     // Color Variant Swapping Logic — driven by variants_json from the view
-    const productVariants = {{ variants_json|safe }};
 
+const rawVariants = JSON.parse(
+    document.getElementById('product-variants-data').textContent
+);
+
+const productVariants =
+    typeof rawVariants === 'string'
+        ? JSON.parse(rawVariants)
+        : rawVariants;
+
+if (!Array.isArray(productVariants)) {
+    console.error('Invalid product variants data:', productVariants);
+}
     function selectVariant(variantId, clickedBtn) {
-      const variant = productVariants.find(v => v.variant_id === variantId);
+     const variant = productVariants.find(
+    v => Number(v.variant_id) === Number(variantId)
+);
       if (!variant) return;
 
       const variantIdInput = document.getElementById('selectedVariantId');
@@ -1114,19 +1138,10 @@ if (buyBtn) {
   buyBtn.href = buyUrl.toString();
 }
 
-      // Out-of-stock messaging
-      const addToCartBtn = document.getElementById('addToCartBtn');
-      if (addToCartBtn) {
-        if (variant.stock_quantity <= 0) {
-          addToCartBtn.disabled = true;
-          addToCartBtn.innerText = 'Out Of Stock';
-          addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        } else {
-          addToCartBtn.disabled = false;
-          addToCartBtn.innerText = 'Add To Cart';
-          addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
-      }
+      // Note: stock is tracked once per product now, not per color variant,
+      // so the Buy Now button's out-of-stock state doesn't change when
+      // switching colors — it's set once from product.stock_quantity on
+      // page load and stays put.
     }
 
     // Accordion Logic
@@ -1169,9 +1184,16 @@ if (buyBtn) {
       }
     }
   });
-  </script>
+  const buyNowBtn = document.getElementById("buyNowBtn");
 
-  <script>
+if (buyNowBtn && {{ product.stock_quantity|default:0 }} <= 0) {
+    buyNowBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    });
+}
+  </script>
+<script>
 (function () {
   const SUGGEST_URL = "{% url 'user:search_suggest' %}";
   const CATALOGUE_URL = "{% url 'user:catalogue' %}";
@@ -1206,34 +1228,110 @@ if (buyBtn) {
     let currentController = null;
 
     function renderSuggestions(results, query) {
-      if (results.length === 0) {
-        dropdown.innerHTML = `<div class="p-4 text-center text-xs text-gray-400">No results for "${query}"</div>`;
+    dropdown.replaceChildren();
+
+    if (!results.length) {
+        const empty = document.createElement('div');
+        empty.className = 'p-4 text-center text-xs text-gray-400';
+        empty.textContent = `No results for "${query}"`;
+
+        dropdown.appendChild(empty);
         dropdown.classList.remove('hidden');
         return;
-      }
-
-      const items = results.map(p => `
-  <a href="/product/${p.slug}/${p.variant_id ? '?variant=' + p.variant_id : ''}" class="flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] hover:bg-[#fff8f4] transition-colors border-b border-gray-100 last:border-0">
-          ${p.thumbnail
-            ? `<img src="${p.thumbnail}" alt="${p.name}" class="w-10 h-12 object-cover rounded bg-gray-100 shrink-0">`
-            : `<div class="w-10 h-12 rounded bg-gray-100 shrink-0"></div>`}
-          <div class="min-w-0">
-            <div class="text-[13px] font-semibold truncate text-[#4a0c16]">${p.name}</div>
-            <div class="text-[11px] text-[#810820]/70">${p.category}</div>
-          </div>
-          <div class="ml-auto text-xs font-bold text-[#810820] whitespace-nowrap">₹${Math.round(p.price).toLocaleString('en-IN')}</div>
-        </a>
-      `).join('');
-
-      const viewAll = `
-        <a href="${CATALOGUE_URL}?q=${encodeURIComponent(query)}"
-           class="block text-center py-2.5 text-xs font-bold text-[#810820] border-t border-[#e7c27a]/30 hover:bg-[#fff8f4] transition-colors">
-          View all results for "${query}" →
-        </a>`;
-
-      dropdown.innerHTML = items + viewAll;
-      dropdown.classList.remove('hidden');
     }
+
+    results.forEach(p => {
+        const link = document.createElement('a');
+
+        link.className =
+            'flex items-center gap-3 px-3.5 py-2.5 text-[#4a0c16] ' +
+            'hover:bg-[#fff8f4] transition-colors border-b ' +
+            'border-gray-100 last:border-0';
+
+        // Build URL from the known product route.
+        const slug = String(p.slug ?? '');
+        const variantId =
+            p.variant_id != null ? String(p.variant_id) : '';
+
+        link.href =
+            `/product/${encodeURIComponent(slug)}` +
+            (variantId
+                ? `?variant=${encodeURIComponent(variantId)}`
+                : '');
+
+        // Product image
+        if (p.thumbnail) {
+            const img = document.createElement('img');
+
+            img.src = String(p.thumbnail);
+            img.alt = String(p.name ?? '');
+            img.className =
+                'w-10 h-12 object-cover rounded bg-gray-100 shrink-0';
+            img.loading = 'lazy';
+
+            link.appendChild(img);
+        } else {
+            const placeholder = document.createElement('div');
+
+            placeholder.className =
+                'w-10 h-12 rounded bg-gray-100 shrink-0';
+
+            link.appendChild(placeholder);
+        }
+
+        // Product information
+        const info = document.createElement('div');
+        info.className = 'min-w-0';
+
+        const name = document.createElement('div');
+        name.className =
+            'text-[13px] font-semibold truncate text-[#4a0c16]';
+        name.textContent = String(p.name ?? '');
+
+        const category = document.createElement('div');
+        category.className =
+            'text-[11px] text-[#810820]/70';
+        category.textContent = String(p.category ?? '');
+
+        info.append(name, category);
+
+        // Price
+        const price = document.createElement('div');
+        price.className =
+            'ml-auto text-xs font-bold text-[#810820] whitespace-nowrap';
+
+        const numericPrice = Number(p.price);
+
+        price.textContent =
+            `₹${
+                Number.isFinite(numericPrice)
+                    ? Math.round(numericPrice).toLocaleString('en-IN')
+                    : '—'
+            }`;
+
+        link.append(info, price);
+
+        dropdown.appendChild(link);
+    });
+
+    // View all results
+    const viewAll = document.createElement('a');
+
+    viewAll.href =
+        `${CATALOGUE_URL}?q=${encodeURIComponent(query)}`;
+
+    viewAll.className =
+        'block text-center py-2.5 text-xs font-bold ' +
+        'text-[#810820] border-t border-[#e7c27a]/30 ' +
+        'hover:bg-[#fff8f4] transition-colors';
+
+    viewAll.textContent =
+        `View all results for "${query}" →`;
+
+    dropdown.appendChild(viewAll);
+
+    dropdown.classList.remove('hidden');
+}
 
     input.addEventListener('input', function () {
       const query = this.value.trim();
@@ -1279,6 +1377,7 @@ if (buyBtn) {
   setupSearchWidget('mobileDrawerSearchInput', 'mobileDrawerSearchSuggestions');
 })();
 </script>
+
 
 </body>
 

@@ -369,7 +369,7 @@
                     <h4 class="text-md font-semibold text-slate-800 dark:text-white flex items-center gap-2">
                         <i class="ph ph-images text-brand-maroon"></i> Customer Photos (Slide 2 Slider)
                     </h4>
-                    <span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded">Drag to reorder</span>
+            
                 </div>
                 <p class="text-xs text-slate-500 mb-4">Upload and manage the sliding photos of customers and memories.</p>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="memoryImagesContainer">
@@ -639,27 +639,66 @@
     const MEMORIES_OFFER_SLIDE_URL = "{% url 'adm_user:save_memories_offer_slide' %}";
     const MEMORIES_SLIDE3_URL = "{% url 'adm_user:save_memories_slide3' %}";
 
-    function getCSRFToken() {
-        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+ function getCSRFToken() {
+    const token = document.querySelector('[name=csrfmiddlewaretoken]');
+
+    if (!token) {
+        throw new Error('CSRF token not found. Please reload the page.');
     }
 
-    function saveMemoriesOfferSlide() {
-        const form = document.getElementById('memoriesOfferSlideForm');
-        const fd = new FormData(form);
-        fd.append('csrfmiddlewaretoken', getCSRFToken());
-        fetch(MEMORIES_OFFER_SLIDE_URL, { method: 'POST', body: fd })
-            .then(r => r.json())
-            .then(data => {
-                if (data.saved) {
-                    if (typeof showToast === 'function') showToast('Sweet Memories Slide 2 saved!', 'success');
-                    else alert('Sweet Memories Slide 2 saved successfully!');
-                } else {
-                    alert('Error: ' + (data.error || 'Unknown error'));
-                }
-            })
-            .catch(() => alert('Network error. Please try again.'));
+    return token.value;
+}
+
+    function showToast(message, type = 'success') {
+    // Remove existing toast
+    const existingToast = document.getElementById('websiteBuilderToast');
+
+    if (existingToast) {
+        existingToast.remove();
     }
 
+    const toast = document.createElement('div');
+
+    toast.id = 'websiteBuilderToast';
+
+    const isError = type === 'error';
+
+    toast.className = `
+        fixed top-5 right-5 z-[9999]
+        flex items-center gap-3
+        px-5 py-3
+        rounded-xl
+        shadow-lg
+        text-sm font-medium
+        text-white
+        transition-all duration-300
+        ${isError ? 'bg-red-600' : 'bg-green-600'}
+    `;
+
+    toast.innerHTML = `
+        <i class="ph ${isError ? 'ph-x-circle' : 'ph-check-circle'} text-xl"></i>
+        <span>${message}</span>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Small entrance animation
+    requestAnimationFrame(() => {
+        toast.classList.add('translate-x-0', 'opacity-100');
+    });
+
+    // Automatically remove after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-x-3');
+
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+
+    }, 3000);
+}
+
+ 
     function saveMemoriesSlide3() {
         const form = document.getElementById('memoriesSlide3Form');
         const fd = new FormData(form);
@@ -740,37 +779,109 @@
         }
     });
 
-    async function postSection(url, root, silent) {
-        if (!root) return { ok: true };
-        const formData = new FormData();
-        root.querySelectorAll('input[name], textarea[name]').forEach(el => {
-            if (el.type === 'file') return;
-            if (el.type === 'radio' && !el.checked) return;
+async function postSection(url, root, silent = false) {
+    if (!root) {
+        const errMsg = 'Section is missing from the page.';
+
+        if (!silent) {
+            alert(errMsg);
+        }
+
+        return {
+            ok: false,
+            error: errMsg
+        };
+    }
+
+    let formData;
+
+    if (root instanceof HTMLFormElement) {
+        // Actual <form>
+        formData = new FormData(root);
+
+    } else {
+        // Editor container such as Hero slides
+        formData = new FormData();
+
+        root.querySelectorAll(
+            'input[name], textarea[name], select[name]'
+        ).forEach(el => {
+
+            // Files are handled separately below
+            if (el.type === 'file') {
+                return;
+            }
+
+            // Don't send unchecked radio/checkbox values
+            if (
+                (el.type === 'radio' || el.type === 'checkbox') &&
+                !el.checked
+            ) {
+                return;
+            }
+
             formData.append(el.name, el.value);
         });
-        root.querySelectorAll('input[type=file][name]').forEach(el => {
-            if (el.files[0]) formData.append(el.name, el.files[0]);
+
+        // Add all selected files
+        root.querySelectorAll(
+            'input[type="file"][name]'
+        ).forEach(el => {
+
+            Array.from(el.files).forEach(file => {
+                formData.append(el.name, file);
+            });
+        });
+    }
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: formData
         });
 
-        try {
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'X-CSRFToken': getCSRFToken() },
-                body: formData,
-            });
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) {
-                const errMsg = data.error || `Server error (HTTP ${res.status})`;
-                if (!silent) alert(errMsg);
-                return { ok: false, error: errMsg };
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            const errorMessage =
+                data.error ||
+                `Server error (HTTP ${response.status})`;
+
+            if (!silent) {
+                alert(errorMessage);
             }
-            return { ok: true };
-        } catch (err) {
-            const errMsg = err.message || 'Network connectivity error';
-            if (!silent) alert(errMsg);
-            return { ok: false, error: errMsg };
+
+            return {
+                ok: false,
+                error: errorMessage
+            };
         }
+
+        return {
+            ok: true,
+            data: data
+        };
+
+    } catch (error) {
+        console.error('postSection error:', error);
+
+        const errorMessage =
+            error.message ||
+            'Network connectivity error. Please try again.';
+
+        if (!silent) {
+            alert(errorMessage);
+        }
+
+        return {
+            ok: false,
+            error: errorMessage
+        };
     }
+}
 
     async function saveWebsiteChanges(clickEvent) {
         const jobs = [
@@ -825,51 +936,195 @@
         }
     }
 
-    async function handleMemoryImages(input) {
-        if (!input.files || input.files.length === 0) return;
+  async function handleMemoryImages(input) {
+    if (!input.files || input.files.length === 0) {
+        return;
+    }
 
-        const formData = new FormData();
-        Array.from(input.files).forEach(file => formData.append('images', file));
+    const files = Array.from(input.files);
 
-        const res = await fetch(MEMORY_IMAGES_URL, {
-            method: 'POST',
-            headers: { 'X-CSRFToken': getCSRFToken() },
-            body: formData,
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-            alert(data.error || 'Upload failed.');
+    // Frontend limits
+    const MAX_FILES = 20;
+    const MAX_SIZE = 10 * 1024 * 1024; // 10 MB per image
+    const ALLOWED_TYPES = [
+        'image/jpeg',
+        'image/png',
+        'image/webp'
+    ];
+
+    // Check number of files
+    if (files.length > MAX_FILES) {
+        alert(`You can upload a maximum of ${MAX_FILES} images at once.`);
+        input.value = '';
+        return;
+    }
+
+    // Validate every file before uploading
+    for (const file of files) {
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            alert(
+                `Invalid image type:\n\n${file.name}\n\n` +
+                `Allowed formats: JPG, PNG, WebP`
+            );
+            input.value = '';
             return;
         }
 
-        const container = document.getElementById('memoryImagesContainer');
+        if (file.size > MAX_SIZE) {
+            alert(
+                `Image is too large:\n\n${file.name}\n\n` +
+                `Maximum size is 10 MB per image.`
+            );
+            input.value = '';
+            return;
+        }
+    }
+
+    const formData = new FormData();
+
+    files.forEach(file => {
+        formData.append('images', file);
+    });
+
+    // Prevent accidental double uploads
+    input.disabled = true;
+
+    try {
+        const response = await fetch(MEMORY_IMAGES_URL, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: formData
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(
+                data.error ||
+                `Upload failed (HTTP ${response.status})`
+            );
+        }
+
+        const container =
+            document.getElementById('memoryImagesContainer');
+
+        if (!container) {
+            throw new Error('Gallery container not found.');
+        }
+
         (data.created || []).forEach(img => {
             const html = `
-                <div class="aspect-[3/4] rounded-xl bg-slate-200 relative group overflow-hidden shadow-sm" data-memory-id="${img.id}">
-                    <img src="${img.url}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-slate-900/60 hidden group-hover:flex items-center justify-center backdrop-blur-sm transition-all">
-                        <button type="button" onclick="deleteMemoryImage(${img.id}, this)" class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="ph ph-trash"></i></button>
+                <div
+                    class="aspect-[3/4] rounded-xl bg-slate-200
+                           relative group overflow-hidden shadow-sm"
+                    data-memory-id="${img.id}"
+                >
+                    <img
+                        src="${img.url}"
+                        alt="Memory image"
+                        class="w-full h-full object-cover"
+                        loading="lazy"
+                    >
+
+                    <div
+                        class="absolute inset-0 bg-slate-900/60
+                               hidden group-hover:flex
+                               items-center justify-center
+                               backdrop-blur-sm transition-all"
+                    >
+                        <button
+                            type="button"
+                            onclick="deleteMemoryImage(${img.id}, this)"
+                            class="w-8 h-8 rounded-full bg-white
+                                   text-red-500 flex items-center
+                                   justify-center hover:scale-110
+                                   transition-transform"
+                            aria-label="Delete image"
+                        >
+                            <i class="ph ph-trash"></i>
+                        </button>
                     </div>
                 </div>
             `;
+
             container.insertAdjacentHTML('beforeend', html);
         });
 
+        if (typeof showToast === 'function') {
+            showToast('Images uploaded successfully!', 'success');
+        }
+
+    } catch (error) {
+        console.error('Memory image upload error:', error);
+
+        alert(
+            error.message ||
+            'Image upload failed. Please try again.'
+        );
+
+    } finally {
+        input.disabled = false;
         input.value = '';
     }
-
-    async function deleteMemoryImage(id, btn) {
-        if (!confirm('Delete this photo?')) return;
-        const res = await fetch(`${MEMORY_IMAGES_URL}${id}/`, {
-            method: 'DELETE',
-            headers: { 'X-CSRFToken': getCSRFToken() },
-        });
-        if (res.ok) {
-            btn.closest('[data-memory-id]').remove();
-        } else {
-            alert('Delete failed.');
-        }
+}
+async function deleteMemoryImage(id, btn) {
+    if (!confirm('Delete this photo?')) {
+        return;
     }
+
+    if (!id || !btn) {
+        alert('Invalid image selected.');
+        return;
+    }
+
+    // Prevent double-click deletion
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(
+            `${MEMORY_IMAGES_URL}${id}/`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                }
+            }
+        );
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(
+                data.error ||
+                `Delete failed (HTTP ${response.status})`
+            );
+        }
+
+        const imageElement =
+            btn.closest('[data-memory-id]');
+
+        if (imageElement) {
+            imageElement.remove();
+        }
+
+        if (typeof showToast === 'function') {
+            showToast('Image deleted successfully!', 'success');
+        }
+
+    } catch (error) {
+        console.error('Memory image delete error:', error);
+
+        alert(
+            error.message ||
+            'Failed to delete image. Please try again.'
+        );
+
+        // Re-enable button if deletion failed
+        btn.disabled = false;
+    }
+}
 
     function addOfferField() {
         const container = document.getElementById('offerBarContainer');
@@ -883,12 +1138,25 @@
         container.insertAdjacentHTML('beforeend', html);
     }
 
-    async function saveNewOfferItem(checkBtn) {
-        const row = checkBtn.parentElement;
-        const input = row.querySelector('input[type=text]');
-        const text = input.value.trim();
-        if (!text) return;
+async function saveNewOfferItem(checkBtn) {
+    const row = checkBtn.parentElement;
+    const input = row.querySelector('input[type=text]');
 
+    if (!input) {
+        alert('Offer input not found.');
+        return;
+    }
+
+    const text = input.value.trim();
+
+    if (!text) {
+        input.focus();
+        return;
+    }
+
+    checkBtn.disabled = true;
+
+    try {
         const res = await fetch(OFFER_ITEMS_URL, {
             method: 'POST',
             headers: {
@@ -897,35 +1165,123 @@
             },
             body: JSON.stringify({ text }),
         });
+
         const data = await res.json().catch(() => ({}));
+
         if (!res.ok) {
-            alert(data.error || 'Could not add offer.');
-            return;
+            throw new Error(
+                data.error || 'Could not add offer.'
+            );
+        }
+
+        if (!data.id) {
+            throw new Error('Server did not return an offer ID.');
         }
 
         row.setAttribute('data-offer-id', data.id);
+
         checkBtn.remove();
+
         const deleteBtn = row.querySelector('button');
-        deleteBtn.setAttribute('onclick', `deleteOfferItem(${data.id}, this)`);
+
+        if (deleteBtn) {
+            deleteBtn.setAttribute(
+                'onclick',
+                `deleteOfferItem(${data.id}, this)`
+            );
+        }
+
+        showToast('Offer added successfully!', 'success');
+
+    } catch (error) {
+        console.error('Save offer error:', error);
+
+        alert(
+            error.message ||
+            'Could not add offer. Please try again.'
+        );
+
+        checkBtn.disabled = false;
+    }
+}
+
+
+async function deleteOfferItem(id, btn) {
+    if (!id || !btn) {
+        alert('Invalid offer selected.');
+        return;
     }
 
-    async function deleteOfferItem(id, btn) {
-        const res = await fetch(`${OFFER_ITEMS_URL}${id}/`, {
-            method: 'DELETE',
-            headers: { 'X-CSRFToken': getCSRFToken() },
-        });
-        if (res.ok) {
-            btn.closest('[data-offer-id]').remove();
+    if (!confirm('Delete this offer?')) {
+        return;
+    }
+
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(
+            `${OFFER_ITEMS_URL}${id}/`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCSRFToken(),
+                },
+            }
+        );
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+            throw new Error(
+                data.error || 'Delete failed.'
+            );
+        }
+
+        const row = btn.closest('[data-offer-id]');
+
+        if (row) {
+            row.remove();
+        }
+
+        showToast('Offer deleted successfully!', 'success');
+
+    } catch (error) {
+        console.error('Delete offer error:', error);
+
+        alert(
+            error.message ||
+            'Delete failed. Please try again.'
+        );
+
+        btn.disabled = false;
+    }
+}
+
+async function saveMemoriesOfferSlide() {
+    const form = document.getElementById('memoriesOfferSlideForm');
+
+    if (!form) {
+        alert('Memories Offer Slide form not found.');
+        return;
+    }
+
+    const result = await postSection(
+        MEMORIES_OFFER_SLIDE_URL,
+        form,
+        false
+    );
+
+    if (result.ok) {
+        if (typeof showToast === 'function') {
+            showToast(
+                'Sweet Memories Offer Slide saved successfully!',
+                'success'
+            );
         } else {
-            alert('Delete failed.');
+            alert('Sweet Memories Offer Slide saved successfully!');
         }
     }
-
-    async function saveMemoriesOfferSlide() {
-        const form = document.getElementById('memoriesOfferSlideForm');
-        const ok = await postSection('/adm/website-builder/save/memories-offer-slide/', form, false);
-        if (ok) alert('Sweet Memories Slide 1 - 3 Offer Frame Cards saved successfully!');
-    }
+}
 
     async function saveMemoriesSection() {
         const form = document.getElementById('memoriesSectionForm');
@@ -936,7 +1292,7 @@
     /* --------------------------------------------------
        SIGNATURE CATEGORIES JS MANAGEMENT
        -------------------------------------------------- */
-    const SIG_CAT_API = '/adm/website-builder/signature-categories/';
+    {% comment %} const SIG_CAT_API = '/adm/website-builder/signature-categories/';
 
     function editSigCategory(id, name, badgeText, originCraft, whatsappLink) {
         document.getElementById('sigCatId').value = id;
@@ -988,6 +1344,6 @@
         } else {
             alert('Failed to delete category.');
         }
-    }
+    } {% endcomment %}
 </script>
 {% endblock %}

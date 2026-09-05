@@ -30,13 +30,46 @@ logger = logging.getLogger(__name__)
 
 FORM_TEMPLATE = "adm_user/products.html"
 
-ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
-MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
-ALLOWED_IMAGE_FORMATS = {"JPEG", "PNG", "WEBP"}
 
-# WEBSITE BUILDER
-MAX_IMAGE_SIZE_MB = 25  
-MAX_MEMORY_IMAGES = 20  
+# ============================================================
+# PRODUCTION IMAGE VALIDATION
+# ============================================================
+
+ALLOWED_IMAGE_TYPES = {
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+}
+
+ALLOWED_IMAGE_FORMATS = {
+    "JPEG",
+    "PNG",
+    "WEBP",
+}
+
+# Product/signature images
+MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5 MB
+
+# Website builder images
+MAX_IMAGE_SIZE_MB = 25
+MAX_BUILDER_IMAGE_SIZE = MAX_IMAGE_SIZE_MB * 1024 * 1024
+
+# Maximum decoded image dimensions
+MAX_IMAGE_WIDTH = 8000
+MAX_IMAGE_HEIGHT = 8000
+
+# Maximum decoded pixels
+MAX_IMAGE_PIXELS = 40_000_000  # 40 megapixels
+
+MAX_MEMORY_IMAGES = 20
+
+# ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
+# MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
+# ALLOWED_IMAGE_FORMATS = {"JPEG", "PNG", "WEBP"}
+
+# # WEBSITE BUILDER
+# MAX_IMAGE_SIZE_MB = 25  
+# MAX_MEMORY_IMAGES = 20  
 
 def dashboard(request):
     return render(request, 'adm_user/dashboard.html')
@@ -555,25 +588,108 @@ def products(request):
     context.update(_product_form_context())
     return render(request, FORM_TEMPLATE, context)
 
-def _validate_image(file_obj):
-    """Pure validation, no storage writes. Raises ValueError on bad input."""
-    if file_obj.content_type not in ALLOWED_IMAGE_TYPES:
-        raise ValueError("Only JPEG, PNG, or WEBP images are allowed.")
-    if file_obj.size > MAX_IMAGE_SIZE:
-        raise ValueError("Image files must be under 5MB.")
+def _validate_image(file_obj, max_size=MAX_IMAGE_SIZE):
+    """
+    Production-safe image validation.
 
+    Validates:
+    - declared MIME type
+    - file size
+    - actual image contents
+    - actual image format
+    - image dimensions
+    - total decoded pixels
+
+    Does NOT write anything to storage.
+    """
+
+    if not file_obj:
+        raise ValueError("No image file was provided.")
+
+    # --------------------------------------------------------
+    # 1. MIME type
+    # --------------------------------------------------------
+    content_type = (getattr(file_obj, "content_type", "") or "").lower()
+
+    if content_type not in ALLOWED_IMAGE_TYPES:
+        raise ValueError(
+            "Only JPEG, PNG, or WEBP images are allowed."
+        )
+
+    # --------------------------------------------------------
+    # 2. File size
+    # --------------------------------------------------------
+    if file_obj.size > max_size:
+        max_mb = max_size / (1024 * 1024)
+
+        raise ValueError(
+            f"Image files must be under {max_mb:g}MB."
+        )
+
+    # --------------------------------------------------------
+    # 3. Verify actual image contents
+    # --------------------------------------------------------
     try:
-        img = Image.open(file_obj)
-        img.verify()
-    except (UnidentifiedImageError, OSError):
-        raise ValueError("Only JPEG, PNG, or WEBP images are allowed.")
+        file_obj.seek(0)
 
-    file_obj.seek(0)
-    img = Image.open(file_obj)
-    if img.format not in ALLOWED_IMAGE_FORMATS:
-        raise ValueError("Only JPEG, PNG, or WEBP images are allowed.")
+        image = Image.open(file_obj)
 
-    file_obj.seek(0)
+        # Force Pillow to verify the image structure.
+        image.verify()
+
+        file_obj.seek(0)
+
+        # Re-open because verify() invalidates the image object.
+        image = Image.open(file_obj)
+
+        actual_format = image.format
+
+        # ----------------------------------------------------
+        # 4. Verify actual format
+        # ----------------------------------------------------
+        if actual_format not in ALLOWED_IMAGE_FORMATS:
+            raise ValueError(
+                "Only JPEG, PNG, or WEBP images are allowed."
+            )
+
+        # ----------------------------------------------------
+        # 5. Dimension validation
+        # ----------------------------------------------------
+        width, height = image.size
+
+        if width <= 0 or height <= 0:
+            raise ValueError("Image dimensions are invalid.")
+
+        if width > MAX_IMAGE_WIDTH:
+            raise ValueError(
+                f"Image width cannot exceed {MAX_IMAGE_WIDTH}px."
+            )
+
+        if height > MAX_IMAGE_HEIGHT:
+            raise ValueError(
+                f"Image height cannot exceed {MAX_IMAGE_HEIGHT}px."
+            )
+
+        # ----------------------------------------------------
+        # 6. Pixel-count protection
+        # ----------------------------------------------------
+        total_pixels = width * height
+
+        if total_pixels > MAX_IMAGE_PIXELS:
+            raise ValueError(
+                "Image resolution is too large. "
+                "Please upload a smaller image."
+            )
+
+    except (UnidentifiedImageError, OSError, SyntaxError):
+        raise ValueError(
+            "The uploaded file is not a valid JPEG, PNG, or WEBP image."
+        )
+
+    finally:
+        file_obj.seek(0)
+        
+
 
 
 def _store_image(file_obj, request=None):
@@ -583,6 +699,18 @@ def _store_image(file_obj, request=None):
     if request is not None and url.startswith("/"):
         url = request.build_absolute_uri(url)
     return url
+
+def _cleanup_files(paths):
+    for path in paths:
+        if not path:
+            continue
+        try:
+            default_storage.delete(path)
+        except Exception:
+            logger.exception(
+                "Failed to clean up uploaded file: %s",
+                path,
+            )
 
 
 def _product_form_context(product=None):
@@ -667,7 +795,6 @@ def _save_product_fields(product, request):
 
 def _save_variants_and_images(product, request):
     color_ids = request.POST.getlist("variant_color_id")
-    stocks = request.POST.getlist("variant_stock")
     prices = request.POST.getlist("variant_price")
     default_image_files = request.FILES.getlist("default_images")
 
@@ -678,8 +805,8 @@ def _save_variants_and_images(product, request):
     }
 
     # ---- PHASE 1: validate everything, write nothing to storage yet ----
-    planned_variants = []  # (color, stock, price, [image_files])
-    for color_id, stock, price in zip(color_ids, stocks, prices):
+    planned_variants = []  # (color, price, [image_files])
+    for color_id, price in zip(color_ids, prices):
         if not color_id:
             continue
         color = colors_by_id.get(color_id)
@@ -690,25 +817,20 @@ def _save_variants_and_images(product, request):
             variant_price = Decimal(price) if price else None
         except InvalidOperation:
             raise ValueError(f"Invalid price for variant color {color.name}.")
-        try:
-            variant_stock = int(stock) if stock else 0
-        except ValueError:
-            raise ValueError(f"Invalid stock quantity for variant color {color.name}.")
 
         image_files = request.FILES.getlist(f"variant_images_{color_id}")
         for f in image_files:
             _validate_image(f)
 
-        planned_variants.append((color, variant_stock, variant_price, image_files))
+        planned_variants.append((color, variant_price, image_files))
 
     for f in default_image_files:
         _validate_image(f)
 
     # ---- PHASE 2: everything validated — safe to save DB rows + write files ----
     kept_variant_ids = []
-    for color, variant_stock, variant_price, image_files in planned_variants:
+    for color, variant_price, image_files in planned_variants:
         variant, _ = ProductVariant.objects.get_or_create(product=product, color=color)
-        variant.stock_quantity = variant_stock
         variant.price = variant_price
         variant.is_active = True
         variant.full_clean()
@@ -968,29 +1090,18 @@ def product_stock_update(request, slug):
  
 def _validate_image_file(f):
     """
-    Validates uploaded image size and verifies format using Pillow with clear user-facing error messages.
-    """
-    file_size_mb = round(f.size / (1024 * 1024), 2)
-    filename = getattr(f, 'name', 'Uploaded image')
+    Website Builder image validation.
 
-    if f.size > MAX_IMAGE_SIZE_MB * 1024 * 1024:
-        raise ValidationError(
-            f"Image '{filename}' is too large ({file_size_mb}MB). Maximum allowed image size is {MAX_IMAGE_SIZE_MB}MB. Please compress or choose a smaller image."
-        )
-    
+    Uses the common image validator but allows the
+    Website Builder's larger 25MB upload limit.
+    """
     try:
-        
-        img = Image.open(f)
-        img.verify()
-        f.seek(0)
-    except Exception:
-        ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
-        allowed = set(get_available_image_extensions()) | {"jpg", "jpeg", "png", "webp", "gif", "bmp", "jfif", "avif", "svg", "blob", ""}
-        if ext not in allowed:
-            raise ValidationError(
-                f"File '{filename}' is not a recognized image format. Please upload a JPG, PNG, or WEBP image."
-            )
- 
+        _validate_image(
+            f,
+            max_size=MAX_BUILDER_IMAGE_SIZE
+        )
+    except ValueError as e:
+        raise ValidationError(str(e))
  
 # ---------------------------------------------------------------------
 # PAGE LOAD
@@ -1029,20 +1140,58 @@ def _save_singleton_text_fields(instance, data, fields):
     instance.save(update_fields=changed_fields or None)
 
 
-def _save_singleton_image(instance, files, field_name):
+def _save_singleton_image(instance, files, field_name, cleanup_files):
     f = files.get(field_name)
+
     if not f:
         return
+
     _validate_image_file(f)
 
     old_file = getattr(instance, field_name)
+    old_file_name = old_file.name if old_file else None
 
     setattr(instance, field_name, f)
-    instance.full_clean(exclude=[fld.name for fld in instance._meta.fields if isinstance(fld, models.ImageField)])
-    instance.save(update_fields=[field_name])
 
-    if old_file and old_file.name != getattr(instance, field_name).name:
-        old_file.delete(save=False)
+    try:
+        instance.full_clean(
+            exclude=[
+                field.name
+                for field in instance._meta.fields
+                if isinstance(field, models.ImageField)
+            ]
+        )
+
+        instance.save(update_fields=[field_name])
+
+        new_file_name = getattr(instance, field_name).name
+
+        # Track the new file so the OUTER transaction can clean it up
+        # if a later operation causes the transaction to roll back.
+        if new_file_name and new_file_name != old_file_name:
+            cleanup_files.append(new_file_name)
+
+        # Old file should only be removed after the DB transaction commits.
+        if old_file_name and old_file_name != new_file_name:
+            transaction.on_commit(
+                lambda old_name=old_file_name:
+                    default_storage.delete(old_name)
+            )
+
+    except Exception:
+        new_file = getattr(instance, field_name)
+
+        if new_file and new_file.name != old_file_name:
+            try:
+                default_storage.delete(new_file.name)
+            except Exception:
+                logger.exception(
+                    "Failed to clean up image after save failure: %s",
+                    new_file.name,
+                )
+
+        setattr(instance, field_name, old_file)
+        raise
 
 # ==========================================
 # WEBSITE BUILDER - HERO BANNER
@@ -1052,9 +1201,12 @@ def _save_singleton_image(instance, files, field_name):
 
 @require_http_methods(["POST"])
 def save_hero_main(request):
+    cleanup_files = []
+
     try:
         with transaction.atomic():
             hero = HeroSlideMain.load()
+
             _save_singleton_text_fields(
                 hero,
                 request.POST,
@@ -1063,46 +1215,122 @@ def save_hero_main(request):
                     "description", "button_1_text", "button_2_text",
                 ],
             )
-            _save_singleton_image(hero, request.FILES, "desktop_image")
-            _save_singleton_image(hero, request.FILES, "mobile_image")
+
+            _save_singleton_image(
+                hero,
+                request.FILES,
+                "desktop_image",
+                cleanup_files,
+            )
+
+            _save_singleton_image(
+                hero,
+                request.FILES,
+                "mobile_image",
+                cleanup_files,
+            )
+
     except ValidationError as e:
+        _cleanup_files(cleanup_files)
         return JsonResponse({"error": " ".join(e.messages)}, status=400)
+
     except Exception:
+        _cleanup_files(cleanup_files)
         logger.exception("Error saving Main Hero Slide")
-        return JsonResponse({"error": "Something went wrong saving the Main Hero Slide."}, status=500)
+        return JsonResponse(
+            {"error": "Something went wrong saving the Main Hero Slide."},
+            status=500,
+        )
+
     return JsonResponse({"saved": True})
  
  
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["POST"])
 def save_hero_image_only(request):
+    cleanup_files = []
+
     try:
         with transaction.atomic():
             hero = HeroSlideImageOnly.load()
-            _save_singleton_image(hero, request.FILES, "desktop_image")
-            _save_singleton_image(hero, request.FILES, "mobile_image")
+
+            _save_singleton_image(
+                hero,
+                request.FILES,
+                "desktop_image",
+                cleanup_files,
+            )
+
+            _save_singleton_image(
+                hero,
+                request.FILES,
+                "mobile_image",
+                cleanup_files,
+            )
+
     except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
-    except Exception as e:
-        logger.exception("Error saving Main Hero Slide 2")
-        return JsonResponse({"error": f"Error saving Image Only Slide: {str(e)}"}, status=500)
-        
+        _cleanup_files(cleanup_files)
+
+        return JsonResponse(
+            {"error": " ".join(e.messages)},
+            status=400,
+        )
+
+    except Exception:
+        _cleanup_files(cleanup_files)
+
+        logger.exception("Error saving Hero Image Only")
+
+        return JsonResponse(
+            {
+                "error": (
+                    "Something went wrong saving the "
+                    "Hero Image Only section."
+                )
+            },
+            status=500,
+        )
+
     return JsonResponse({"saved": True})
- 
  
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["POST"])
 def save_hero_offer(request):
+    cleanup_files = []
+
     try:
         with transaction.atomic():
             hero = HeroSlideOffer.load()
-            _save_singleton_image(hero, request.FILES, "desktop_image")
-            _save_singleton_image(hero, request.FILES, "mobile_image")
+
+            _save_singleton_image(
+                hero,
+                request.FILES,
+                "desktop_image",
+                cleanup_files,
+            )
+
+            _save_singleton_image(
+                hero,
+                request.FILES,
+                "mobile_image",
+                cleanup_files,
+            )
+
     except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
-    except Exception as e:
-        logger.exception("Error saving Main Hero Slide 3")
-        return JsonResponse({"error": f"Error saving Hero Offer Banner: {str(e)}"}, status=500)
+        _cleanup_files(cleanup_files)
+        return JsonResponse(
+            {"error": " ".join(e.messages)},
+            status=400,
+        )
+
+    except Exception:
+        _cleanup_files(cleanup_files)
+        logger.exception("Error saving Hero Offer Banner")
+        return JsonResponse(
+            {"error": "Something went wrong saving the Hero Offer Banner."},
+            status=500,
+        )
+
     return JsonResponse({"saved": True})
  
 
@@ -1116,50 +1344,156 @@ def save_memories_section(request):
     try:
         with transaction.atomic():
             section = SweetMemoriesSection.load()
+
             _save_singleton_text_fields(
                 section,
                 request.POST,
                 ["section_label", "main_heading", "paragraph_text"],
             )
+
     except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+        return JsonResponse(
+            {"error": " ".join(e.messages)},
+            status=400,
+        )
+
+    except Exception:
+        logger.exception("Error saving Sweet Memories section")
+        return JsonResponse(
+            {
+                "error": "Something went wrong saving Sweet Memories section."
+            },
+            status=500,
+        )
+
     return JsonResponse({"saved": True})
- 
  
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["POST"])
 def save_memories_offer_slide(request):
+    cleanup_files = []
+
     try:
         with transaction.atomic():
             slide = MemoriesOfferSlide.load()
+
             _save_singleton_text_fields(
                 slide,
                 request.POST,
                 [
-                    "frame1_title", "frame1_badge", "frame1_ribbon", "frame1_wa_link",
-                    "frame2_title", "frame2_badge", "frame2_ribbon", "frame2_wa_link",
-                    "frame3_title", "frame3_badge", "frame3_ribbon", "frame3_wa_link",
-                ]
+                    "frame1_title",
+                    "frame1_badge",
+                    "frame1_ribbon",
+                    "frame1_wa_link",
+                    "frame2_title",
+                    "frame2_badge",
+                    "frame2_ribbon",
+                    "frame2_wa_link",
+                    "frame3_title",
+                    "frame3_badge",
+                    "frame3_ribbon",
+                    "frame3_wa_link",
+                ],
             )
-            _save_singleton_image(slide, request.FILES, "desktop_image")
-            _save_singleton_image(slide, request.FILES, "mobile_image")
-            _save_singleton_image(slide, request.FILES, "frame1_image")
-            _save_singleton_image(slide, request.FILES, "frame2_image")
-            _save_singleton_image(slide, request.FILES, "frame3_image")
+
+            _save_singleton_image(
+                slide,
+                request.FILES,
+                "desktop_image",
+                cleanup_files,
+            )
+
+            _save_singleton_image(
+                slide,
+                request.FILES,
+                "mobile_image",
+                cleanup_files,
+            )
+
+            _save_singleton_image(
+                slide,
+                request.FILES,
+                "frame1_image",
+                cleanup_files,
+            )
+
+            _save_singleton_image(
+                slide,
+                request.FILES,
+                "frame2_image",
+                cleanup_files,
+            )
+
+            _save_singleton_image(
+                slide,
+                request.FILES,
+                "frame3_image",
+                cleanup_files,
+            )
+
     except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+        _cleanup_files(cleanup_files)
+
+        return JsonResponse(
+            {"error": " ".join(e.messages)},
+            status=400,
+        )
+
+    except Exception:
+        _cleanup_files(cleanup_files)
+
+        logger.exception("Error saving Memories Offer Slide")
+
+        return JsonResponse(
+            {
+                "error": (
+                    "Something went wrong saving the "
+                    "Memories Offer Slide."
+                )
+            },
+            status=500,
+        )
+
     return JsonResponse({"saved": True})
 
 
 @require_http_methods(["POST"])
 def save_memories_slide3(request):
+    cleanup_files = []
+
     try:
         with transaction.atomic():
             slide = MemoriesSlide3.load()
-            _save_singleton_image(slide, request.FILES, "desktop_image")
-            _save_singleton_image(slide, request.FILES, "mobile_image")
+
+            _save_singleton_image(
+                slide,
+                request.FILES,
+                "desktop_image",
+                cleanup_files,
+            )
+
+            _save_singleton_image(
+                slide,
+                request.FILES,
+                "mobile_image",
+                cleanup_files,
+            )
+
     except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+        _cleanup_files(cleanup_files)
+        return JsonResponse(
+            {"error": " ".join(e.messages)},
+            status=400,
+        )
+
+    except Exception:
+        _cleanup_files(cleanup_files)
+        logger.exception("Error saving Memories Slide 3")
+        return JsonResponse(
+            {"error": "Something went wrong saving Memories Slide 3."},
+            status=500,
+        )
+
     return JsonResponse({"saved": True})
 
 
@@ -1171,46 +1505,158 @@ def save_memories_slide3(request):
 @require_http_methods(["GET", "POST"])
 def memory_images(request):
     if request.method == "GET":
-        images = SweetMemoryImage.objects.order_by("display_order")
-        return JsonResponse(
-            {"images": [{"id": i.id, "url": i.image.url, "display_order": i.display_order} for i in images]}
-        )
+        images = SweetMemoryImage.objects.order_by("display_order", "id")
+
+        return JsonResponse({
+            "images": [
+                {
+                    "id": image.id,
+                    "url": image.image.url,
+                    "display_order": image.display_order,
+                }
+                for image in images
+            ]
+        })
 
     uploaded = request.FILES.getlist("images")
-    if not uploaded:
-        return JsonResponse({"error": "No images provided."}, status=400)
 
+    if not uploaded:
+        return JsonResponse(
+            {"error": "No images provided."},
+            status=400,
+        )
+
+    if len(uploaded) > MAX_MEMORY_IMAGES:
+        return JsonResponse(
+            {
+                "error": (
+                    f"You can upload a maximum of "
+                    f"{MAX_MEMORY_IMAGES} images at once."
+                )
+            },
+            status=400,
+        )
+
+    cleanup_files = []
     created = []
+
     try:
         with transaction.atomic():
-            # lock existing rows so a concurrent upload can't read a stale count
-            current_count = SweetMemoryImage.objects.select_for_update().count()
+
+            # Lock existing gallery rows while calculating the next position.
+            existing_images = list(
+                SweetMemoryImage.objects
+                .select_for_update()
+                .order_by("display_order", "id")
+            )
+
+            current_count = len(existing_images)
 
             if current_count + len(uploaded) > MAX_MEMORY_IMAGES:
                 return JsonResponse(
-                    {"error": f"Maximum {MAX_MEMORY_IMAGES} memory images allowed."}, status=400
+                    {
+                        "error": (
+                            f"Maximum {MAX_MEMORY_IMAGES} "
+                            f"memory images allowed."
+                        )
+                    },
+                    status=400,
                 )
 
-            next_order = current_count
+            # Don't use COUNT() as display_order.
+            # Deleted images can leave gaps.
+            if existing_images:
+                next_order = max(
+                    image.display_order
+                    for image in existing_images
+                ) + 1
+            else:
+                next_order = 0
+
+            # Validate ALL files before saving any of them.
             for f in uploaded:
                 _validate_image_file(f)
-                img = SweetMemoryImage(image=f, display_order=next_order)
+
+            # Everything passed validation.
+            for f in uploaded:
+                img = SweetMemoryImage(
+                    image=f,
+                    display_order=next_order,
+                )
+
                 img.full_clean()
                 img.save()
-                created.append({"id": img.id, "url": img.image.url})
-                next_order += 1
-    except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
 
-    return JsonResponse({"created": created}, status=201)
+                # Track the actual storage path so we can
+                # delete it if the outer transaction fails.
+                if img.image and img.image.name:
+                    cleanup_files.append(img.image.name)
+
+                created.append({
+                    "id": img.id,
+                    "url": img.image.url,
+                    "display_order": img.display_order,
+                })
+
+                next_order += 1
+
+    except ValidationError as e:
+        _cleanup_files(cleanup_files)
+
+        return JsonResponse(
+            {"error": " ".join(e.messages)},
+            status=400,
+        )
+
+    except Exception:
+        _cleanup_files(cleanup_files)
+
+        logger.exception("Error uploading Sweet Memories gallery images")
+
+        return JsonResponse(
+            {
+                "error": (
+                    "Something went wrong while uploading "
+                    "the gallery images."
+                )
+            },
+            status=500,
+        )
+
+    return JsonResponse(
+        {"created": created},
+        status=201,
+    )
  
  
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["DELETE"])
 def memory_image_delete(request, pk):
     image = get_object_or_404(SweetMemoryImage, pk=pk)
-    image.image.delete(save=False) 
-    image.delete()
+
+    image_name = image.image.name if image.image else None
+
+    try:
+        with transaction.atomic():
+            image.delete()
+
+            if image_name:
+                transaction.on_commit(
+                    lambda name=image_name: default_storage.delete(name)
+                )
+
+    except Exception:
+        logger.exception(
+            "Error deleting Sweet Memories gallery image: %s",
+            pk,
+        )
+        return JsonResponse(
+            {
+                "error": "Something went wrong deleting the gallery image."
+            },
+            status=500,
+        )
+
     return JsonResponse({"deleted": True})
  
  
@@ -1253,14 +1699,35 @@ def memory_images_reorder(request):
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["POST"])
 def save_header_settings(request):
+    cleanup_files = []
+
     try:
         with transaction.atomic():
             header = HeaderSettings.load()
-            _save_singleton_image(header, request.FILES, "logo")
-    except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
-    return JsonResponse({"saved": True})
 
+            _save_singleton_image(
+                header,
+                request.FILES,
+                "logo",
+                cleanup_files,
+            )
+
+    except ValidationError as e:
+        _cleanup_files(cleanup_files)
+        return JsonResponse(
+            {"error": " ".join(e.messages)},
+            status=400,
+        )
+
+    except Exception:
+        _cleanup_files(cleanup_files)
+        logger.exception("Error saving Header Settings")
+        return JsonResponse(
+            {"error": "Something went wrong saving the Header Settings."},
+            status=500,
+        )
+
+    return JsonResponse({"saved": True})
 # OFFER BAR ITEMS (dynamic list — "Add Another Offer")
 
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
@@ -1348,16 +1815,36 @@ def save_footer_settings(request):
     try:
         with transaction.atomic():
             footer = FooterSettings.load()
+
             _save_singleton_text_fields(
                 footer,
                 request.POST,
                 [
-                    "brand_name", "brand_description", "store_address",
-                    "phone_number", "email", "instagram_link", "whatsapp_number",
+                    "brand_name",
+                    "brand_description",
+                    "store_address",
+                    "phone_number",
+                    "email",
+                    "instagram_link",
+                    "whatsapp_number",
                 ],
             )
+
     except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
+        return JsonResponse(
+            {"error": " ".join(e.messages)},
+            status=400,
+        )
+
+    except Exception:
+        logger.exception("Error saving footer settings")
+        return JsonResponse(
+            {
+                "error": "Something went wrong saving footer settings."
+            },
+            status=500,
+        )
+
     return JsonResponse({"saved": True})
  
 # ==========================================
@@ -1367,23 +1854,49 @@ def save_footer_settings(request):
 # TODO: add @login_required(login_url="adm_user:login") once login/signup is implemented
 @require_http_methods(["POST"])
 def save_about_section(request):
+    cleanup_files = []
+
     try:
         with transaction.atomic():
             about = AboutUsSection.load()
+
             _save_singleton_text_fields(
                 about,
                 request.POST,
                 [
-                    "small_title", "main_heading", "highlight_quote",
-                    "main_paragraph", "ending_signoff",
-                    "floating_top_text", "floating_bottom_text",
+                    "small_title",
+                    "main_heading",
+                    "highlight_quote",
+                    "main_paragraph",
+                    "ending_signoff",
+                    "floating_top_text",
+                    "floating_bottom_text",
                 ],
             )
-            _save_singleton_image(about, request.FILES, "about_image")
-    except ValidationError as e:
-        return JsonResponse({"error": " ".join(e.messages)}, status=400)
-    return JsonResponse({"saved": True})
 
+            _save_singleton_image(
+                about,
+                request.FILES,
+                "about_image",
+                cleanup_files,
+            )
+
+    except ValidationError as e:
+        _cleanup_files(cleanup_files)
+        return JsonResponse(
+            {"error": " ".join(e.messages)},
+            status=400,
+        )
+
+    except Exception:
+        _cleanup_files(cleanup_files)
+        logger.exception("Error saving About Us Section")
+        return JsonResponse(
+            {"error": "Something went wrong saving the About Us section."},
+            status=500,
+        )
+
+    return JsonResponse({"saved": True})
 
 
 # ---------------------------------------------------------------------
@@ -1440,11 +1953,19 @@ ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
 MAX_SIG_IMAGE_SIZE_MB = 5
 
 def validate_image_file(file):
-    if file.content_type not in ALLOWED_IMAGE_TYPES:
-        return "Please upload a JPG, PNG or WEBP image."
-    if file.size > MAX_SIG_IMAGE_SIZE_MB * 1024 * 1024:
-        return f"Image is {file.size / (1024*1024):.1f}MB — max allowed is {MAX_SIG_IMAGE_SIZE_MB}MB."
-    return None
+    """
+    Validate signature-category images using the same
+    production image validation rules.
+    """
+    try:
+        _validate_image(
+            file,
+            max_size=MAX_SIG_IMAGE_SIZE_MB * 1024 * 1024
+        )
+        return None
+
+    except ValueError as e:
+        return str(e)
 
 def parse_display_order(raw_value):
     try:

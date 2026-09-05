@@ -285,65 +285,179 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderAdminSuggestions(container, results, query) {
-        if (!container) return;
+    if (!container) return;
 
-        let html = ``;
+    // Clear existing suggestions safely
+    container.replaceChildren();
 
-        // Matching admin pages
-        const matchingPages = adminPages.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
-        if (matchingPages.length > 0) {
-            html += `
-                <div class="p-2 border-b border-slate-100 dark:border-dark-border">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3">Quick Navigation</span>
-                </div>
-                <div class="p-1">
-            `;
-            matchingPages.slice(0, 3).forEach(page => {
-                html += `
-                    <a href="${page.url}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs font-medium">
-                        <i class="ph ${page.icon} text-base text-brand-maroon dark:text-brand-gold"></i>
-                        <span>${page.name}</span>
-                    </a>
-                `;
-            });
-            html += `</div>`;
-        }
+    // -----------------------------
+    // Matching admin pages
+    // -----------------------------
+    const matchingPages = adminPages.filter(p =>
+        p.name.toLowerCase().includes(query.toLowerCase())
+    );
 
-        if (results.length > 0) {
-            html += `
-                <div class="p-2 border-t border-b border-slate-100 dark:border-dark-border">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3">Matching Products (${results.length})</span>
-                </div>
-                <div class="p-1 divide-y divide-slate-100 dark:divide-dark-border">
-            `;
+    if (matchingPages.length > 0) {
+        const header = document.createElement('div');
+        header.className =
+            'p-2 border-b border-slate-100 dark:border-dark-border';
 
-            results.forEach(p => {
-                html += `
-                    <a href="/adm/products/?search=${encodeURIComponent(p.name)}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-brand-maroon/5 dark:hover:bg-slate-800 transition-colors">
-                        ${p.thumbnail
-                        ? `<img src="${p.thumbnail}" alt="${p.name}" class="w-10 h-10 object-cover rounded-lg bg-slate-100 shrink-0 border border-slate-200 dark:border-slate-700">`
-                        : `<div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0 flex items-center justify-center text-slate-400"><i class="ph ph-image"></i></div>`}
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-white truncate">${p.name}</div>
-                            <div class="text-[10px] text-slate-400">${p.category || 'Product'}</div>
-                        </div>
-                        <div class="text-xs font-bold text-brand-maroon dark:text-brand-gold whitespace-nowrap">₹${Math.round(p.price).toLocaleString('en-IN')}</div>
-                    </a>
-                `;
-            });
+        const headerText = document.createElement('span');
+        headerText.className =
+            'text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3';
+        headerText.textContent = 'Quick Navigation';
 
-            html += `</div>`;
-        }
+        header.appendChild(headerText);
+        container.appendChild(header);
 
-        html += `
-            <a href="/adm/products/?search=${encodeURIComponent(query)}" class="block text-center py-2.5 text-xs font-bold text-brand-maroon dark:text-brand-gold border-t border-slate-100 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                Search all products for "${query}" →
-            </a>
-        `;
+        const pagesWrapper = document.createElement('div');
+        pagesWrapper.className = 'p-1';
 
-        container.innerHTML = html;
-        container.classList.remove('hidden');
+        matchingPages.slice(0, 3).forEach(page => {
+            const link = document.createElement('a');
+
+            link.href = page.url;
+            link.className =
+                'flex items-center gap-3 px-3 py-2 rounded-lg ' +
+                'text-slate-700 dark:text-slate-200 ' +
+                'hover:bg-slate-100 dark:hover:bg-slate-800 ' +
+                'transition-colors text-xs font-medium';
+
+            const icon = document.createElement('i');
+            icon.className =
+                `ph ${page.icon} text-base text-brand-maroon dark:text-brand-gold`;
+
+            const name = document.createElement('span');
+            name.textContent = page.name;
+
+            link.append(icon, name);
+            pagesWrapper.appendChild(link);
+        });
+
+        container.appendChild(pagesWrapper);
     }
+
+    // -----------------------------
+    // Matching products
+    // -----------------------------
+    if (results.length > 0) {
+        const productHeader = document.createElement('div');
+        productHeader.className =
+            'p-2 border-t border-b border-slate-100 dark:border-dark-border';
+
+        const productHeaderText = document.createElement('span');
+        productHeaderText.className =
+            'text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3';
+        productHeaderText.textContent =
+            `Matching Products (${results.length})`;
+
+        productHeader.appendChild(productHeaderText);
+        container.appendChild(productHeader);
+
+        const productsWrapper = document.createElement('div');
+        productsWrapper.className =
+            'p-1 divide-y divide-slate-100 dark:divide-dark-border';
+
+        results.forEach(p => {
+            const link = document.createElement('a');
+
+            link.href =
+                `/adm/products/?search=${encodeURIComponent(
+                    String(p.name ?? '')
+                )}`;
+
+            link.className =
+                'flex items-center gap-3 px-3 py-2.5 ' +
+                'hover:bg-brand-maroon/5 dark:hover:bg-slate-800 ' +
+                'transition-colors';
+
+            // Product image
+            if (p.thumbnail) {
+                const img = document.createElement('img');
+
+                img.src = String(p.thumbnail);
+                img.alt = String(p.name ?? '');
+                img.className =
+                    'w-10 h-10 object-cover rounded-lg bg-slate-100 ' +
+                    'shrink-0 border border-slate-200 dark:border-slate-700';
+                img.loading = 'lazy';
+
+                link.appendChild(img);
+            } else {
+                const placeholder = document.createElement('div');
+
+                placeholder.className =
+                    'w-10 h-10 rounded-lg bg-slate-100 ' +
+                    'dark:bg-slate-800 shrink-0 flex items-center ' +
+                    'justify-center text-slate-400';
+
+                const icon = document.createElement('i');
+                icon.className = 'ph ph-image';
+
+                placeholder.appendChild(icon);
+                link.appendChild(placeholder);
+            }
+
+            // Product information
+            const info = document.createElement('div');
+            info.className = 'min-w-0 flex-1';
+
+            const name = document.createElement('div');
+            name.className =
+                'text-xs font-bold text-slate-800 dark:text-white truncate';
+            name.textContent = String(p.name ?? '');
+
+            const category = document.createElement('div');
+            category.className = 'text-[10px] text-slate-400';
+            category.textContent =
+                String(p.category || 'Product');
+
+            info.append(name, category);
+
+            // Price
+            const price = document.createElement('div');
+            price.className =
+                'text-xs font-bold text-brand-maroon dark:text-brand-gold ' +
+                'whitespace-nowrap';
+
+            const numericPrice = Number(p.price);
+
+            price.textContent = `₹${
+                Number.isFinite(numericPrice)
+                    ? Math.round(numericPrice).toLocaleString('en-IN')
+                    : '—'
+            }`;
+
+            link.append(info, price);
+            productsWrapper.appendChild(link);
+        });
+
+        container.appendChild(productsWrapper);
+    }
+
+    // -----------------------------
+    // Search all products
+    // -----------------------------
+    const searchAllLink = document.createElement('a');
+
+    searchAllLink.href =
+        `/adm/products/?search=${encodeURIComponent(query)}`;
+
+    searchAllLink.className =
+        'block text-center py-2.5 text-xs font-bold ' +
+        'text-brand-maroon dark:text-brand-gold ' +
+        'border-t border-slate-100 dark:border-dark-border ' +
+        'hover:bg-slate-50 dark:hover:bg-slate-800 ' +
+        'transition-colors';
+
+    searchAllLink.textContent =
+        `Search all products for "${query}" →`;
+
+    container.appendChild(searchAllLink);
+
+    // Show dropdown
+    container.classList.remove('hidden');
+}
 
     function setupAdminSearchInput(inputEl, suggestionsContainer) {
         if (!inputEl || !suggestionsContainer) return;

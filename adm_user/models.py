@@ -272,8 +272,7 @@ class Product(SlugMixin, TimeStampedModel):
     )
     stock_quantity = models.PositiveIntegerField(
         default=0,
-        help_text="Fallback stock count, used only if this product has "
-        "no color variants below.",
+        help_text="Total stock quantity available for this product.",
     )
 
     # --- Saree Specifications ---
@@ -348,7 +347,6 @@ class ProductVariant(TimeStampedModel):
         related_name="product_variants",
         on_delete=models.PROTECT,
     )
-    stock_quantity = models.PositiveIntegerField(default=0)
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
