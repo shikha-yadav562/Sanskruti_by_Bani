@@ -134,6 +134,10 @@ class OTPMixin(models.Model):
         return max(0, int(remaining))
 
     def can_resend(self) -> bool:
+        # If the OTP has expired, treat this as a fresh cycle so a maxed-out
+        # resend_count can't lock the user out permanently.
+        if self.is_expired():
+            self.resend_count = 0
         return self.resend_count < self.MAX_RESEND_ATTEMPTS and self.seconds_until_resend_allowed() == 0
 
     def check_otp(self, raw_otp: str) -> bool:

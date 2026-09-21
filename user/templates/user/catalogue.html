@@ -12,7 +12,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
     rel="stylesheet">
 
-  <script src="https://cdn.tailwindcss.com"></script>
+ <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+  
   <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
 
   <!-- Font Awesome for Footer Icons if needed -->
@@ -193,23 +194,36 @@
 
     <div class="mobile-links">
       <a href="{% url 'user:index' %}">Home</a>
-      <div class="mobile-dropdown">
+     <div class="mobile-dropdown">
+
         <div class="mobile-dropdown-head" id="mobileCollectionBtn">
+
           Collections
-          <span class="material-symbols-outlined">expand_more</span>
+
+          <span class="material-symbols-outlined">
+            expand_more
+          </span>
+
         </div>
+
         <div class="mobile-dropdown-body">
-          {% for cat in signature_categories %}
+          {% for cat in categories %}
           <h5>{{ cat.name }}</h5>
           <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore {{ cat.name }}</a>
           {% empty %}
-          <h5>Banarasi</h5><a href="#">Katan Silk</a><a href="#">Organza</a>
-          <h5>Paithani</h5><a href="#">Traditional</a><a href="#">Lotus</a>
-          <h5>Patola</h5><a href="#">Rajkot</a><a href="#">Double Ikat</a>
-          <h5>Bandhani</h5><a href="#">Leheriya</a><a href="#">Gharchola</a>
-          <h5>Kanjivaram</h5><a href="#">Temple Border</a><a href="#">Soft Silk</a>
+          <h5>Banarasi</h5>
+          <a href="{% url 'user:catalogue' %}">Katan Silk</a>
+          <h5>Paithani</h5>
+          <a href="{% url 'user:catalogue' %}">Traditional</a>
+          <h5>Patola</h5>
+          <a href="{% url 'user:catalogue' %}">Rajkot</a>
+          <h5>Bandhani</h5>
+          <a href="{% url 'user:catalogue' %}">Leheriya</a>
+          <h5>Kanjivaram</h5>
+          <a href="{% url 'user:catalogue' %}">Temple Border</a>
           {% endfor %}
         </div>
+
       </div>
       <a href="{% url 'user:catalogue' %}?tag={{ new_arrivals_tag.slug }}">New Arrivals</a>
       <a href="{% url 'user:catalogue' %}?tag={{ bestsellers_tag.slug }}">Bestsellers</a>
@@ -448,7 +462,7 @@
 <a href="{% url 'user:buy_now' product.slug %}" target="_blank" rel="noopener"
   class="w-full bg-[#fff8f4] border border-[#810820] text-[#810820] hover:bg-[#810820] hover:text-[#fff8f4] transition-colors duration-300 py-2 sm:py-3 px-2 text-[10px] sm:text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-1 sm:gap-2">
   <span><i class="fa-brands fa-whatsapp text-lg"></i></span>
-  WhatsApp
+  Buy Now
 </a>
           </div>
         </div>

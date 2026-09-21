@@ -2,7 +2,8 @@ from .models import ProductReview, ReviewHelpful, LoginHistory
 from . import services
 
 from adm_user.models import (AboutUsSection, HeroSlideOffer, HeroSlideMain, HeroSlideImageOnly, HeaderSettings, OfferBarItem, FooterSettings, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, SignatureCategoryItem, Product, ProductImage, SignatureCategoryItem, Color, Fabric, Print,Tag)
-
+import logging
+logger = logging.getLogger(__name__)
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash, get_user_model
 from django.contrib.auth.decorators import login_required
@@ -161,6 +162,7 @@ def product(request, slug):
             "color_name": v.color.name,
             "color_hex": v.color.hex_code,
             "price": str(v.price or product.final_price),
+            "has_price_override": bool(v.price),
             "images": [img.image_url for img in v.images.all()] or [img.image_url for img in default_images],
         }
         for v in variants
@@ -265,7 +267,7 @@ def privacy_policy(request):
         "offer_items": OfferBarItem.objects.all(),
         "footer_settings": FooterSettings.load(),
         "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
-        "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
+        "signature_categories": SignatureCategoryItem.objects.filter(is_active=True),
     }
     return render(request, 'user/privacy_policy.html', context)
 
@@ -324,13 +326,15 @@ def api_login(request: HttpRequest) -> JsonResponse:
             try:
                 failed_account = Account.objects.get(email=username) if '@' in username else Account.objects.get(username=username)
                 if failed_account.is_locked():
-                    lock_mins = int((failed_account.locked_until - timezone.now()).total_seconds() / 60)
                     services.log_login_attempt(request, failed_account, "failed", attempted_identifier=username, failure_reason="Account locked")
-                    return JsonResponse({"error": f"Account locked. Try again in {lock_mins} minutes."}, status=403)
-                services.log_login_attempt(request, failed_account, "failed", attempted_identifier=username, failure_reason="Invalid password")
+                else:
+                    services.log_login_attempt(request, failed_account, "failed", attempted_identifier=username, failure_reason="Invalid password")
             except Account.DoesNotExist:
                 services.log_login_attempt(request, None, "failed", attempted_identifier=username, failure_reason="User not found")
-                
+
+            # Same generic response regardless of whether the account exists,
+            # is locked, or the password was simply wrong -- avoids leaking
+            # account existence or exact unlock timing to the client.
             return JsonResponse({"error": "Invalid credentials provided."}, status=401)
             
     except Exception as e:
@@ -346,7 +350,7 @@ def api_logout(request: HttpRequest) -> JsonResponse:
                 
             logout(request)
             request.session.flush() # Destroy Django Session
-        return JsonResponse({"success": True, "redirect_url": "/login/"})
+        return JsonResponse({"success": True, "redirect_url": "/"})
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
 @transaction.atomic
@@ -430,10 +434,10 @@ def api_forgot_password_init(request: HttpRequest) -> JsonResponse:
         account = Account.objects.get(Q(email=identifier) | Q(username=identifier))
         result = services.initiate_password_reset(account)
         if not result['success']:
-            return JsonResponse({"error": result['message']}, status=429)
+            logger.warning(f"Password reset resend blocked for account id={account.id}: {result['message']}")
     except Account.DoesNotExist:
         pass # Enumeration protection
-        
+
     return JsonResponse({"success": True, "message": "If the account exists, an OTP has been sent."})
 
 def api_forgot_password_verify(request: HttpRequest) -> JsonResponse:
@@ -475,10 +479,10 @@ def api_forgot_username_init(request: HttpRequest) -> JsonResponse:
         account = Account.objects.get(email=email)
         result = services.initiate_username_recovery(account)
         if not result['success']:
-             return JsonResponse({"error": result['message']}, status=429)
+            logger.warning(f"Username recovery resend blocked for account id={account.id}: {result['message']}")
     except Account.DoesNotExist:
         pass # Enumeration protection
-        
+
     return JsonResponse({"success": True, "message": "If the email matches our records, an OTP has been sent."})
 
 def api_forgot_username_verify(request: HttpRequest) -> JsonResponse:
@@ -516,6 +520,9 @@ def api_update_profile(request: HttpRequest) -> JsonResponse:
         
         new_password = data.get('new_password')
         if new_password:
+            current_password = data.get('current_password', '')
+            if not account.check_password(current_password):
+                return JsonResponse({"error": "Current password is incorrect."}, status=400)
             try:
                 validate_password(new_password, account)
                 account.set_password(new_password)
@@ -539,7 +546,16 @@ def api_delete_account(request: HttpRequest) -> JsonResponse:
         
     if request.user.role == Account.Role.ADMIN or request.user.is_superuser:
         return JsonResponse({"error": "Administrator accounts cannot be deleted via this endpoint."}, status=403)
-        
+
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, TypeError):
+        return JsonResponse({"error": "Invalid request body."}, status=400)
+
+    current_password = data.get('current_password', '')
+    if not request.user.check_password(current_password):
+        return JsonResponse({"error": "Current password is incorrect."}, status=400)
+
     account = request.user
     logout(request)
     request.session.flush()
@@ -937,6 +953,15 @@ def catalogue(request):
     )
     
     #----------------WHATSAPP REDIRECT BUY--------------------------
+
+def build_customer_info(user):
+    """Short, WhatsApp-friendly block with the logged-in customer's details."""
+    lines = [f"Name: {user.full_name}"]
+    if user.phone_number:
+        lines.append(f"Phone: {user.phone_number}")
+    lines.append(f"Email: {user.email}")
+    return "\n".join(lines)
+
     
 @login_required(login_url='user:login')
 def buy_now(request, slug):
@@ -969,7 +994,8 @@ def buy_now(request, slug):
     message = f"Hi, I am interested in {product.name}"
     if variant:
         message += f" ({variant.color.name})"
-    message += f". Price: ₹{int(display_price)}. Product Link: {product_url}"
+    message += f".\nPrice: ₹{int(display_price)}\nProduct Link: {product_url}"
+    message += f"\n\nMy details:\n{build_customer_info(request.user)}"
 
     whatsapp_number = getattr(settings, 'WHATSAPP_BUSINESS_NUMBER', '919372471363')
     return redirect(f"https://wa.me/{whatsapp_number}?text={quote(message)}")

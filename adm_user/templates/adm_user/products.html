@@ -117,7 +117,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
     </div>
 
     <form id="addProductForm" method="post" enctype="multipart/form-data"
-        action="{% if product %}{% url 'adm_user:update' product.slug %}{% else %}{% url 'adm_user:create' %}{% endif %}"
+        action="{% if product.pk %}{% url 'adm_user:update' product.slug %}{% else %}{% url 'adm_user:create' %}{% endif %}"
         class="flex flex-col lg:flex-row gap-6">
         {% csrf_token %}
         <!-- Main Form Column -->
@@ -321,6 +321,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
 
                 <!-- Variants Container -->
                 <div id="variantsContainer" class="space-y-4">
+                    {% if product.pk %}
                     {% for v in product.variants.all %}
                     {% if v.is_active %}
                     <div id="var_{{ v.id }}" data-color-id="{{ v.color_id }}"
@@ -388,6 +389,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                     </div>
                     {% endif %}
                     {% endfor %}
+                    {% endif %}
                 </div>
 
                 <div class="mt-6 pt-6 border-t border-slate-100 dark:border-dark-border">
@@ -429,6 +431,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
 
                 <!-- Preview Container -->
                 <div id="defaultImagesPreview" class="flex flex-wrap gap-3 mt-4">
+                    {% if product.pk %}
                     {% for img in product.images.all %}
                     {% if not img.variant_id %}
                     <!-- CHANGED: added id, relative/group/overflow-hidden, and hover-delete button (Bug 2 fix) -->
@@ -445,6 +448,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
                     <!-- END CHANGED -->
                     {% endif %}
                     {% endfor %}
+                    {% endif %}
                 </div>
 
 
@@ -650,7 +654,7 @@ bg-brand-maroon/5 dark:bg-brand-maroon/20 dark:text-brand-gold font-medium trans
         document.getElementById('view-add-product').classList.remove('hidden');
     };
 
-    window.editProductDetailUrl = "{% if product %}{% url 'adm_user:detail' product.slug %}{% endif %}";
+    window.editProductDetailUrl = "{% if product.pk %}{% url 'adm_user:detail' product.slug %}{% endif %}";
     window.productStockUpdateUrlTemplate = "{% url 'adm_user:product_stock_update' '__SLUG__' %}";
     window.productImageDeleteUrlTemplate = "{% url 'adm_user:product_image_delete' '__ID__' %}";
     // CHANGED: URL template for the variant-delete AJAX call (Bug 1 fix)

@@ -1,0 +1,27 @@
+{
+  "name": "sanskruti_by_bani",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tailwindcss -i ./src/input.css -o ./static/css/tailwind.css --watch",
+    "build": "tailwindcss -i ./src/input.css -o ./static/css/tailwind.css --minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shikha-yadav562/Sanskruti_by_Bani.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/shikha-yadav562/Sanskruti_by_Bani/issues"
+  },
+  "homepage": "https://github.com/shikha-yadav562/Sanskruti_by_Bani#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

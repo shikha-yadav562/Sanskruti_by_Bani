@@ -2033,6 +2033,9 @@ def signature_categories_api(request):
 
 @require_http_methods(["POST"])
 def signature_category_edit(request, pk):
+    print("EDIT content-type:", request.content_type)
+    print("EDIT FILES:", list(request.FILES.keys()))
+    print("EDIT POST:", list(request.POST.keys()))
     item = get_object_or_404(SignatureCategoryItem, pk=pk)
 
     if "name" in request.POST:

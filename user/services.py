@@ -111,6 +111,7 @@ def initiate_password_reset(account: Account) -> Dict[str, Any]:
         if not reset_otp.can_resend():
             return {"success": False, "message": "Please wait before requesting a new OTP."}
         reset_otp.resend_count += 1
+        reset_otp.save(update_fields=['resend_count'])
         
     raw_otp = generate_secure_otp()
     reset_otp.set_otp(raw_otp)
@@ -162,6 +163,7 @@ def initiate_username_recovery(account: Account) -> Dict[str, Any]:
         if not recovery_otp.can_resend():
             return {"success": False, "message": "Please wait before requesting a new OTP."}
         recovery_otp.resend_count += 1
+        recovery_otp.save(update_fields=['resend_count'])
         
     raw_otp = generate_secure_otp()
     recovery_otp.set_otp(raw_otp)

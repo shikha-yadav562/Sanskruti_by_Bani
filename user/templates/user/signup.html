@@ -8,9 +8,9 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Poppins:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
     
-    <script>
+    {% comment %} <script>
         tailwind.config = {
             theme: {
                 extend: {
@@ -32,7 +32,7 @@
                 }
             }
         }
-    </script>
+    </script> {% endcomment %}
 </head>
 <body class="h-[100dvh] lg:h-screen overflow-hidden font-sans antialiased text-slate-900 bg-[#2a0109] relative flex items-center justify-center p-4 sm:p-6 md:p-8 selection:bg-[#D4AF37] selection:text-[#540112]">
 

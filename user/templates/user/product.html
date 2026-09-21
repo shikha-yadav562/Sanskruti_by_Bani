@@ -14,7 +14,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
     rel="stylesheet">
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+
   <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1055,6 +1056,12 @@ async function logoutUser() {
 }
 </script>
 {{ variants_json|json_script:"product-variants-data" }}
+<script>
+  const PRODUCT_HAS_DISCOUNT = {% if product.discount_price %}true{% else %}false{% endif %};
+  const PRODUCT_BASE_PRICE = {{ product.base_price|default:0 }};
+  const PRODUCT_FINAL_PRICE = {{ product.final_price|default:0 }};
+  const PRODUCT_DISCOUNT_PERCENT = {{ discount_percent|default:"0" }};
+</script>
   <script>
     // Thumbnail Swapping Logic
     function changeMainImg(src, clickedThumb) {
@@ -1104,14 +1111,27 @@ if (!Array.isArray(productVariants)) {
       clickedBtn.classList.remove('border-transparent');
       clickedBtn.classList.add('border-[#e7c27a]', 'ring-2', 'ring-[#810820]');
 
-      // Update price — variant price overrides replace the base price entirely,
-      // so hide the strike-through / save badge in that case.
       const priceEl = document.getElementById('currentPrice');
       const originalPriceEl = document.getElementById('originalPrice');
       const saveBadgeEl = document.getElementById('saveBadge');
       if (priceEl) priceEl.innerText = '₹' + Math.round(parseFloat(variant.price)).toLocaleString('en-IN');
-      if (originalPriceEl) originalPriceEl.classList.add('hidden');
-      if (saveBadgeEl) saveBadgeEl.classList.add('hidden');
+
+      if (variant.has_price_override) {
+        if (originalPriceEl) originalPriceEl.classList.add('hidden');
+        if (saveBadgeEl) saveBadgeEl.classList.add('hidden');
+      } else if (PRODUCT_HAS_DISCOUNT) {
+        if (originalPriceEl) {
+          originalPriceEl.innerText = '₹' + Math.round(PRODUCT_BASE_PRICE).toLocaleString('en-IN');
+          originalPriceEl.classList.remove('hidden');
+        }
+        if (saveBadgeEl) {
+          saveBadgeEl.innerText = 'Save ' + PRODUCT_DISCOUNT_PERCENT + '%';
+          saveBadgeEl.classList.remove('hidden');
+        }
+      } else {
+        if (originalPriceEl) originalPriceEl.classList.add('hidden');
+        if (saveBadgeEl) saveBadgeEl.classList.add('hidden');
+      }
 
       // Update gallery — swap thumbnails + main image to this variant's images
       const rail = document.getElementById('thumbnailRail');

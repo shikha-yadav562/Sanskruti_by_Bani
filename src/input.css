@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@import "../user/static/user/css/style.css" layer(components);;
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-brand-maroon: #71041a;
+    --color-brand-maroonLight: #9b0b28;
+    --color-brand-maroonDark: #4a0210;
+    --color-brand-gold: #e7c27a;
+    --color-brand-ivory: #fff8f4;
+
+    --color-dark-bg: #0f172a;
+    --color-dark-panel: #1e293b;
+    --color-dark-border: #334155;
+
+    --font-sans: Inter, system-ui, sans-serif;
+    --font-serif: Cinzel, serif;
+    --font-poppins: Poppins, sans-serif;
+}
+
+@source "../adm_user/templates";
+@source "..user/templates";

@@ -8,7 +8,7 @@
     {% load static %}
 
     <!-- Tailwind CSS (CDN for simple setup) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+   <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
 
     <!-- Phosphor Icons (Huge, Premium Icons) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -19,7 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
     <!-- Tailwind Configuration -->
-    <script>
+    {% comment %} <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -45,7 +45,7 @@
                 }
             }
         }
-    </script>
+    </script> {% endcomment %}
 </head>
 
 <body
@@ -209,12 +209,12 @@
                     </button>
 
                     <!-- Notifications -->
-                    <button
+                    {% comment %} <button
                         class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-maroon transition-colors">
                         <i class="ph ph-bell text-lg sm:text-xl"></i>
                         <span
                             class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
-                    </button>
+                    </button> {% endcomment %}
                 </div>
             </header>
 

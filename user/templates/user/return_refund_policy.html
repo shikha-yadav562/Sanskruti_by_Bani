@@ -14,8 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- TAILWIND -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
+  <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
   <!-- MAIN CSS -->
   <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
 </head>
@@ -67,7 +66,7 @@
 
       <nav class="menu right-menu">
         <div class="dropdown">
-          <a href="{% url 'user:catalogue' %}" class="mega-link">
+          <a href="#">
             Collections
             <span class="material-symbols-outlined arrow">expand_more</span>
           </a>

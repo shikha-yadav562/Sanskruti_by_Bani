@@ -30,10 +30,9 @@ class EnterpriseAuthBackend(ModelBackend):
             account.reset_failed_logins()
             return account
         else:
-            if account.role != Account.Role.ADMIN and not account.is_superuser:
-                account.register_failed_login()
-                if account.is_locked():
-                    logger.warning(f"Account locked due to consecutive failed attempts: {username}")
+            account.register_failed_login()
+            if account.is_locked():
+                logger.warning(f"Account locked due to consecutive failed attempts: {username}")
             return None
 
     def get_user(self, user_id: Any) -> Optional[Any]:
