@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Terms & Conditions - Sanskruti by Bani</title>
-  {% load static %}
+<title>Terms & Conditions - Sanskruti by Bani</title>
+<meta name="description" content="Terms and conditions for shopping at Sanskruti by Bani — order policies, payment terms, and usage guidelines.">
+<link rel="canonical" href="{{ canonical_url }}">
+{% load static %}
   
   <!-- GOOGLE FONTS -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -75,8 +75,8 @@
             {% for cat in signature_categories %}
             <div class="mega-col">
               <h4>{{ cat.name }}</h4>
-              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore Sarees</a>
-              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}&tag=new-arrival">New Arrivals</a>
+              <a href="{% url 'user:catalogue_category' cat.slug %}">Explore Sarees</a>
+              <a href="{% url 'user:catalogue_category' cat.slug %}?tag=new-arrival">New Arrivals</a>
             </div>
             {% empty %}
             <div class="mega-col">
@@ -207,7 +207,7 @@
         <div class="mobile-dropdown-body">
           {% for cat in signature_categories %}
           <h5>{{ cat.name }}</h5>
-          <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore {{ cat.name }}</a>
+          <a href="{% url 'user:catalogue_category' cat.slug %}">Explore {{ cat.name }}</a>
           {% empty %}
           <h5>Banarasi</h5>
           <a href="{% url 'user:catalogue' %}">Katan Silk</a>
@@ -462,7 +462,7 @@
         <h3>Collections</h3>
 
         {% for cat in signature_categories %}
-        <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">{{ cat.name }} Sarees</a>
+        <a href="{% url 'user:catalogue_category' cat.slug %}">{{ cat.name }} Sarees</a>
         {% endfor %}
 
       </div>

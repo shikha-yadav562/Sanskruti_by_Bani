@@ -2,10 +2,21 @@
 <html lang="en">
 
 <head>
+  {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sanskruti by Bani - Collections</title>
-  {% load static %}
+
+  <title>{{ page_title|default:"Sanskruti by Bani - Collections" }}</title>
+  <meta name="description" content="{{ page_description|default:'Browse our full saree collection — Paithani, Banarasi, Kanjivaram, cotton and silk sarees. Filter by fabric, color, print and price.' }}">
+  {% if canonical_url %}<link rel="canonical" href="{{ canonical_url }}">{% endif %}
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ page_title|default:'Sanskruti by Bani - Collections' }}">
+  <meta property="og:description" content="{{ page_description|default:'Browse our full saree collection — Paithani, Banarasi, Kanjivaram, cotton and silk sarees.' }}">
+  {% if canonical_url %}<meta property="og:url" content="{{ canonical_url }}">{% endif %}
+  <meta property="og:site_name" content="Sanskruti by Bani">
+  <meta property="og:image" content="{% static 'user/assets/logo.png' %}">
+
   <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap"
     rel="stylesheet">
@@ -79,8 +90,8 @@
             {% for cat in categories %}
             <div class="mega-col">
               <h4>{{ cat.name }}</h4>
-              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore Sarees</a>
-              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}&tag=new-arrival">New Arrivals</a>
+              <a href="{% url 'user:catalogue_category' cat.slug %}">Explore Sarees</a>
+              <a href="{% url 'user:catalogue_category' cat.slug %}?tag=new-arrival">New Arrivals</a>
             </div>
             {% empty %}
             <div class="mega-col">
@@ -209,7 +220,7 @@
         <div class="mobile-dropdown-body">
           {% for cat in categories %}
           <h5>{{ cat.name }}</h5>
-          <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore {{ cat.name }}</a>
+          <a href="{% url 'user:catalogue_category' cat.slug %}">Explore {{ cat.name }}</a>
           {% empty %}
           <h5>Banarasi</h5>
           <a href="{% url 'user:catalogue' %}">Katan Silk</a>
@@ -392,6 +403,15 @@
 
     <!-- PRODUCT GRID -->
     <main id="mainContent" class="w-full lg:w-3/4 transition-all duration-500 ease-in-out">
+      <h1 class="text-2xl md:text-3xl font-serif text-[#810820] mb-2" style="font-family: 'Cinzel', serif;">
+        {% if request.GET.q %}
+          Search results for "{{ request.GET.q }}"
+        {% elif current_category %}
+          {{ current_category.name }} Sarees
+        {% else %}
+          Our Saree Collections
+        {% endif %}
+      </h1>
       <!-- TOOLBAR -->
       <div class="flex flex-col md:flex-row justify-between items-center mb-8 pb-4 border-b border-[#e7c27a]/50"
         style="font-family: 'Poppins', sans-serif;">
@@ -529,7 +549,7 @@
       <div class="footer-col">
         <h3>Collections</h3>
         {% for cat in categories %}
-        <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">{{ cat.name }} Sarees</a>
+        <a href="{% url 'user:catalogue_category' cat.slug %}">{{ cat.name }} Sarees</a>
         {% endfor %}
       </div>
 

@@ -26,7 +26,7 @@ from urllib.parse import urlparse
 import logging
 
 logger = logging.getLogger(__name__)
-
+from user.decorators  import admin_required
 
 FORM_TEMPLATE = "adm_user/products.html"
 
@@ -70,7 +70,7 @@ MAX_MEMORY_IMAGES = 20
 # # WEBSITE BUILDER
 # MAX_IMAGE_SIZE_MB = 25  
 # MAX_MEMORY_IMAGES = 20  
-
+@admin_required
 def dashboard(request):
     return render(request, 'adm_user/dashboard.html')
 

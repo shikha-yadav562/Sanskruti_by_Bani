@@ -2,12 +2,32 @@
 <html lang="en">
 
 <head>
+  {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>{{ product.name }} | Sanskruti by Bani</title>
-  <meta name="description" content="{{ product.description|truncatewords:30 }}">
-  {% if gallery_images %}<meta property="og:image" content="{{ gallery_images.0.image_url }}">{% endif %}
-  {% load static %}
+  <meta name="description" content="{{ product.description|default:product.name|truncatewords:30 }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="{{ product.name }} | Sanskruti by Bani">
+  <meta property="og:description" content="{{ product.description|default:product.name|truncatewords:30 }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:site_name" content="Sanskruti by Bani">
+  {% if gallery_images %}<meta property="og:image" content="{{ gallery_images.0.image_url }}">{% else %}<meta property="og:image" content="{% static 'user/assets/placeholder-saree.jpg' %}">{% endif %}
+  <meta property="product:price:amount" content="{{ display_price }}">
+  <meta property="product:price:currency" content="INR">
+
+  <!-- Twitter Card (WhatsApp/Telegram also read Open Graph above, this is for Twitter/X previews) -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ product.name }} | Sanskruti by Bani">
+  <meta name="twitter:description" content="{{ product.description|default:product.name|truncatewords:30 }}">
+  {% if gallery_images %}<meta name="twitter:image" content="{{ gallery_images.0.image_url }}">{% endif %}
+
+  <!-- Structured data for Google (price, stock, star ratings in search results) -->
+  <script type="application/ld+json">{{ product_json_ld|safe }}</script>
   <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap"
     rel="stylesheet">
@@ -96,8 +116,8 @@
             {% for cat in signature_categories %}
             <div class="mega-col">
               <h4>{{ cat.name }}</h4>
-              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore Sarees</a>
-              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}&tag=new-arrival">New Arrivals</a>
+              <a href="{% url 'user:catalogue_category' cat.slug %}">Explore Sarees</a>
+              <a href="{% url 'user:catalogue_category' cat.slug %}?tag=new-arrival">New Arrivals</a>
             </div>
             {% empty %}
             <div class="mega-col">
@@ -222,7 +242,7 @@
         <div class="mobile-dropdown-body">
           {% for cat in signature_categories %}
           <h5>{{ cat.name }}</h5>
-          <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore {{ cat.name }}</a>
+          <a href="{% url 'user:catalogue_category' cat.slug %}">Explore {{ cat.name }}</a>
           {% empty %}
           <h5>Banarasi</h5><a href="#">Katan Silk</a><a href="#">Organza</a>
           <h5>Paithani</h5><a href="#">Traditional</a><a href="#">Lotus</a>
@@ -248,7 +268,7 @@
       <a href="{% url 'user:index' %}" class="hover:text-[#71041a] hover:opacity-100 transition">Home</a> /
       <a href="{% url 'user:catalogue' %}" class="hover:text-[#71041a] hover:opacity-100 transition">Catalogue</a> /
       {% if product.category %}
-      <a href="{% url 'user:catalogue' %}?category={{ product.category.slug }}" class="hover:text-[#71041a] hover:opacity-100 transition">{{ product.category.name }}</a> /
+      <a href="{% url 'user:catalogue_category' product.category.slug %}" class="hover:text-[#71041a] hover:opacity-100 transition">{{ product.category.name }}</a> /
       {% endif %}
       <span class="text-[#71041a] font-semibold opacity-100">{{ product.name }}</span>
     </div>
@@ -727,13 +747,13 @@
                   {% if rev.image_1 or rev.image_2 or rev.image_3 %}
                   <div class="flex gap-2 pt-2">
                     {% if rev.image_1 %}
-                    <img src="{{ rev.image_1.url }}" class="w-20 h-20 object-cover rounded-xl border border-[#e7c27a]/50 cursor-pointer hover:scale-105 transition" onclick="openPhotoModal(this.src)">
+                    <img src="{{ rev.image_1.url }}" width="80" height="80" alt="Customer photo from {{ rev.user.full_name|default:'a customer' }}'s review: {{ rev.title }}" class="w-20 h-20 object-cover rounded-xl border border-[#e7c27a]/50 cursor-pointer hover:scale-105 transition" onclick="openPhotoModal(this.src)">
                     {% endif %}
                     {% if rev.image_2 %}
-                    <img src="{{ rev.image_2.url }}" class="w-20 h-20 object-cover rounded-xl border border-[#e7c27a]/50 cursor-pointer hover:scale-105 transition" onclick="openPhotoModal(this.src)">
+                    <img src="{{ rev.image_2.url }}" width="80" height="80" alt="Customer photo from {{ rev.user.full_name|default:'a customer' }}'s review: {{ rev.title }}" class="w-20 h-20 object-cover rounded-xl border border-[#e7c27a]/50 cursor-pointer hover:scale-105 transition" onclick="openPhotoModal(this.src)">
                     {% endif %}
                     {% if rev.image_3 %}
-                    <img src="{{ rev.image_3.url }}" class="w-20 h-20 object-cover rounded-xl border border-[#e7c27a]/50 cursor-pointer hover:scale-105 transition" onclick="openPhotoModal(this.src)">
+                    <img src="{{ rev.image_3.url }}" width="80" height="80" alt="Customer photo from {{ rev.user.full_name|default:'a customer' }}'s review: {{ rev.title }}" class="w-20 h-20 object-cover rounded-xl border border-[#e7c27a]/50 cursor-pointer hover:scale-105 transition" onclick="openPhotoModal(this.src)">
                     {% endif %}
                   </div>
                   {% endif %}
@@ -981,7 +1001,7 @@ LUXURY FOOTER SECTION
       <div class="footer-col">
         <h3>Collections</h3>
         {% for cat in signature_categories %}
-        <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">{{ cat.name }} Sarees</a>
+        <a href="{% url 'user:catalogue_category' cat.slug %}">{{ cat.name }} Sarees</a>
         {% endfor %}
       </div>
 

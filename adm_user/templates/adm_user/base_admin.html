@@ -113,16 +113,15 @@
                     <i class="ph ph-browser text-xl"></i>
                     <span>Website Builder</span>
                 </a>
-                
-                {% if request.user.is_authenticated %}
-                <button class="icon-btn" onclick="logoutUser()" title="Logout">
-                    <span class="material-symbols-outlined">logout</span>
-                </button>
-                {% else %}
-                <a class="icon-btn" href="{% url 'user:login' %}?next={{ request.get_full_path|urlencode }}" title="Login">
-                    <span class="material-symbols-outlined">account_circle</span>
-                </a>
-                {% endif %}
+                    {% if request.user.is_authenticated %}
+<button class="icon-btn" onclick="logoutUser()" title="Logout">
+  <span class="material-symbols-outlined">logout</span>
+</button>
+{% else %}
+<a class="icon-btn" href="{% url 'user:login' %}?next={{ request.get_full_path|urlencode }}" title="Login">
+  <span class="material-symbols-outlined">account_circle</span>
+</a>
+{% endif %}
             </nav>
 
             <!-- Bottom Profile -->
@@ -229,6 +228,7 @@
 
 
     {% block modals %}{% endblock %}
+    
 
     <script>
         function openMobileAdminSearch() {
@@ -273,6 +273,32 @@
         }
     </script>
     <script src="{% static 'adm_user/js/admin_core.js' %}?v={% now 'U' %}"></script>
+
+        <script>
+        async function logoutUser() {
+            try {
+                const response = await fetch("/api/auth/logout/", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    credentials: "same-origin"
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert(data.error || "Logout failed.");
+                }
+            } catch (error) {
+                console.error("Logout error:", error);
+            }
+        }
+    </script>
+
     {% block extra_scripts %}{% endblock %}
 </body>
 

@@ -2,14 +2,26 @@
 <html lang="en">
 
 <head>
-
-  <!-- =====================================
-  META
-  ===================================== -->
+  {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Sanskruti by Bani</title>
+  <title>Sanskruti by Bani | Handloom &amp; Designer Sarees</title>
+  <meta name="description" content="Shop handpicked Paithani, Banarasi, Kanjivaram and pure silk sarees at Sanskruti by Bani — authentic weaves, quality fabric, delivered across India.">
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Sanskruti by Bani | Handloom & Designer Sarees">
+  <meta property="og:description" content="Shop handpicked Paithani, Banarasi, Kanjivaram and pure silk sarees at Sanskruti by Bani.">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:site_name" content="Sanskruti by Bani">
+  <meta property="og:image" content="{% static 'user/assets/logo.png' %}">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sanskruti by Bani | Handloom & Designer Sarees">
+  <meta name="twitter:description" content="Shop handpicked Paithani, Banarasi, Kanjivaram and pure silk sarees at Sanskruti by Bani.">
 
   <style>
 @media (max-width: 767px) {
@@ -18,10 +30,8 @@
   }
 }
 </style>
-  {% load static %}
-  <!-- =====================================
-  GOOGLE FONTS
-  ===================================== -->
+
+  <!-- GOOGLE FONTS -->
  <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap"
     rel="stylesheet">
@@ -39,9 +49,7 @@
   <!-- MAIN CSS -->
   <link rel="stylesheet" href="{% static 'user/css/style.css' %}?v={{ STATIC_VERSION }}">
 
-   
 </head>
-
 <body>
 
   <!-- =====================================
@@ -66,7 +74,7 @@
       <img src="{% static 'user/assets/logo.png' %}" class="splash-logo" alt="Sanskruti Logo">
       {% endif %}
 
-      <h1 class="movie-title">
+           <div class="movie-title">
         <span>S</span>
         <span>A</span>
         <span>N</span>
@@ -76,7 +84,7 @@
         <span>U</span>
         <span>T</span>
         <span>I</span>
-      </h1>
+      </div>
 
       <div class="movie-sub">by Bani</div>
 
@@ -193,8 +201,8 @@
             {% for cat in signature_categories %}
             <div class="mega-col">
               <h4>{{ cat.name }}</h4>
-              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore Sarees</a>
-              <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}&tag=new-arrival">New Arrivals</a>
+              <a href="{% url 'user:catalogue_category' cat.slug %}">Explore Sarees</a>
+              <a href="{% url 'user:catalogue_category' cat.slug %}?tag=new-arrival">New Arrivals</a>
             </div>
             {% empty %}
             <div class="mega-col">
@@ -338,7 +346,7 @@
         <div class="mobile-dropdown-body">
           {% for cat in signature_categories %}
           <h5>{{ cat.name }}</h5>
-          <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">Explore {{ cat.name }}</a>
+          <a href="{% url 'user:catalogue_category' cat.slug %}">Explore {{ cat.name }}</a>
           {% empty %}
           <h5>Banarasi</h5>
           <a href="{% url 'user:catalogue' %}">Katan Silk</a>
@@ -471,9 +479,9 @@ HERO SLIDER (LUXURY EDITION)
 
         <!-- DESKTOP IMAGE -->
         {% if hero_image_only.desktop_image %}
-        <img src="{{ hero_image_only.desktop_image.url }}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner" loading="lazy">
+        <img src="{{ hero_image_only.desktop_image.url }}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner" >
         {% else %}
-        <img src="{% static 'user/assets/slide21.png' %}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner" loading="lazy">
+        <img src="{% static 'user/assets/slide21.png' %}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner" >
         {% endif %}
 
         <!-- MOBILE LAYOUT (Full Image Only) -->
@@ -482,10 +490,10 @@ HERO SLIDER (LUXURY EDITION)
 
           {% if hero_image_only.mobile_image %}
           <img src="{{ hero_image_only.mobile_image.url }}" class="premium-cover-img"
-            alt="Sanskruti By Bani Mobile Banner" loading="lazy">
+            alt="Sanskruti By Bani Mobile Banner" >
           {% else %}
           <img src="{% static 'user/assets/slide21-mobile.png' %}" class="premium-cover-img"
-            alt="Sanskruti By Bani Mobile Banner" loading="lazy">
+            alt="Sanskruti By Bani Mobile Banner" >
           {% endif %}
         </div>
 
@@ -523,7 +531,7 @@ LUXURY EDITORIAL COLLECTIONS
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
 
       {% for cat in signature_categories %}
-<a href="{% url 'user:catalogue' %}?category={{ cat.slug }}" class="luxury-card sig-lux-frame relative group block overflow-hidden rounded-2xl">{% if cat.badge_text %}
+<a href="{% url 'user:catalogue_category' cat.slug %}" class="luxury-card sig-lux-frame relative group block overflow-hidden rounded-2xl">{% if cat.badge_text %}
         <span class="sig-lux-badge z-20">{{ cat.badge_text }}</span>
         {% endif %}
 
@@ -1010,7 +1018,7 @@ LUXURY FOOTER SECTION
         <h3>Collections</h3>
 
         {% for cat in signature_categories %}
-        <a href="{% url 'user:catalogue' %}?category={{ cat.slug }}">{{ cat.name }} Sarees</a>
+        <a href="{% url 'user:catalogue_category' cat.slug %}">{{ cat.name }} Sarees</a>
         {% endfor %}
 
       </div>

@@ -24,7 +24,7 @@ from django.shortcuts import render, get_object_or_404,  redirect
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.urls import reverse
-
+from django.templatetags.static import static
 from django.views.decorators.http import require_POST, require_GET
 import json
 from PIL import Image, UnidentifiedImageError
@@ -99,6 +99,7 @@ def index(request):
     context = {
         "hero_offer": HeroSlideOffer.load(),
         "hero_main": HeroSlideMain.load(),
+        "canonical_url": request.build_absolute_uri(reverse('user:index')),
         "hero_image_only": HeroSlideImageOnly.load(),
         "header_settings": HeaderSettings.load(),
         "offer_items": list(OfferBarItem.objects.all()),
@@ -212,7 +213,35 @@ def product(request, slug):
     for p in similar_products:
         default_imgs = [img for img in p.all_images if img.variant_id is None]
         p.thumb = default_imgs[0] if default_imgs else (p.all_images[0] if p.all_images else None)
-    
+        canonical_url = request.build_absolute_uri(reverse('user:product', args=[product.slug]))
+
+    product_ld = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": product.name,
+        "image": [img.image_url for img in gallery_images] or [request.build_absolute_uri(static('user/assets/placeholder-saree.jpg'))],
+        "description": (product.description or "").strip() or f"{product.name} — handpicked saree from Sanskruti by Bani.",
+        "sku": product.product_code or str(product.id),
+        "brand": {"@type": "Brand", "name": "Sanskruti by Bani"},
+        "offers": {
+            "@type": "Offer",
+            "url": canonical_url,
+            "priceCurrency": "INR",
+            "price": str(display_price),
+            "availability": "https://schema.org/InStock" if product.stock_quantity > 0 else "https://schema.org/OutOfStock",
+        },
+    }
+    if total_reviews > 0:
+        product_ld["aggregateRating"] = {
+            "@type": "AggregateRating",
+            "ratingValue": str(avg_rating_formatted),
+            "reviewCount": total_reviews,
+        }
+
+    # json.dumps() keeps this valid JSON; Django's {{ }} auto-escaping would
+    # turn quotes into &quot; which breaks parsing inside <script type="application/ld+json">.
+    # The </ replacement stops a stray "</script>" in a description from closing the tag early.
+    product_json_ld = json.dumps(product_ld, cls=DjangoJSONEncoder).replace("</", "<\\/")
     context = {
         "header_settings": HeaderSettings.load(),
         "footer_settings": FooterSettings.load(),
@@ -236,11 +265,14 @@ def product(request, slug):
         "similar_products": similar_products,
         "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
         "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
+        "canonical_url": canonical_url,
+        "product_json_ld": product_json_ld,
     }
     return render(request, 'user/product.html', context)
 
 def terms_conditions(request):
     context = {
+        "canonical_url": request.build_absolute_uri(reverse('user:terms_conditions')),
         "header_settings": HeaderSettings.load(),
         "offer_items": OfferBarItem.objects.all(),
         "footer_settings": FooterSettings.load(),
@@ -901,6 +933,7 @@ def catalogue(request):
         "page_obj": page_obj,
         "products": page_obj.object_list,
         "total_count": paginator.count,
+        "canonical_url": request.build_absolute_uri(reverse('user:catalogue')),
 
         "price_choices": price_choices,
 
@@ -1000,3 +1033,200 @@ def buy_now(request, slug):
     whatsapp_number = getattr(settings, 'WHATSAPP_BUSINESS_NUMBER', '919372471363')
     return redirect(f"https://wa.me/{whatsapp_number}?text={quote(message)}")
 ##############################
+
+
+def catalogue_category(request, category_slug):
+    """
+    Dedicated SEO landing page for one category, e.g. /catalogue/paithani/
+    Completely separate from `catalogue` above — that view is untouched.
+    Same filtering/sorting/pagination behavior, just pinned to one category
+    and with its own title/description/canonical for ranking.
+    """
+    current_category = get_object_or_404(
+        SignatureCategoryItem, slug=category_slug, is_active=True
+    )
+
+    products = (
+        Product.objects
+        .filter(is_active=True, category=current_category)
+        .select_related("category", "fabric", "print_type")
+        .prefetch_related(
+            Prefetch(
+                "images",
+                queryset=ProductImage.objects
+                .select_related("variant__color")
+                .order_by("display_order", "created_at"),
+                to_attr="all_images",
+            ),
+            "variants__color",
+        )
+        .annotate(
+            effective_price=Case(
+                When(
+                    discount_price__isnull=False,
+                    then=F("discount_price"),
+                ),
+                default=F("base_price"),
+                output_field=DecimalField(
+                    max_digits=10,
+                    decimal_places=2,
+                ),
+            )
+        )
+    )
+
+    # ---------------------------------------------------------
+    # SEARCH (within this category)
+    # ---------------------------------------------------------
+    q = request.GET.get("q", "").strip()
+
+    if q:
+        products = products.filter(
+            Q(name__icontains=q)
+            | Q(description__icontains=q)
+            | Q(product_code__icontains=q)
+        )
+
+    # ---------------------------------------------------------
+    # FILTERS (category itself is fixed by the URL, not a GET param)
+    # ---------------------------------------------------------
+    fabric_slugs = request.GET.getlist("fabric")
+    print_slugs = request.GET.getlist("print")
+    color_slugs = request.GET.getlist("color")
+    price_keys = request.GET.getlist("price")
+    tag_slugs = request.GET.getlist("tag")
+
+    if fabric_slugs:
+        products = products.filter(fabric__slug__in=fabric_slugs)
+
+    if print_slugs:
+        products = products.filter(print_type__slug__in=print_slugs)
+
+    if color_slugs:
+        products = products.filter(
+            variants__color__slug__in=color_slugs
+        ).distinct()
+
+    if tag_slugs:
+        products = products.filter(tags__slug__in=tag_slugs).distinct()
+
+    if price_keys:
+        price_q = Q()
+
+        for key in price_keys:
+            lo, hi = PRICE_BRACKETS.get(key, (None, None))
+
+            bracket = Q()
+
+            if lo is not None:
+                bracket &= Q(effective_price__gte=lo)
+
+            if hi is not None:
+                bracket &= Q(effective_price__lt=hi)
+
+            price_q |= bracket
+
+        products = products.filter(price_q)
+
+    # ---------------------------------------------------------
+    # SORTING
+    # ---------------------------------------------------------
+    sort_key = request.GET.get("sort", "featured")
+
+    if sort_key in SORT_MAP:
+        products = products.order_by(SORT_MAP[sort_key])
+
+    # ---------------------------------------------------------
+    # PAGINATION
+    # ---------------------------------------------------------
+    paginator = Paginator(products, 5)
+    page_obj = paginator.get_page(request.GET.get("page", 1))
+
+    querydict = request.GET.copy()
+    querydict.pop("page", None)
+    base_qs = querydict.urlencode()
+
+    # ---------------------------------------------------------
+    # COLOR-SPECIFIC THUMBNAIL LOGIC (same as catalogue)
+    # ---------------------------------------------------------
+    for product in page_obj.object_list:
+        thumb = None
+        has_variant_images = any(img.variant_id for img in product.all_images)
+
+        if color_slugs:
+            thumb = next(
+                (
+                    img
+                    for img in product.all_images
+                    if img.variant_id
+                    and img.variant.color.slug in color_slugs
+                ),
+                None,
+            )
+
+        if thumb is None and not has_variant_images:
+            thumb = next(
+                (img for img in product.all_images if img.variant_id is None),
+                None,
+            )
+
+        if thumb is None:
+            thumb = next(
+                (img for img in product.all_images if img.variant_id),
+                None,
+            )
+
+        if thumb is None and product.all_images:
+            thumb = product.all_images[0]
+
+        product.thumb = thumb
+        product.thumb_variant_id = thumb.variant_id if thumb else None
+
+    # ---------------------------------------------------------
+    # SEO CONTEXT (this is the whole point of this view)
+    # ---------------------------------------------------------
+    canonical_url = request.build_absolute_uri(
+        reverse("user:catalogue_category", args=[current_category.slug])
+    )
+    page_title = f"{current_category.name} Sarees Online | Sanskruti by Bani"
+    page_description = (
+        f"Shop {current_category.name} sarees at Sanskruti by Bani — "
+        f"{current_category.origin_craft or 'authentic handloom weaves'}, "
+        f"premium quality, pan-India delivery."
+    )
+
+    context = {
+        "page_obj": page_obj,
+        "products": page_obj.object_list,
+        "total_count": paginator.count,
+
+        "price_choices": price_choices,
+
+        "categories": SignatureCategoryItem.objects.filter(is_active=True),
+        "colors": Color.objects.filter(is_active=True),
+        "fabrics": Fabric.objects.filter(is_active=True),
+        "prints": Print.objects.filter(is_active=True),
+        "tags": Tag.objects.all(),
+
+        "new_arrivals_tag": Tag.objects.filter(slug="new-arrival").first(),
+        "bestsellers_tag": Tag.objects.filter(slug="bestseller").first(),
+
+        "selected_categories": [current_category.slug],
+        "selected_fabrics": fabric_slugs,
+        "selected_prints": print_slugs,
+        "selected_colors": color_slugs,
+        "selected_prices": price_keys,
+        "selected_tags": tag_slugs,
+
+        "current_sort": sort_key,
+        "query": q,
+        "base_qs": base_qs,
+
+        # SEO-specific, not present on the plain /catalogue/ page
+        "current_category": current_category,
+        "canonical_url": canonical_url,
+        "page_title": page_title,
+        "page_description": page_description,
+    }
+
+    return render(request, "user/catalogue.html", context)

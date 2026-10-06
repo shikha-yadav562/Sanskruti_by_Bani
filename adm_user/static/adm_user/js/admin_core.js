@@ -173,26 +173,7 @@ function getCookie(name) {
     return cookieValue;
 }
 
-async function logoutUser(event) {
-    event.preventDefault();
 
-    const csrftoken = getCookie("csrftoken");
-
-    const response = await fetch("/api/auth/logout/", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": csrftoken,
-            "X-Requested-With": "XMLHttpRequest"
-        },
-        credentials: "same-origin"
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-        window.location.href = data.redirect_url;
-    }
-}
 
 // --- ADMIN SEARCH HANDLER (Desktop & Mobile with Live Suggestions) ---
 document.addEventListener('DOMContentLoaded', () => {
