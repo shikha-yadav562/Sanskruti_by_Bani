@@ -6,3 +6,7 @@ db.sqlite3
 node_modules/
 upload_local_media.py
 copy_r2.py
+
+data.json
+db.sqlite3.bak
+counts_*.txt
