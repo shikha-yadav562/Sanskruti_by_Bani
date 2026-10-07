@@ -1,0 +1,11 @@
+Django==6.0.5
+django-environ==0.11.2
+django-storages[s3]==1.14.4
+boto3==1.35.50
+psycopg2-binary==2.9.9
+Pillow==11.0.0
+user-agents==2.2.0
+
+# Testing
+pytest==8.3.3
+pytest-django==4.9.0
