@@ -6794,6 +6794,10 @@ HERO SLIDE 1 FULL IMAGE BANNER RESPONSIVE
    object-position: center !important;
    z-index: 1;
  }
+  .hero-offer picture {
+   display: contents;
+ }
+
 
  .hero-offer-desktop {
    display: block !important;
@@ -7153,7 +7157,7 @@ HERO SLIDE 1 FULL IMAGE BANNER RESPONSIVE
 
     .offer-editorial-img-box {
       height: 280px;
-      border-radius: 110px 110px 16px 16px;
+      border-radius: 150px 150px 16px 16px;
     }
 
     .offer-editorial-img {

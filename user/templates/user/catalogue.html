@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>{{ page_title|default:"Sanskruti by Bani - Collections" }}</title>
+  
   <meta name="description" content="{{ page_description|default:'Browse our full saree collection — Paithani, Banarasi, Kanjivaram, cotton and silk sarees. Filter by fabric, color, print and price.' }}">
   {% if canonical_url %}<link rel="canonical" href="{{ canonical_url }}">{% endif %}
 
@@ -16,7 +17,13 @@
   {% if canonical_url %}<meta property="og:url" content="{{ canonical_url }}">{% endif %}
   <meta property="og:site_name" content="Sanskruti by Bani">
   <meta property="og:image" content="{% static 'user/assets/logo.png' %}">
-
+  <link rel="icon" type="image/x-icon" href="{% static 'user/assets/favicon/favicon.ico' %}">
+ <link rel="icon" type="image/png" sizes="16x16" href="{% static 'user/assets/favicon/favicon-16x16.png' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'user/assets/favicon/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="48x48" href="{% static 'user/assets/favicon/favicon-48x48.png' %}">
+<link rel="icon" type="image/png" sizes="64x64" href="{% static 'user/assets/favicon/favicon-64x64.png' %}">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'user/assets/favicon/apple-touch-icon.png' %}">
+<link rel="manifest" href="{% static 'user/assets/favicon/site.webmanifest' %}">
   <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap"
     rel="stylesheet">
@@ -167,7 +174,7 @@
         {% endif %}
       </div>
 
-      <div class="nav-spacer"></div>
+      {% comment %} <div class="nav-spacer"></div> {% endcomment %}
     </div>
 
     <!-- MOBILE SLIDE-DOWN SEARCH BAR -->
@@ -254,20 +261,20 @@
     </button>
 
     <!-- FILTERS SIDEBAR (Drawer on Mobile, Sidebar on Desktop) -->
-    <form method="get" action="" id="filterForm" style="display:contents">
+    <form method="get" action="{% url 'user:catalogue' %}" id="filterForm" style="display:contents">
    <aside id="filterSidebar"
-  class="fixed inset-y-0 left-0 z-[1000] w-[85%] max-w-sm bg-[#fff8f4] shadow-2xl transform -translate-x-full transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 lg:z-[100] lg:w-1/4 lg:shadow-none lg:bg-transparent overflow-y-auto p-8 pb-24 lg:p-0"
+  class="fixed inset-y-0 left-0 z-[1000] w-[85%] max-w-sm bg-[#fff8f4] shadow-2xl transform -translate-x-full transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 lg:z-[100] lg:w-1/4 lg:shadow-none lg:bg-transparent overflow-y-auto p-8 pb-10 lg:p-0"
   style="font-family: 'Poppins', sans-serif;">
 
       <div class="lg:sticky lg:top-0 lg:flex lg:flex-col lg:max-h-[calc(100vh-10rem)]">
         <div class="flex justify-between items-center mb-8 border-b-2 border-[#810820] pb-4">
           <h3 class="text-2xl font-serif tracking-wider text-[#71041a]" style="font-family: 'Cinzel', serif;">Refine
           </h3>
-          <button id="closeFilterBtn" class="lg:hidden text-[#71041a] hover:text-[#c4453e] transition">
+          <button id="closeFilterBtn" class="hidden lg:block text-[#71041a] hover:text-[#c4453e] transition">
             <span class="material-symbols-outlined">close</span>
           </button>
-          {% if selected_prices or selected_categories or selected_tags or selected_colors or selected_fabrics or selected_prints %}
-<a href="{{ request.path }}" class="hidden lg:flex items-center gap-1 text-sm text-[#810820] font-semibold hover:text-[#c4453e] transition">
+         {% if selected_prices or selected_categories or selected_tags or selected_colors or selected_fabrics or selected_prints or current_category %}
+<a href="{% url 'user:catalogue' %}" class="flex items-center gap-1 text-sm text-[#810820] font-semibold hover:text-[#c4453e] transition">
   <span class="material-symbols-outlined text-[16px]">filter_alt_off</span> Remove Filters
 </a>
 {% else %}
@@ -304,7 +311,7 @@
     <div class="space-y-3 text-[#4a1c1c] text-sm">
       {% for cat in categories %}
       <label class="flex items-center space-x-3 cursor-pointer hover:text-[#810820] transition">
-        <input type="checkbox" name="category" value="{{ cat.slug }}" class="accent-[#810820] w-4 h-4 rounded-none cursor-pointer" {% if cat.slug in selected_categories %}checked{% endif %}>
+        <input type="checkbox" name="category" value="{{ cat.slug }}" class="accent-[#810820] w-4 h-4 rounded-none cursor-pointer" {% if cat.slug in selected_categories or cat.slug == current_category.slug %}checked{% endif %}>
         <span>{{ cat.name }}</span>
       </label>
       {% endfor %}

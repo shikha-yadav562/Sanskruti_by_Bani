@@ -1,10 +1,13 @@
 
+import os
 import json
+from io import BytesIO
 import uuid
 import csv
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.core.validators import get_available_image_extensions
@@ -20,7 +23,7 @@ from django.views.decorators.http import require_http_methods
 from .models import Category, Color, Fabric, Print, Tag, Product, ProductVariant, ProductImage, HeroSlideMain, HeroSlideImageOnly, HeroSlideOffer, SweetMemoriesSection, SweetMemoryImage, MemoriesOfferSlide, MemoriesSlide3, OfferBarItem, HeaderSettings, FooterSettings, AboutUsSection,SignatureCategoryItem
 from decimal import Decimal, InvalidOperation
 
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, ImageOps, UnidentifiedImageError
 from user.models import ProductReview
 from urllib.parse import urlparse
 import logging
@@ -510,6 +513,7 @@ def tag_delete(request, pk):
 # PRODUCTS
 # ==========================================
 
+
 def _delete_stored_image(image_url):
     """Delete the actual file from storage, given the full URL saved on ProductImage."""
     if not image_url:
@@ -688,13 +692,36 @@ def _validate_image(file_obj, max_size=MAX_IMAGE_SIZE):
 
     finally:
         file_obj.seek(0)
+
+
+##################CONVERTER WEBP AND AVIF#######################################
+def _convert_image(file_obj, target, max_side=2560):
+    file_obj.seek(0)
+    image = ImageOps.exif_transpose(Image.open(file_obj))
+
+    has_alpha = image.mode in ("RGBA", "LA") or (
+        image.mode == "P" and "transparency" in image.info
+    )
+    image = image.convert("RGBA" if has_alpha else "RGB")
+
+    if max_side:
+        image.thumbnail((max_side, max_side), Image.LANCZOS)
+
+    buffer = BytesIO()
+    if target == "avif":
+        image.save(buffer, format="AVIF", quality=85, speed=6)
+    else:
+        image.save(buffer, format="WEBP", quality=82, method=6)
+
+    stem = (os.path.splitext(get_valid_filename(file_obj.name))[0] or "image")[:60]
+    return ContentFile(buffer.getvalue(), name=f"{stem}.{target}")
         
 
 
 
 def _store_image(file_obj, request=None):
-    safe_name = get_valid_filename(file_obj.name)
-    path = default_storage.save(f"products/{uuid.uuid4().hex}_{safe_name}", file_obj)
+    converted = _convert_image(file_obj, "webp")
+    path = default_storage.save(f"products/{uuid.uuid4().hex}_{converted.name}", converted)
     url = default_storage.url(path)
     if request is not None and url.startswith("/"):
         url = request.build_absolute_uri(url)
@@ -1147,6 +1174,7 @@ def _save_singleton_image(instance, files, field_name, cleanup_files):
         return
 
     _validate_image_file(f)
+    f = _convert_image(f, "avif")
 
     old_file = getattr(instance, field_name)
     old_file_name = old_file.name if old_file else None
@@ -1580,7 +1608,7 @@ def memory_images(request):
             # Everything passed validation.
             for f in uploaded:
                 img = SweetMemoryImage(
-                    image=f,
+                    image=_convert_image(f, "avif"),
                     display_order=next_order,
                 )
 
@@ -2011,7 +2039,7 @@ def signature_categories_api(request):
         display_order=display_order,
     )
     if "image" in request.FILES:
-        item.image = request.FILES["image"]
+        item.image = _convert_image(request.FILES["image"], "webp")
 
     try:
         item.full_clean()
@@ -2059,7 +2087,7 @@ def signature_category_edit(request, pk):
         if error:
             return JsonResponse({"error": error}, status=400)
         old_image = item.image if item.image else None
-        item.image = request.FILES["image"]
+        item.image = _convert_image(request.FILES["image"], "webp")
     try:
         item.full_clean()
         with transaction.atomic():

@@ -143,6 +143,9 @@ Django settings for SanskrutiByBani project.
 from pathlib import Path
 import environ
 import os
+import mimetypes
+
+mimetypes.add_type("image/avif", ".avif")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -158,7 +161,7 @@ SECRET_KEY = env('SECRET_KEY')
 # Safe default is False. Set DEBUG=True in your local .env only.
 DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
+ALLOWED_HOSTS = ["*"]#env.list('ALLOWED_HOSTS')
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
 
 # ==============================================================================

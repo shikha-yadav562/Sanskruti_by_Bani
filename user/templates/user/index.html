@@ -7,6 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Sanskruti by Bani | Handloom &amp; Designer Sarees</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi&display=swap" rel="stylesheet">
+  {% if hero_offer.desktop_image %}
+  <link rel="preload" as="image" href="{{ hero_offer.desktop_image.url }}" media="(min-width: 769px)" fetchpriority="high">
+  {% endif %}
+  {% if hero_offer.mobile_image %}
+  <link rel="preload" as="image" href="{{ hero_offer.mobile_image.url }}" media="(max-width: 768px)" fetchpriority="high">
+  {% endif %}
   <meta name="description" content="Shop handpicked Paithani, Banarasi, Kanjivaram and pure silk sarees at Sanskruti by Bani — authentic weaves, quality fabric, delivered across India.">
   <link rel="canonical" href="{{ canonical_url }}">
 
@@ -22,7 +31,13 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Sanskruti by Bani | Handloom & Designer Sarees">
   <meta name="twitter:description" content="Shop handpicked Paithani, Banarasi, Kanjivaram and pure silk sarees at Sanskruti by Bani.">
-
+<link rel="icon" type="image/x-icon" href="{% static 'user/assets/favicon/favicon.ico' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'user/assets/favicon/favicon-16x16.png' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'user/assets/favicon/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="48x48" href="{% static 'user/assets/favicon/favicon-48x48.png' %}">
+<link rel="icon" type="image/png" sizes="64x64" href="{% static 'user/assets/favicon/favicon-64x64.png' %}">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'user/assets/favicon/apple-touch-icon.png' %}">
+<link rel="manifest" href="{% static 'user/assets/favicon/site.webmanifest' %}">
   <style>
 @media (max-width: 767px) {
   .saree-quickview-wrap {
@@ -281,7 +296,7 @@
       </div>
 
       <!-- SPACER -->
-      <div class="nav-spacer"></div>
+      {% comment %} <div class="nav-spacer"></div> {% endcomment %}
 
     </div>
 
@@ -381,17 +396,10 @@ HERO SLIDER (LUXURY EDITION)
       SLIDE 1 (50% OFF SPECIAL OFFER BANNER)
       ========================= -->
       <div class="hero-slide hero-offer" style="height: 100vh; min-height: 520px; width: 100%; position: relative; background: #6e0318; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-        {% if hero_offer.desktop_image %}
-        <img src="{{ hero_offer.desktop_image.url }}" class="hero-offer-banner hero-offer-desktop" alt="Sanskruti By Bani 50% Off Special Offer Banner Desktop" fetchpriority="high" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
-        {% else %}
-        <img src="{% static 'user/assets/hero section slide 1.png' %}" class="hero-offer-banner hero-offer-desktop" alt="Sanskruti By Bani 50% Off Special Offer Banner Desktop" fetchpriority="high" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
-        {% endif %}
-
-        {% if hero_offer.mobile_image %}
-        <img src="{{ hero_offer.mobile_image.url }}" class="hero-offer-banner hero-offer-mobile" alt="Sanskruti By Bani 50% Off Special Offer Banner Mobile" fetchpriority="high" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
-        {% else %}
-        <img src="{% static 'user/assets/hero section slide 1.png' %}" class="hero-offer-banner hero-offer-mobile" alt="Sanskruti By Bani 50% Off Special Offer Banner Mobile" fetchpriority="high" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
-        {% endif %}
+        <picture>
+          <source media="(max-width: 768px)" srcset="{% if hero_offer.mobile_image %}{{ hero_offer.mobile_image.url }}{% else %}{% static 'user/assets/hero section slide 1.png' %}{% endif %}">
+          <img src="{% if hero_offer.desktop_image %}{{ hero_offer.desktop_image.url }}{% else %}{% static 'user/assets/hero section slide 1.png' %}{% endif %}" class="hero-offer-banner" alt="Sanskruti By Bani 50% Off Special Offer Banner" fetchpriority="high" decoding="async">
+        </picture>
       </div>
 
       <!-- =========================
@@ -451,18 +459,15 @@ HERO SLIDER (LUXURY EDITION)
 
             <!-- DESKTOP IMAGE -->
             {% if hero_main.desktop_image %}
-            <img src="{{ hero_main.desktop_image.url }}" class="hero-img desktop-hero-img" alt="Founder Image">
+            <img src="{{ hero_main.desktop_image.url }}" class="hero-img desktop-hero-img" alt="Founder Image" loading="lazy" decoding="async">
             {% else %}
-            <img src="{% static 'user/assets/slide1.png' %}" class="hero-img desktop-hero-img" alt="Founder Image">
+            <img src="{% static 'user/assets/slide1.png' %}" class="hero-img desktop-hero-img" alt="Founder Image" loading="lazy" decoding="async">
             {% endif %}
 
-            <!-- MOBILE IMAGE -->
             {% if hero_main.mobile_image %}
-            <img src="{{ hero_main.mobile_image.url }}" class="hero-img mobile-hero-img"
-              alt="Sanskruti By Bani Family">
+            <img src="{{ hero_main.mobile_image.url }}" class="hero-img mobile-hero-img" alt="Sanskruti By Bani Family" loading="lazy" decoding="async">
             {% else %}
-            <img src="{% static 'user/assets/344941.png' %}" class="hero-img mobile-hero-img"
-              alt="Sanskruti By Bani Family">
+            <img src="{% static 'user/assets/344941.png' %}" class="hero-img mobile-hero-img" alt="Sanskruti By Bani Family" loading="lazy" decoding="async">
             {% endif %}
 
           </div>
@@ -478,22 +483,19 @@ HERO SLIDER (LUXURY EDITION)
       <div class="hero-slide image-slide">
 
         <!-- DESKTOP IMAGE -->
-        {% if hero_image_only.desktop_image %}
-        <img src="{{ hero_image_only.desktop_image.url }}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner" >
+               {% if hero_image_only.desktop_image %}
+        <img src="{{ hero_image_only.desktop_image.url }}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner" loading="lazy" decoding="async">
         {% else %}
-        <img src="{% static 'user/assets/slide21.png' %}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner" >
+        <img src="{% static 'user/assets/slide21.png' %}" class="desktop-img" alt="Sanskruti By Bani Desktop Banner" loading="lazy" decoding="async">
         {% endif %}
 
-        <!-- MOBILE LAYOUT (Full Image Only) -->
         <div class="slide2-mobile-layout premium-cover-layout"
           style="position: absolute; inset: 0; width: 100%; height: 100% !important;">
 
           {% if hero_image_only.mobile_image %}
-          <img src="{{ hero_image_only.mobile_image.url }}" class="premium-cover-img"
-            alt="Sanskruti By Bani Mobile Banner" >
+          <img src="{{ hero_image_only.mobile_image.url }}" class="premium-cover-img" alt="Sanskruti By Bani Mobile Banner" loading="lazy" decoding="async">
           {% else %}
-          <img src="{% static 'user/assets/slide21-mobile.png' %}" class="premium-cover-img"
-            alt="Sanskruti By Bani Mobile Banner" >
+          <img src="{% static 'user/assets/slide21-mobile.png' %}" class="premium-cover-img" alt="Sanskruti By Bani Mobile Banner" loading="lazy" decoding="async">
           {% endif %}
         </div>
 
@@ -536,7 +538,8 @@ LUXURY EDITORIAL COLLECTIONS
         {% endif %}
 
         {% if cat.image %}
-        <img src="{{ cat.image.url }}"  loading="lazy" alt="{{ cat.name }}">
+  
+<img src="{{ cat.image.url }}" alt="{{ cat.name }}" loading="lazy" decoding="async">
         {% else %}
           {% if forloop.counter == 1 %}<img src="{% static 'user/assets/BEST SELLER SAREE FOLDER/ANURADHA PAITHANI/Anuradha Paithani Soft Peacock Design Saree 1.jpeg' %}" alt="Paithani" loading="lazy">
           {% elif forloop.counter == 2 %}<img src="{% static 'user/assets/PAITHANI SAREE PHOTO/PAITHANI SAREE PHOTO/PURE SOFT KANCHIVRAM  PETHANI SILK 21.jpeg' %}" alt="Kanjivaram" loading="lazy">
@@ -596,9 +599,9 @@ LUXURY EDITORIAL COLLECTIONS
               <div class="offer-editorial-img-box">
                 <span class="offer-ribbon-tag">{{ memories_offer_slide.frame1_ribbon|default:"50% OFF" }}</span>
                 {% if memories_offer_slide.frame1_image %}
-                <img class="offer-editorial-img" src="{{ memories_offer_slide.frame1_image.url }}" alt="{{ memories_offer_slide.frame1_title }}" loading="lazy">
+                <img class="offer-editorial-img" src="{{ memories_offer_slide.frame1_image.url }}" alt="{{ memories_offer_slide.frame1_title }}" loading="lazy" decoding="async">
                 {% else %}
-                <img class="offer-editorial-img" src="{% static 'user/assets/hero section slide 1.png' %}" alt="{{ memories_offer_slide.frame1_title }}" loading="lazy">
+                <img class="offer-editorial-img" src="{% static 'user/assets/hero section slide 1.png' %}" alt="{{ memories_offer_slide.frame1_title }}" loading="lazy" decoding="async">
                 {% endif %}
               </div>
               <div class="offer-editorial-badge-wrap">
@@ -617,11 +620,11 @@ LUXURY EDITORIAL COLLECTIONS
               <div class="offer-editorial-img-box">
                 <span class="offer-ribbon-tag">{{ memories_offer_slide.frame2_ribbon|default:"10% OFF" }}</span>
                 {% if memories_offer_slide.frame2_image %}
-                <img class="offer-editorial-img" src="{{ memories_offer_slide.frame2_image.url }}" alt="{{ memories_offer_slide.frame2_title }}" loading="lazy">
+                <img class="offer-editorial-img" src="{{ memories_offer_slide.frame2_image.url }}" alt="{{ memories_offer_slide.frame2_title }}" loading="lazy" decoding="async">
                 {% elif memories_offer_slide.desktop_image %}
-                <img class="offer-editorial-img" src="{{ memories_offer_slide.desktop_image.url }}" alt="{{ memories_offer_slide.frame2_title }}" loading="lazy">
+                <img class="offer-editorial-img" src="{{ memories_offer_slide.desktop_image.url }}" alt="{{ memories_offer_slide.frame2_title }}" loading="lazy" decoding="async" >
                 {% else %}
-                <img class="offer-editorial-img" src="{% static 'user/assets/sweet-slide 1-1.jpeg' %}" alt="{{ memories_offer_slide.frame2_title }}" loading="lazy">
+                <img class="offer-editorial-img" src="{% static 'user/assets/sweet-slide 1-1.jpeg' %}" alt="{{ memories_offer_slide.frame2_title }}" loading="lazy" decoding="async">
                 {% endif %}
               </div>
               <div class="offer-editorial-badge-wrap">
@@ -640,9 +643,9 @@ LUXURY EDITORIAL COLLECTIONS
               <div class="offer-editorial-img-box">
                 <span class="offer-ribbon-tag">{{ memories_offer_slide.frame3_ribbon|default:"65% OFF" }}</span>
                 {% if memories_offer_slide.frame3_image %}
-                <img class="offer-editorial-img" src="{{ memories_offer_slide.frame3_image.url }}" alt="{{ memories_offer_slide.frame3_title }}" loading="lazy">
+                <img class="offer-editorial-img" src="{{ memories_offer_slide.frame3_image.url }}" alt="{{ memories_offer_slide.frame3_title }}" loading="lazy" decoding="async">
                 {% else %}
-                <img class="offer-editorial-img" src="{% static 'user/assets/rakhi-desktop.jpg' %}" alt="{{ memories_offer_slide.frame3_title }}" loading="lazy">
+                <img class="offer-editorial-img" src="{% static 'user/assets/rakhi-desktop.jpg' %}" alt="{{ memories_offer_slide.frame3_title }}" loading="lazy" decoding="async">
                 {% endif %}
               </div>
               <div class="offer-editorial-badge-wrap">
@@ -673,7 +676,7 @@ LUXURY EDITORIAL COLLECTIONS
               <div class="slider-window">
                 <div class="slider-track">
                   {% for img in memory_images %}
-                  <img src="{{ img.image.url }}"  loading="lazy">
+                  <img src="{{ img.image.url }}" loading="lazy" decoding="async">
                   {% empty %}
                   <img src="{% static 'user/assets/SPECIAL MEMORIES/CARE FOR HER DAUGHTER.JPG' %}" loading="lazy">
                   <img src="{% static 'user/assets/SPECIAL MEMORIES/WEDDING MOMENTS WITH YELLOW PAITHANI.JPG' %}" loading="lazy">
@@ -780,9 +783,10 @@ SPECIALITY = PAITHANI
       <div class="saree-card">
 
         <div class="saree-image">
-          <a href="{% url 'user:product' product.slug %}" class="saree-image-link group">
+          <a href="{% url 'user:product' product.slug %}{% if product.thumb_variant_id %}?variant={{ product.thumb_variant_id }}{% endif %}"
+   class="saree-image-link group">
             {% if product.thumb %}
-              <img src="{{ product.thumb.image_url }}" alt="{{ product.name }}" loading="lazy" >
+              <img src="{{ product.thumb.image_url }}" alt="{{ product.name }}" loading="lazy" decoding="async">
             {% endif %}
             <div class="saree-quickview-wrap">
               <span class="saree-quickview-btn">Quick View</span>
@@ -906,9 +910,9 @@ WITH IMAGE + ANIMATION
 
           {% comment %} <img src="{% static 'user/assets/about-1.jpeg' %}" alt="Sanskruti By Bani" class="about-main-img"> {% endcomment %}
           {% if about_section.about_image %}
-          <img src="{{ about_section.about_image.url }}" loading="lazy" alt="Sanskruti By Bani" class="about-main-img">
+          <img src="{{ about_section.about_image.url }}"  alt="Sanskruti By Bani" class="about-main-img" loading="lazy" decoding="async">
           {% else %}
-          <img src="{% static 'user/assets/about-1.jpeg' %}" loading="lazy" alt="Sanskruti By Bani" class="about-main-img">
+          <img src="{% static 'user/assets/about-1.jpeg' %}"  alt="Sanskruti By Bani" class="about-main-img" loading="lazy" decoding="async">
           {% endif %}
 
           <!-- FLOAT CARD -->

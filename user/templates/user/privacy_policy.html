@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy Policy - Sanskruti by Bani</title>
 <meta name="description" content="How Sanskruti by Bani collects, uses, and protects your personal information.">
 <link rel="canonical" href="{{ canonical_url }}">
 {% load static %}
-  
+  <link rel="icon" type="image/x-icon" href="{% static 'user/assets/favicon/favicon.ico' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'user/assets/favicon/favicon-16x16.png' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'user/assets/favicon/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="48x48" href="{% static 'user/assets/favicon/favicon-48x48.png' %}">
+<link rel="icon" type="image/png" sizes="64x64" href="{% static 'user/assets/favicon/favicon-64x64.png' %}">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'user/assets/favicon/apple-touch-icon.png' %}">
+<link rel="manifest" href="{% static 'user/assets/favicon/site.webmanifest' %}">
   <!-- GOOGLE FONTS -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   
@@ -154,7 +162,7 @@
         {% endif %}
       </div>
 
-      <div class="nav-spacer"></div>
+      {% comment %} <div class="nav-spacer"></div> {% endcomment %}
     </div>
 
     <!-- MOBILE SLIDE-DOWN SEARCH BAR -->

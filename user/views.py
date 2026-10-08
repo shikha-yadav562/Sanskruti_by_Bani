@@ -89,12 +89,27 @@ def index(request):
         bestseller_products = bestseller_products[:5]
 
     for product in bestseller_products:
-        if product.default_images:
+        variant_thumb = next(
+            (
+                img
+                for img in product.any_images
+                if img.variant_id
+            ),
+            None,
+        )
+
+        if variant_thumb:
+            product.thumb = variant_thumb
+        elif product.default_images:
             product.thumb = product.default_images[0]
         elif product.any_images:
             product.thumb = product.any_images[0]
         else:
             product.thumb = None
+
+        product.thumb_variant_id = (
+            product.thumb.variant_id if product.thumb else None
+        )
 
     context = {
         "hero_offer": HeroSlideOffer.load(),
